@@ -19,6 +19,8 @@ find_library(RASQAL_LIBRARY rasqal REQUIRED)
 # Determine the Redland RDF library path:
 find_library(REDLAND_LIBRARY rdf REQUIRED)
 
+find_package(spdlog REQUIRED)
+
 # Include and link Raptor2
 include_directories(${RAPTOR2_INCLUDE_PATH})
 include_directories(${RASQAL_INCLUDE_PATH})
@@ -33,6 +35,7 @@ add_executable(
 target_link_libraries(${PROJECT_NAME} PRIVATE ${RAPTOR2_LIBRARY})
 target_link_libraries(${PROJECT_NAME} PRIVATE ${RASQAL_LIBRARY})
 target_link_libraries(${PROJECT_NAME} PRIVATE ${REDLAND_LIBRARY})
+target_link_libraries(${PROJECT_NAME} PRIVATE spdlog::spdlog)
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -pedantic)

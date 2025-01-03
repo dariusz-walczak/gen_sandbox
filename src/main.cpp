@@ -2,7 +2,8 @@
 #include <cstdio>
 
 #include <redland.h>
-
+#include "spdlog/spdlog.h"
+#include "spdlog/sinks/stdout_color_sinks.h"
 
 namespace {
     struct RedlandContext {
@@ -20,94 +21,85 @@ namespace {
         librdf_free_storage(ctx.storage);
         librdf_free_world(ctx.world);
 
-        std::cout << "Released the Redland context" << std::endl;
+        spdlog::debug("Released the Redland context");
 
         return {};
     }
 }
 
 int main() {
+    spdlog::set_level(spdlog::level::debug);
+    spdlog::set_default_logger(spdlog::stderr_color_mt("stderr_logger"));
+
     RedlandContext redland_ctx = {};
 
     redland_ctx.world = librdf_new_world();
 
     if (!redland_ctx.world) {
-        std::cerr
-            << "Redland RDF Library: Failed to create the execution environment"
-            << std::endl;
+        spdlog::critical("Redland Context: Failed to create a Redland World");
 
         return 1;
     }
 
-    std::cerr << "Redland Context: Created a Redland World" << std::endl;
+    spdlog::debug("Redland Context: Created a Redland World");
 
     librdf_world_open(redland_ctx.world);
 
-    std::cerr << "Redland Context: Initialized the Redland World" << std::endl;
+    spdlog::debug("Redland Context: Initialized the Redland World");
 
     // https://librdf.org/docs/api/redland-storage.html#librdf-new-storage
     redland_ctx.storage = librdf_new_storage(redland_ctx.world, "memory", nullptr, nullptr);
 
     if (!redland_ctx.storage) {
-        std::cerr
-            << "Redland Context: Failed to create a Redland Storage"
-            << std::endl;
+        spdlog::critical("Redland Context: Failed to create a Redland Storage");
 
         redland_ctx = ReleaseRedland(redland_ctx);
         return 2;
     }
 
-    std::cerr << "Redland Context: Created a Redland Storage" << std::endl;
+    spdlog::debug("Redland Context: Created a Redland Storage");
 
     // https://librdf.org/docs/api/redland-model.html#librdf-new-model
     redland_ctx.model = librdf_new_model(redland_ctx.world, redland_ctx.storage, nullptr);
 
     if (!redland_ctx.model) {
-        std::cerr
-            << "Redland Context: Failed to create a Redland Model"
-            << std::endl;
+        spdlog::critical("Redland Context: Failed to create a Redland Model");
 
         redland_ctx = ReleaseRedland(redland_ctx);
         return 3;
     }
 
-    std::cerr << "Redland Context: Created a Redland Model" << std::endl;
+    spdlog::debug("Redland Context: Created a Redland Model");
 
     // https://librdf.org/docs/api/redland-parser.html#librdf-new-parser
     redland_ctx.parser = librdf_new_parser(redland_ctx.world, "turtle", nullptr, nullptr);
 
     if (!redland_ctx.parser) {
-        std::cerr
-            << "Redland Context: Failed to create a Redland Parser"
-            << std::endl;
+        spdlog::critical("Redland Context: Failed to create a Redland Parser");
 
         redland_ctx = ReleaseRedland(redland_ctx);
         return 4;
     }
 
-    std::cerr << "Redland Context: Created a Redland Parser" << std::endl;
+    spdlog::debug("Redland Context: Created a Redland Parser");
 
     const unsigned char base_uri_str[] = "https://aurochsoft.com/";
     redland_ctx.base_uri = librdf_new_uri(redland_ctx.world, base_uri_str);
 
     if (!redland_ctx.base_uri) {
-        std::cerr
-            << "Redland Context: Failed to create the Base URI"
-            << std::endl;
+        spdlog::critical("Redland Context: Failed to create the Base URI");
 
         redland_ctx = ReleaseRedland(redland_ctx);
         return 5;
     }
 
-    std::cerr << "Redland Context: Created the Base URI" << std::endl;
+    spdlog::debug("Redland Context: Created the Base URI");
 
     const char* input_file_path = "sample.ttl";
     FILE* input_file = fopen(input_file_path, "r");
 
     if (!input_file) {
-        std::cerr
-            << "Failed to open the '" << input_file_path << "' file"
-            << std::endl;
+        spdlog::error("Failed to open the '{}' file", input_file_path);
 
         redland_ctx = ReleaseRedland(redland_ctx);
         return 6;
@@ -118,18 +110,16 @@ int main() {
 
     fclose(input_file);
 
-    std::cerr << "Closed the '" << input_file_path << "' file" << std::endl;
+    spdlog::debug("Closed the '{}' file", input_file_path);
 
     if (parser_error) {
-        std::cerr
-            << "Redland Context: Failed to parse the input file"
-            << std::endl;
+        spdlog::error("Redland Context: Failed to parse the '{}' input file", input_file_path);
 
         redland_ctx = ReleaseRedland(redland_ctx);
         return 7;
     }
 
-    std::cerr << "Redland Context: Successfully parsed the input file" << std::endl;
+    spdlog::info("Redland Context: Successfully parsed the '{}' input file", input_file_path);
 
     librdf_model_print(redland_ctx.model, stdout);
 
