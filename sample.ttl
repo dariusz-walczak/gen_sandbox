@@ -8,5 +8,15 @@ ex:person1
 
 ex:person2
     a foaf:Person ;
-    foaf:name "Bob" ;
-    foaf:mbox <mailto:bob@example.org> .
+    foaf:name "Ben" ;
+    foaf:mbox <mailto:ben@example.org> .
+
+ex:person3
+    a foaf:Person ;
+    foaf:name "Celina" ;
+    foaf:mbox <mailto:celina@example.org> .
+
+ex:person3
+    a foaf:Person ;
+    foaf:name "Dorota" ;
+    foaf:mbox <mailto:dorota@example.org> .

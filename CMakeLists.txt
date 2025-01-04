@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
 
+include(FetchContent)
+
 project(
   gen_sandbox VERSION 0.1.0
   DESCRIPTION "Sample C++ application for experiments with RDF"
@@ -8,26 +10,57 @@ project(
 set(
   CMAKE_CXX_STANDARD 17)
 
-# Determine the Raptor RDF Syntax library paths:
+# ---[ Raptor RDF Syntax Library ]-------------------------------------------------------------- #
+
+# Required by the Redland RDF Library
+
 find_path(RAPTOR2_INCLUDE_PATH raptor2.h PATH_SUFFIXES "raptor2" REQUIRED)
 find_library(RAPTOR2_LIBRARY raptor2 REQUIRED)
+include_directories(${RAPTOR2_INCLUDE_PATH})
 
-# Determine the Rasqal RDF Query library paths:
+# ---[ Rasqal RDF Query Library ]--------------------------------------------------------------- #
+
+# Required by the Redland RDF Library
+
 find_path(RASQAL_INCLUDE_PATH rasqal.h PATH_SUFFIXES "rasqal" REQUIRED)
 find_library(RASQAL_LIBRARY rasqal REQUIRED)
+include_directories(${RASQAL_INCLUDE_PATH})
 
-# Determine the Redland RDF library path:
+# ---[ Redland RDF Library ]-------------------------------------------------------------------- #
+
+# Required by the project for rdf data handling purposes.
+
 find_library(REDLAND_LIBRARY rdf REQUIRED)
+
+# ---[ SpdLog Library ]------------------------------------------------------------------------- #
+
+# SpdLog is a Fast C++ Logging Library
+# Required by the project for logging purposes.
 
 find_package(spdlog REQUIRED)
 
-# Include and link Raptor2
-include_directories(${RAPTOR2_INCLUDE_PATH})
-include_directories(${RASQAL_INCLUDE_PATH})
+# ---[ Tabulate Library ]----------------------------------------------------------------------- #
+
+# Required by the project for output data presentation purposes.
+
+set(USE_CPP17 ON)
+
+FetchContent_Declare(
+    tabulate
+    GIT_REPOSITORY https://github.com/p-ranav/tabulate.git
+    GIT_TAG master
+)
+FetchContent_MakeAvailable(tabulate)
+
+include_directories(${tabulate_SOURCE_DIR}/single_include)
+
+
 
 set(
   SOURCES
-  src/main.cpp)
+  src/main.cpp
+  src/redland_utils.cpp
+)
 
 add_executable(
   ${PROJECT_NAME} ${SOURCES})

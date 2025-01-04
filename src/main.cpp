@@ -2,8 +2,11 @@
 #include <cstdio>
 
 #include <redland.h>
-#include "spdlog/spdlog.h"
-#include "spdlog/sinks/stdout_color_sinks.h"
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+
+#include "redland_utils.hpp"
+
 
 namespace {
     struct RedlandContext {
@@ -28,7 +31,7 @@ namespace {
 }
 
 int main() {
-    spdlog::set_level(spdlog::level::debug);
+    spdlog::set_level(spdlog::level::info);
     spdlog::set_default_logger(spdlog::stderr_color_mt("stderr_logger"));
 
     RedlandContext redland_ctx = {};
@@ -71,57 +74,26 @@ int main() {
 
     spdlog::debug("Redland Context: Created a Redland Model");
 
-    // https://librdf.org/docs/api/redland-parser.html#librdf-new-parser
-    redland_ctx.parser = librdf_new_parser(redland_ctx.world, "turtle", nullptr, nullptr);
+    load_rdf(redland_ctx.world, redland_ctx.model, "sample.ttl");
 
-    if (!redland_ctx.parser) {
-        spdlog::critical("Redland Context: Failed to create a Redland Parser");
-
-        redland_ctx = ReleaseRedland(redland_ctx);
-        return 4;
-    }
-
-    spdlog::debug("Redland Context: Created a Redland Parser");
-
-    const unsigned char base_uri_str[] = "https://aurochsoft.com/";
-    redland_ctx.base_uri = librdf_new_uri(redland_ctx.world, base_uri_str);
-
-    if (!redland_ctx.base_uri) {
-        spdlog::critical("Redland Context: Failed to create the Base URI");
-
-        redland_ctx = ReleaseRedland(redland_ctx);
-        return 5;
-    }
-
-    spdlog::debug("Redland Context: Created the Base URI");
-
-    const char* input_file_path = "sample.ttl";
-    FILE* input_file = fopen(input_file_path, "r");
-
-    if (!input_file) {
-        spdlog::error("Failed to open the '{}' file", input_file_path);
-
-        redland_ctx = ReleaseRedland(redland_ctx);
-        return 6;
-    }
-
-    const int parser_error = librdf_parser_parse_file_handle_into_model(
-        redland_ctx.parser, input_file, 0, redland_ctx.base_uri, redland_ctx.model);
-
-    fclose(input_file);
-
-    spdlog::debug("Closed the '{}' file", input_file_path);
-
-    if (parser_error) {
-        spdlog::error("Redland Context: Failed to parse the '{}' input file", input_file_path);
-
-        redland_ctx = ReleaseRedland(redland_ctx);
-        return 7;
-    }
-
-    spdlog::info("Redland Context: Successfully parsed the '{}' input file", input_file_path);
+    std::cout << std::endl;
 
     librdf_model_print(redland_ctx.model, stdout);
+
+    std::cout << std::endl;
+
+    const std::string query = {
+        R"(
+        PREFIX ex: <http://example.org/>
+        PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+        SELECT ?person, ?name
+        WHERE {
+            ?person a foaf:Person ;
+                    foaf:name ?name .
+        })"
+    };
+
+    exec_query(redland_ctx.world, redland_ctx.model, query);
 
     redland_ctx = ReleaseRedland(redland_ctx);
 
