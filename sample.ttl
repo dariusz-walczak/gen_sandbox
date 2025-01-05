@@ -16,7 +16,7 @@ ex:person3
     foaf:name "Celina" ;
     foaf:mbox <mailto:celina@example.org> .
 
-ex:person3
+ex:person4
     a foaf:Person ;
     foaf:name "Dorota" ;
     foaf:mbox <mailto:dorota@example.org> .
