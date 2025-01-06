@@ -84,12 +84,17 @@ int main() {
 
     const std::string query = {
         R"(
-        PREFIX ex: <http://example.org/>
-        PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-        SELECT ?person, ?name
+        PREFIX gx: <http://gedcomx.org/>
+
+        SELECT ?person, ?name, ?gender, ?birthDate, ?deathDate
         WHERE {
-            ?person a foaf:Person ;
-                    foaf:name ?name .
+            ?person a gx:Person ;
+                gx:name ?name ;
+                gx:gender ?gender ;
+                gx:birthDate ?birthDate .
+                OPTIONAL {
+                    ?person gx:deathDate ?deathDate
+                }
         })"
     };
 
