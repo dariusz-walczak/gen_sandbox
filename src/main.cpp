@@ -89,12 +89,15 @@ int main() {
         SELECT ?person, ?name, ?gender, ?birthDate, ?deathDate
         WHERE {
             ?person a gx:Person ;
-                gx:name ?name ;
-                gx:gender ?gender ;
-                gx:birthDate ?birthDate .
-                OPTIONAL {
-                    ?person gx:deathDate ?deathDate
-                }
+                gx:name ?name .
+            OPTIONAL {
+                ?person gx:gender ?gender
+            }
+            ?person gx:birthDate ?birthDate .
+            OPTIONAL {
+                ?person gx:deathDate ?deathDate
+            }
+
         })"
     };
 
