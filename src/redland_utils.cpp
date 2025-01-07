@@ -159,6 +159,7 @@ void exec_query(librdf_world* world, librdf_model* model, const std::string& que
                 row.push_back(librdf_query_results_get_binding_name(ctx->results, i));
             } else {
                 spdlog::warn("exec_query: Node #{} of the first row couldn't be retrieved", i);
+                row.push_back("");
             }
         }
 
