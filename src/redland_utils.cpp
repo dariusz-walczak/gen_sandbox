@@ -14,6 +14,36 @@
 #include <tabulate/tabulate.hpp>
 
 namespace {
+
+}
+
+void release_redland_ctx(redland_context* ctx) {
+    librdf_free_uri(ctx->base_uri);
+    spdlog::debug("Released the Base URI");
+
+    librdf_free_parser(ctx->parser);
+    spdlog::debug("Released the Redland Parser");
+
+    librdf_free_model(ctx->model);
+    spdlog::debug("Released the Redland Model");
+
+    librdf_free_storage(ctx->storage);
+    spdlog::debug("Released the Redland Storage");
+
+    librdf_free_world(ctx->world);
+    spdlog::debug("Released the Redland World");
+
+    spdlog::info("Released the Redland Context");
+
+    delete ctx;
+}
+
+scoped_redland_ctx create_redland_ctx() {
+    return { new redland_context(), release_redland_ctx };
+}
+
+
+namespace {
     struct load_rdf_ctx {
         librdf_parser* parser;
         librdf_uri*    base_uri;
