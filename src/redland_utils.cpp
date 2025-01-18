@@ -1,8 +1,13 @@
 #include "redland_utils.hpp"
 
+#include <cassert>
 #include <iostream>
+#include <unordered_set>
 #include <memory>
+#include <optional>
+#include <map>
 #include <string>
+#include <tuple>
 #include <vector>
 
 #include <spdlog/spdlog.h>
@@ -116,7 +121,94 @@ namespace {
     typedef
         std::unique_ptr<binding_ctx, decltype(&release_binding_ctx)>
         scoped_binding_ctx;
+
+    typedef std::string tmp_binding_name;
+    typedef std::string tmp_binding_value;
+    typedef std::map<tmp_binding_name, tmp_binding_value> tmp_data_row;
+    typedef std::vector<tmp_data_row> tmp_data_table;
+    typedef std::vector<tmp_binding_name> tmp_head_row;
+    typedef std::unordered_set<tmp_binding_name> tmp_name_lut;
 }
+
+/**
+ * @brief Extract the query results and prepare them for further presentation
+ */
+std::tuple<tmp_head_row, tmp_data_table> extract_data_table(librdf_query_results* results)
+{
+    assert(results);
+
+    tmp_head_row head_row;
+    tmp_name_lut head_row_lut;
+    tmp_data_table table;
+    const int binding_count = librdf_query_results_get_bindings_count(results);
+
+    if (binding_count < 0) {
+        spdlog::error(
+            "extract_data_table: Couldn't retrieve the number of bound variables. The "
+            "librdf_query_results_get_bindings_count returned a negative number ({})",
+            binding_count);
+
+        return std::make_tuple(head_row, table);
+    }
+
+    int row_idx = 0;
+
+    while (!librdf_query_results_finished(results)) {
+        assert(
+            (binding_count == librdf_query_results_get_bindings_count(results)) &&
+            "Assuming that the binding count returned by librdf_query_results_get_bindings_count"
+            " is the same for all the result rows");
+
+        tmp_data_row row;
+
+        for (int binding_idx=0; binding_idx < binding_count; ++binding_idx) {
+            const char* binding_name = librdf_query_results_get_binding_name(results, binding_idx);
+
+            if (head_row_lut.size() < static_cast<tmp_name_lut::size_type>(binding_count)) {
+                if (!head_row_lut.count(binding_name)) {
+                    head_row.push_back(binding_name);
+                    head_row_lut.insert(binding_name);
+                }
+            }
+
+            scoped_binding_ctx ctx = { new binding_ctx(), release_binding_ctx };
+            ctx->node = librdf_query_results_get_binding_value(results, binding_idx);
+
+            if (ctx->node) {
+                std::string value;
+
+                if (librdf_node_is_literal(ctx->node)) {
+                    value = reinterpret_cast<char*>(
+                        librdf_node_get_literal_value(ctx->node));
+                } else {
+                    ctx->value = librdf_node_to_string(ctx->node);
+
+                    if (ctx->value) {
+                        value = reinterpret_cast<char*>(ctx->value);
+                    } else {
+                        spdlog::debug(
+                            "exec_query: Value of the node #{} of the row #{} couldn't be"
+                            " retrieved", binding_idx, row_idx);
+                    }
+                }
+
+                row.insert({std::string(binding_name), std::move(value)});
+            } else {
+                spdlog::debug(
+                    "exec_query: Node #{} of the row #{} couldn't be retrieved",
+                    binding_idx, row_idx);
+            }
+        }
+
+        table.push_back(std::move(row));
+
+        librdf_query_results_next(results);
+        ++row_idx;
+    }
+
+    return std::make_tuple(head_row, table);
+}
+
 
 void exec_query(librdf_world* world, librdf_model* model, const std::string& query_text) {
 
@@ -143,59 +235,34 @@ void exec_query(librdf_world* world, librdf_model* model, const std::string& que
 
     spdlog::debug("exec_query: Redland Query execution succeeded");
 
+    auto [tmp_head_row, tmp_data_rows] = extract_data_table(ctx->results);
+
     tabulate::Table table;
 
-    // Add the header row:
-    if (!librdf_query_results_finished(ctx->results)) {
-        const int binding_count = librdf_query_results_get_bindings_count(ctx->results);
+    {
+        tabulate::Table::Row_t head_row;
 
-        tabulate::Table::Row_t row;
-
-        for (int i=0; i<binding_count; ++i) {
-            scoped_binding_ctx bind_ctx = { new binding_ctx(), release_binding_ctx };
-            bind_ctx->node = librdf_query_results_get_binding_value(ctx->results, i);
-
-            if (bind_ctx->node) {
-                row.push_back(librdf_query_results_get_binding_name(ctx->results, i));
-            } else {
-                spdlog::warn("exec_query: Node #{} of the first row couldn't be retrieved", i);
-                row.push_back("");
-            }
+        for (tmp_binding_name name : tmp_head_row) {
+            head_row.push_back(name);
         }
 
-        table.add_row(row);
+        table.add_row(head_row);
     }
 
-    while (!librdf_query_results_finished(ctx->results)) {
-        int binding_count = librdf_query_results_get_bindings_count(ctx->results);
+    for (tmp_data_row input_data_row : tmp_data_rows) {
+        tabulate::Table::Row_t data_row;
 
-        tabulate::Table::Row_t row;
+        for (tmp_binding_name name : tmp_head_row) {
+            auto input_data_row_it = input_data_row.find(name);
 
-        for (int i=0; i<binding_count; ++i) {
-            scoped_binding_ctx bind_ctx = { new binding_ctx(), release_binding_ctx };
-            bind_ctx->node = librdf_query_results_get_binding_value(ctx->results, i);
-
-            if (bind_ctx->node) {
-                bind_ctx->value = librdf_node_to_string(bind_ctx->node);
-
-                if (bind_ctx->value) {
-                    if (librdf_node_is_literal(bind_ctx->node)) {
-                        row.push_back(
-                            std::string(
-                                reinterpret_cast<char*>(
-                                    librdf_node_get_literal_value(bind_ctx->node))));
-                    } else {
-                        row.push_back(std::string(reinterpret_cast<char*>(bind_ctx->value)));
-                    }
-                } else {
-                    row.push_back("");
-                }
+            if (input_data_row_it != input_data_row.end()) {
+                data_row.push_back(input_data_row_it->second);
+            } else {
+                data_row.push_back("");
             }
         }
-        
-        table.add_row(row);
 
-        librdf_query_results_next(ctx->results);
+        table.add_row(data_row);
     }
 
     table.format().multi_byte_characters(true);
