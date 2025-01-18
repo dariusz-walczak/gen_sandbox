@@ -1,0 +1,24 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix gx: <http://gedcomx.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix ex: <http://example.org/> .
+@base <http://example.org/> .
+
+ex:P00003 a gx:Person ;
+    gx:gender "Male" ;
+    gx:name "Kowalski, Józef" ;
+    gx:birthDate "1980-09-14"^^xsd:date ;
+    gx:parent ex:P00002 , ex:P00001 .
+
+
+ex:P00017 a gx:Person ;
+    gx:gender "Male" ;
+    gx:name "Nowak, Janusz" ;
+    gx:birthDate "1923-16-07"^^xsd:date ;
+    gx:deathDate "1995-05-11"^^xsd:date .
+
+ex:P00375 a gx:Person ;
+    gx:gender "Female" ;
+    gx:name "Podstawka, Marianna" ;
+    gx:birthDate "1859-01-12"^^xsd:date ;
+    gx:deathDate "1905-06-18"^^xsd:date .

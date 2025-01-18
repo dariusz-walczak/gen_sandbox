@@ -74,7 +74,8 @@ int main() {
 
     spdlog::debug("Redland Context: Created a Redland Model");
 
-    load_rdf(redland_ctx.world, redland_ctx.model, "sample.ttl");
+    load_rdf(redland_ctx.world, redland_ctx.model, "data/people/batch1.ttl");
+    load_rdf(redland_ctx.world, redland_ctx.model, "data/people/batch2.ttl");
 
     std::cout << std::endl;
 

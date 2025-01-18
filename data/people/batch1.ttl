@@ -13,6 +13,7 @@ ex:P00001 a gx:Person ;
     gx:gender "Female" ;
     gx:name "Nowak, Jadwiga" ;
     gx:birthDate "1954-11-13"^^xsd:date .
+    gx:parent ex:p00017 .
 
 ex:P00002 a gx:Person ;
     gx:gender "Male" ;
