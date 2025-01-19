@@ -20,6 +20,7 @@ typedef
     scoped_redland_ctx;
 
 scoped_redland_ctx create_redland_ctx();
+bool initialize_redland_ctx(scoped_redland_ctx& ctx);
 
 
 void load_rdf(librdf_world* world, librdf_model* model, const std::string& input_file_path);

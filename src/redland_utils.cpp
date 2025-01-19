@@ -33,6 +33,46 @@ scoped_redland_ctx create_redland_ctx() {
     return { new redland_context(), release_redland_ctx };
 }
 
+bool initialize_redland_ctx(scoped_redland_ctx& ctx) {
+    ctx->world = librdf_new_world();
+
+    if (!ctx->world) {
+        spdlog::error("Redland Context: Failed to create a Redland World");
+
+        return false;
+    }
+
+    spdlog::debug("Redland Context: Created a Redland World");
+
+    librdf_world_open(ctx->world);
+
+    spdlog::debug("Redland Context: Initialized the Redland World");
+
+    // https://librdf.org/docs/api/redland-storage.html#librdf-new-storage
+    ctx->storage = librdf_new_storage(ctx->world, "memory", nullptr, nullptr);
+
+    if (!ctx->storage) {
+        spdlog::error("Redland Context: Failed to create a Redland Storage");
+
+        return false;
+    }
+
+    spdlog::debug("Redland Context: Created a Redland Storage");
+
+    // https://librdf.org/docs/api/redland-model.html#librdf-new-model
+    ctx->model = librdf_new_model(ctx->world, ctx->storage, nullptr);
+
+    if (!ctx->model) {
+        spdlog::error("Redland Context: Failed to create a Redland Model");
+
+        return false;
+    }
+
+    spdlog::debug("Redland Context: Created a Redland Model");
+
+    return true;
+}
+
 
 namespace {
     struct load_rdf_ctx {
