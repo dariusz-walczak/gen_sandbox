@@ -11,8 +11,6 @@ struct redland_context {
     librdf_world*   world;
     librdf_storage* storage;
     librdf_model*   model;
-    librdf_parser*  parser;
-    librdf_uri*     base_uri;
 };
 
 void release_redland_ctx(redland_context* ctx);

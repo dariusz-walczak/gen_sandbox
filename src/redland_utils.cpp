@@ -13,17 +13,8 @@
 #include <spdlog/spdlog.h>
 #include <tabulate/tabulate.hpp>
 
-namespace {
-
-}
 
 void release_redland_ctx(redland_context* ctx) {
-    librdf_free_uri(ctx->base_uri);
-    spdlog::debug("Released the Base URI");
-
-    librdf_free_parser(ctx->parser);
-    spdlog::debug("Released the Redland Parser");
-
     librdf_free_model(ctx->model);
     spdlog::debug("Released the Redland Model");
 
