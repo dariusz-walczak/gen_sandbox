@@ -1,0 +1,16 @@
+add_library(
+  gen_common
+  src/redland_utils.cpp
+)
+
+target_include_directories(
+  gen_common
+  PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+
+target_link_libraries(gen_common PRIVATE ${RAPTOR2_LIBRARY})
+target_link_libraries(gen_common PRIVATE ${RASQAL_LIBRARY})
+target_link_libraries(gen_common PRIVATE ${REDLAND_LIBRARY})
+target_link_libraries(gen_common PRIVATE spdlog::spdlog)

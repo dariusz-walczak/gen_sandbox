@@ -10,6 +10,8 @@ project(
 set(
   CMAKE_CXX_STANDARD 17)
 
+# ===[ Dependencies ]=========================================================================== #
+
 # ---[ Raptor RDF Syntax Library ]-------------------------------------------------------------- #
 
 # Required by the Redland RDF Library
@@ -55,21 +57,12 @@ FetchContent_MakeAvailable(tabulate)
 include_directories(${tabulate_SOURCE_DIR}/single_include)
 
 
+# ===[ Components ]============================================================================= #
 
-set(
-  SOURCES
-  src/main.cpp
-  src/redland_utils.cpp
-)
+add_subdirectory(code/common)
+add_subdirectory(code/sandbox)
 
-add_executable(
-  ${PROJECT_NAME} ${SOURCES})
-
-target_link_libraries(${PROJECT_NAME} PRIVATE ${RAPTOR2_LIBRARY})
-target_link_libraries(${PROJECT_NAME} PRIVATE ${RASQAL_LIBRARY})
-target_link_libraries(${PROJECT_NAME} PRIVATE ${REDLAND_LIBRARY})
-target_link_libraries(${PROJECT_NAME} PRIVATE spdlog::spdlog)
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -pedantic)
+    add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
