@@ -56,10 +56,26 @@ FetchContent_MakeAvailable(tabulate)
 
 include_directories(${tabulate_SOURCE_DIR}/single_include)
 
+# ---[ CLI11 Library ]-------------------------------------------------------------------------- #
+
+# CLI11 is a command line parser for C++11 and beyond that provides a rich feature set with a
+# simple and intuitive interface.
+#
+# https://github.com/CLIUtils/CLI11
+
+FetchContent_Declare(
+    cli11
+    GIT_REPOSITORY https://github.com/CLIUtils/CLI11.git
+    GIT_TAG v2.4.2
+)
+FetchContent_MakeAvailable(cli11)
+
+include_directories(${cli11_SOURCE_DIR}/include)
 
 # ===[ Components ]============================================================================= #
 
 add_subdirectory(code/common)
+add_subdirectory(code/person)
 add_subdirectory(code/sandbox)
 
 
