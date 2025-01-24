@@ -7,6 +7,7 @@
 
 #include "redland_utils.hpp"
 #include <CLI/CLI.hpp>
+#include <nlohmann/json.hpp>
 
 int main(int argc, char** argv) {
     spdlog::set_level(spdlog::level::info);
@@ -57,6 +58,21 @@ int main(int argc, char** argv) {
 
         })"
     };
+
+    nlohmann::json j = {
+        {"pi", 3.141},
+        {"happy", true},
+        {"name", "Niels"},
+        {"nothing", nullptr},
+        {"answer", {{"everything", 42}}},
+        {"list", {1, 0, 2}},
+        {"object", {
+            {"currency", "USD"},
+            {"value", 42.99}
+        }}
+    };
+
+    std::cout << j.dump(4) << std::endl;
 
     exec_query(redland_ctx->world, redland_ctx->model, query);
 

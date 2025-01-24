@@ -5,3 +5,4 @@ add_executable(
 
 target_link_libraries(gen_person PRIVATE gen_common)
 target_link_libraries(gen_person PRIVATE CLI11::CLI11)
+target_link_libraries(gen_person PRIVATE nlohmann_json::nlohmann_json)
