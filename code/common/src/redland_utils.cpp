@@ -241,6 +241,19 @@ std::tuple<tmp_head_row, tmp_data_table> extract_data_table(librdf_query_results
                 if (librdf_node_is_literal(ctx->node)) {
                     value = reinterpret_cast<char*>(
                         librdf_node_get_literal_value(ctx->node));
+                } else if (librdf_node_is_resource(ctx->node)) {
+                    librdf_uri* uri = librdf_node_get_uri(ctx->node);
+                    std::string_view raw_value(
+                        reinterpret_cast<char*>(
+                            librdf_uri_as_string(uri)));
+
+                    if (raw_value == "http://gedcomx.org/Male") {
+                        value = "male";
+                    } else if (raw_value == "http://gedcomx.org/Female") {
+                        value = "female";
+                    } else {
+                        value = raw_value;
+                    }
                 } else {
                     ctx->value = librdf_node_to_string(ctx->node);
 

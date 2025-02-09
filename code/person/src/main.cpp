@@ -44,12 +44,14 @@ int main(int argc, char** argv) {
         R"(
         PREFIX gx: <http://gedcomx.org/>
 
-        SELECT ?person, ?name, ?gender, ?birthDate, ?deathDate
+        SELECT ?person, ?name, ?gender, ?genderType, ?birthDate, ?deathDate
         WHERE {
             ?person a gx:Person ;
                 gx:name ?name .
             OPTIONAL {
-                ?person gx:gender ?gender
+                ?person gx:gender ?gender .
+                ?gender a gx:Gender ;
+                    gx:type ?genderType .
             }
             ?person gx:birthDate ?birthDate .
             OPTIONAL {
