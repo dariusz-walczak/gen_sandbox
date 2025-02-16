@@ -9,6 +9,9 @@
 #include <CLI/CLI.hpp>
 #include <nlohmann/json.hpp>
 
+#include "person.hpp"
+
+
 int main(int argc, char** argv) {
     spdlog::set_level(spdlog::level::info);
     spdlog::set_default_logger(spdlog::stderr_color_mt("stderr_logger"));
@@ -44,7 +47,7 @@ int main(int argc, char** argv) {
         R"(
         PREFIX gx: <http://gedcomx.org/>
 
-        SELECT ?person, ?name, ?gender, ?genderType, ?birthDate, ?deathDate
+        SELECT ?person, ?name, ?genderType, ?birthDate, ?deathDate, ?father, ?fatherName, ?motherName
         WHERE {
             ?person a gx:Person ;
                 gx:name ?name .
@@ -52,6 +55,22 @@ int main(int argc, char** argv) {
                 ?person gx:gender ?gender .
                 ?gender a gx:Gender ;
                     gx:type ?genderType .
+            }
+            OPTIONAL {
+                ?person gx:parent ?father .
+                ?father a gx:Person ;
+                    gx:name ?fatherName ;
+                    gx:gender ?fatherGender .
+                ?fatherGender a gx:Gender ;
+                    gx:type gx:Male .
+            }
+            OPTIONAL {
+                ?person gx:parent ?mother .
+                ?mother a gx:Person ;
+                    gx:name ?motherName ;
+                    gx:gender ?motherGender .
+                ?motherGender a gx:Gender ;
+                    gx:type gx:Female .
             }
             ?person gx:birthDate ?birthDate .
             OPTIONAL {
@@ -76,7 +95,19 @@ int main(int argc, char** argv) {
 
     std::cout << j.dump(4) << std::endl;
 
-    exec_query(redland_ctx->world, redland_ctx->model, query);
+    exec_query_result res = exec_query(redland_ctx->world, redland_ctx->model, query);
+
+    if (!res->success) {
+        spdlog::critical("The Redland query execution has failed");
+
+        return 2;
+    }
+
+    extract_cb_lut cb_lut = {
+        {"genderType", extract_gender_raw}
+    };
+
+    print_data_table(extract_data_table(res->results, cb_lut));
 
     return 0;
 }

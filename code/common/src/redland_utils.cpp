@@ -146,27 +146,48 @@ void load_rdf(librdf_world* world, librdf_model* model, const std::string& input
 }
 
 
-namespace {
-    struct exec_query_ctx {
-        librdf_query* query;
-        librdf_query_results* results;
-    };
+void release_exec_query_ctx(exec_query_ctx* ctx) {
+    librdf_free_query_results(ctx->results);
+    spdlog::debug("Released the Redland Query Results");
 
-    void release_exec_query_ctx(exec_query_ctx* ctx) {
-        librdf_free_query_results(ctx->results);
-        spdlog::debug("Released the Redland Query Results");
+    librdf_free_query(ctx->query);
+    spdlog::debug("Released the Redland Query");
 
-        librdf_free_query(ctx->query);
-        spdlog::debug("Released the Redland Query");
+    delete ctx;
+}
 
-        delete ctx;
+exec_query_result exec_query(librdf_world* world, librdf_model* model, const std::string& query) {
+
+    spdlog::trace("exec_query: Entrypoint");
+
+    exec_query_result res = { new exec_query_ctx(), release_exec_query_ctx };
+
+    res->query = librdf_new_query(
+        world, "sparql", nullptr, reinterpret_cast<const unsigned char*>(query.c_str()), nullptr);
+
+    if (!res->query) {
+        spdlog::error("exec_query: Failed to create a Redland Query");
+
+        return res;
     }
 
-    typedef
-        std::unique_ptr<exec_query_ctx, decltype(&release_exec_query_ctx)>
-        exec_query_ctx_unique_ptr;
+    spdlog::debug("exec_query: Created a Redland Query");
 
+    res->results = librdf_query_execute(res->query, model);
 
+    if (!res->results) {
+        spdlog::error("exec_query: Redland Query execution failed");
+
+        return res;
+    }
+
+    spdlog::debug("exec_query: Redland Query execution succeeded");
+
+    res->success = true;
+    return res;
+}
+
+namespace {
     struct binding_ctx {
         librdf_node*   node;
         unsigned char* value;
@@ -183,24 +204,20 @@ namespace {
         std::unique_ptr<binding_ctx, decltype(&release_binding_ctx)>
         scoped_binding_ctx;
 
-    typedef std::string tmp_binding_name;
-    typedef std::string tmp_binding_value;
-    typedef std::map<tmp_binding_name, tmp_binding_value> tmp_data_row;
-    typedef std::vector<tmp_data_row> tmp_data_table;
-    typedef std::vector<tmp_binding_name> tmp_head_row;
-    typedef std::unordered_set<tmp_binding_name> tmp_name_lut;
+    typedef std::unordered_set<binding_name> tmp_name_lut;
 }
 
-/**
- * @brief Extract the query results and prepare them for further presentation
- */
-std::tuple<tmp_head_row, tmp_data_table> extract_data_table(librdf_query_results* results)
+
+extract_data_table_result extract_data_table(
+    librdf_query_results* results, const extract_cb_lut& cb_lut)
 {
+    spdlog::trace("extract_data_table: Entrypoint");
+
     assert(results);
 
-    tmp_head_row head_row;
+    head_row head_row;
     tmp_name_lut head_row_lut;
-    tmp_data_table table;
+    data_table table;
     const int binding_count = librdf_query_results_get_bindings_count(results);
 
     if (binding_count < 0) {
@@ -220,7 +237,7 @@ std::tuple<tmp_head_row, tmp_data_table> extract_data_table(librdf_query_results
             "Assuming that the binding count returned by librdf_query_results_get_bindings_count"
             " is the same for all the result rows");
 
-        tmp_data_row row;
+        data_row row;
 
         for (int binding_idx=0; binding_idx < binding_count; ++binding_idx) {
             const char* binding_name = librdf_query_results_get_binding_name(results, binding_idx);
@@ -238,7 +255,11 @@ std::tuple<tmp_head_row, tmp_data_table> extract_data_table(librdf_query_results
             if (ctx->node) {
                 std::string value;
 
-                if (librdf_node_is_literal(ctx->node)) {
+                auto ecb_it = cb_lut.find(binding_name);
+
+                if (ecb_it != cb_lut.end()) {
+                    value = ecb_it->second(ctx->node);
+                } else if (librdf_node_is_literal(ctx->node)) {
                     value = reinterpret_cast<char*>(
                         librdf_node_get_literal_value(ctx->node));
                 } else if (librdf_node_is_resource(ctx->node)) {
@@ -283,54 +304,32 @@ std::tuple<tmp_head_row, tmp_data_table> extract_data_table(librdf_query_results
     return std::make_tuple(head_row, table);
 }
 
+void print_data_table(const extract_data_table_result& data_table) {
 
-void exec_query(librdf_world* world, librdf_model* model, const std::string& query_text) {
+    spdlog::trace("print_data_table: Entrypoint");
 
-    exec_query_ctx_unique_ptr ctx = { new exec_query_ctx(), release_exec_query_ctx };
-
-    ctx->query = librdf_new_query(
-        world, "sparql", nullptr, reinterpret_cast<const unsigned char*>(query_text.c_str()), nullptr);
-
-    if (!ctx->query) {
-        spdlog::error("exec_query: Failed to create a Redland Query");
-
-        return;
-    }
-
-    spdlog::debug("exec_query: Created a Redland Query");
-
-    ctx->results = librdf_query_execute(ctx->query, model);
-    
-    if (!ctx->results) {
-        spdlog::error("exec_query: Redland Query execution failed");
-
-        return;
-    }
-
-    spdlog::debug("exec_query: Redland Query execution succeeded");
-
-    auto [tmp_head_row, tmp_data_rows] = extract_data_table(ctx->results);
+    auto [in_head_row, in_data_rows] = data_table;
 
     tabulate::Table table;
 
     {
         tabulate::Table::Row_t head_row;
 
-        for (tmp_binding_name name : tmp_head_row) {
+        for (binding_name name : in_head_row) {
             head_row.push_back(name);
         }
 
         table.add_row(head_row);
     }
 
-    for (tmp_data_row input_data_row : tmp_data_rows) {
+    for (data_row in_data_row : in_data_rows) {
         tabulate::Table::Row_t data_row;
 
-        for (tmp_binding_name name : tmp_head_row) {
-            auto input_data_row_it = input_data_row.find(name);
+        for (binding_name name : in_head_row) {
+            auto in_data_row_it = in_data_row.find(name);
 
-            if (input_data_row_it != input_data_row.end()) {
-                data_row.push_back(input_data_row_it->second);
+            if (in_data_row_it != in_data_row.end()) {
+                data_row.push_back(in_data_row_it->second);
             } else {
                 data_row.push_back("");
             }
