@@ -10,6 +10,7 @@
 #include <nlohmann/json.hpp>
 
 #include "person.hpp"
+#include "command_line_utils.hpp"
 
 
 int main(int argc, char** argv) {
@@ -19,9 +20,15 @@ int main(int argc, char** argv) {
     CLI::App app{"My Program Description"};
 
     std::vector<std::string> input_paths;
+    std::string person_id;
     app.add_option(
         "-i,--input", input_paths, "Path to the turtle file to be loaded into the RDF model")
         ->required();
+    app.add_option(
+        "-p,--person", person_id, "Person Local Name in the 'P00000' format")
+        ->option_text("PID")
+        ->required()
+        ->check(validate_person_local_name);
 
     CLI11_PARSE(app, argc, argv);
 
@@ -47,7 +54,8 @@ int main(int argc, char** argv) {
         R"(
         PREFIX gx: <http://gedcomx.org/>
 
-        SELECT ?person, ?name, ?genderType, ?birthDate, ?deathDate, ?father, ?fatherName, ?motherName
+        SELECT ?person, ?name, ?genderType, ?birthDate, ?deathDate, ?father, ?fatherName,
+            ?motherName
         WHERE {
             ?person a gx:Person ;
                 gx:name ?name .
@@ -76,7 +84,6 @@ int main(int argc, char** argv) {
             OPTIONAL {
                 ?person gx:deathDate ?deathDate
             }
-
         })"
     };
 

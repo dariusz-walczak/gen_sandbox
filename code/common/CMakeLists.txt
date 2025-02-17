@@ -1,5 +1,6 @@
 add_library(
   gen_common
+  src/command_line_utils.cpp
   src/person.cpp
   src/redland_utils.cpp
 )
