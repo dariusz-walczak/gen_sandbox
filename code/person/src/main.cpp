@@ -50,8 +50,9 @@ int main(int argc, char** argv) {
 
     std::cout << std::endl;
 
-    const std::string query = {
-        R"(
+    const std::string person_iri = "http://example.org/" + person_id;
+
+    const std::string query = R"(
         PREFIX gx: <http://gedcomx.org/>
 
         SELECT ?person, ?name, ?genderType, ?birthDate, ?deathDate, ?father, ?fatherName,
@@ -84,8 +85,8 @@ int main(int argc, char** argv) {
             OPTIONAL {
                 ?person gx:deathDate ?deathDate
             }
-        })"
-    };
+            FILTER (?person = <)" + person_iri + R"(>)
+        })";
 
     nlohmann::json j = {
         {"pi", 3.141},
