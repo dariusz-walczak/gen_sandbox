@@ -57,6 +57,11 @@ typedef
 /**
  * @brief Extract the query results and prepare them for further presentation
  */
+extract_data_table_result extract_data_table(librdf_query_results* results);
+
+/**
+ * @brief Extract the query results and prepare them for further presentation
+ */
 extract_data_table_result extract_data_table(
     librdf_query_results* results, const extract_cb_lut& cb_lut);
 

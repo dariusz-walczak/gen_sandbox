@@ -208,6 +208,11 @@ namespace {
 }
 
 
+extract_data_table_result extract_data_table(librdf_query_results* results) {
+    return extract_data_table(results, extract_cb_lut{});
+}
+
+
 extract_data_table_result extract_data_table(
     librdf_query_results* results, const extract_cb_lut& cb_lut)
 {
