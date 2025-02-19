@@ -2,9 +2,66 @@
 
 #include <cassert>
 
+#include <spdlog/spdlog.h>
+
 namespace {
     const char* g_male = "male";
     const char* g_female = "female";
+}
+
+std::string Person::get_given_names() const {
+    std::ostringstream oss;
+
+    auto given_it = given_names.begin();
+
+    if (given_it != given_names.end()) {
+        oss << *given_it;
+        ++given_it;
+    }
+
+    while (given_it != given_names.end()) {
+        oss << " " << *given_it;
+        ++given_it;
+    }
+
+    return oss.str();
+}
+
+
+std::string Person::get_last_names() const {
+    std::ostringstream oss;
+
+    auto last_it = last_names.begin();
+
+    if (last_it != last_names.end()) {
+        oss << *last_it;
+        ++last_it;
+    }
+
+    while (last_it != last_names.end()) {
+        oss << " " << *last_it;
+        ++last_it;
+    }
+
+    return oss.str();
+}
+
+
+std::string Person::get_full_name() const {
+    std::string given_names = get_given_names();
+    std::string last_names = get_last_names();
+
+    if (!given_names.empty() && !last_names.empty()) {
+        std::ostringstream oss;
+        oss << last_names << ", " << given_names;
+        return oss.str();
+    } else if (!given_names.empty()) {
+        return given_names;
+    } else if (!last_names.empty()) {
+        return last_names;
+    }
+
+    return "";
 }
 
 
@@ -26,24 +83,50 @@ std::string extract_gender_raw(librdf_node* node) {
 }
 
 
-Person extract_person(const data_row& row) {
-    Person result;
-
+void extract_person_gender(Person& person, const data_row& row) {
     auto gender_it = row.find("genderType");
 
     if (gender_it != row.end()) {
         if (gender_it->second == g_male) {
-            result.gender = Gender::Male;
+            person.gender = Gender::Male;
         } else if (gender_it->second == g_female) {
-            result.gender = Gender::Female;
+            person.gender = Gender::Female;
         } else {
-            result.gender = Gender::Unknown;
+            person.gender = Gender::Unknown;
         }
     } else {
-        result.gender = Gender::Unknown;
+        person.gender = Gender::Unknown;
     }
+}
 
-    return result;
+
+void extract_person_names(Person& person, const data_table& table) {
+    for (data_row row : table) {
+        std::string name_type;
+        std::string name_value;
+
+        auto type_it = row.find("nameType");
+        if (type_it != row.end()) {
+            name_type = type_it->second;
+        } else {
+            spdlog::warn("The data table is missing the expected 'nameType' field");
+            continue;
+        }
+
+        auto value_it = row.find("nameValue");
+        if (value_it != row.end()) {
+            name_value = value_it->second;
+        } else {
+            spdlog::warn("The data table is missing the expected 'nameValue' field");
+            continue;
+        }
+
+        if (name_type == "http://gedcomx.org/Given") {
+            person.given_names.push_back(name_value);
+        } else if (name_type == "http://gedcomx.org/Surname") {
+            person.last_names.push_back(name_value);
+        }
+    }
 }
 
 
@@ -54,6 +137,12 @@ nlohmann::json person_to_json(const Person& person) {
         result["gender"] = g_male;
     } else if (person.gender == Gender::Female) {
         result["gender"] = g_female;
+    }
+
+    std::string full_name = person.get_full_name();
+
+    if (!full_name.empty()) {
+        result["name"] = full_name;
     }
 
     return result;

@@ -1,6 +1,14 @@
 add_executable(
   gen_person
   src/main.cpp
+  src/queries.cpp
+)
+
+target_include_directories(
+  gen_person
+  PRIVATE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
 )
 
 target_link_libraries(gen_person PRIVATE gen_common)

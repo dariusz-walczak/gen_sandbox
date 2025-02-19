@@ -11,6 +11,7 @@
 
 #include "person.hpp"
 #include "command_line_utils.hpp"
+#include "queries.hpp"
 
 
 int main(int argc, char** argv) {
@@ -55,11 +56,10 @@ int main(int argc, char** argv) {
     const std::string query = R"(
         PREFIX gx: <http://gedcomx.org/>
 
-        SELECT ?person, ?name, ?genderType, ?birthDate, ?deathDate, ?father, ?fatherName,
+        SELECT ?person, ?genderType, ?birthDate, ?deathDate, ?father, ?fatherName,
             ?motherName
         WHERE {
-            ?person a gx:Person ;
-                gx:name ?name .
+            ?person a gx:Person .
             OPTIONAL {
                 ?person gx:gender ?gender .
                 ?gender a gx:Gender ;
@@ -112,7 +112,12 @@ int main(int argc, char** argv) {
 
     const data_row& data_row = data_table[0];
 
-    nlohmann::json output = person_to_json(extract_person(data_row));
+    Person person;
+    extract_person_gender(person, data_row);
+
+    retrieve_person_preferred_name(person, person_iri, redland_ctx->world, redland_ctx->model);
+
+    nlohmann::json output = person_to_json(person);
     std::cout << output.dump(4) << std::endl;
 
     return 0;
