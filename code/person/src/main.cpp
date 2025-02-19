@@ -88,21 +88,6 @@ int main(int argc, char** argv) {
             FILTER (?person = <)" + person_iri + R"(>)
         })";
 
-    nlohmann::json j = {
-        {"pi", 3.141},
-        {"happy", true},
-        {"name", "Niels"},
-        {"nothing", nullptr},
-        {"answer", {{"everything", 42}}},
-        {"list", {1, 0, 2}},
-        {"object", {
-            {"currency", "USD"},
-            {"value", 42.99}
-        }}
-    };
-
-    std::cout << j.dump(4) << std::endl;
-
     exec_query_result res = exec_query(redland_ctx->world, redland_ctx->model, query);
 
     if (!res->success) {
@@ -115,7 +100,20 @@ int main(int argc, char** argv) {
         {"genderType", extract_gender_raw}
     };
 
-    print_data_table(extract_data_table(res->results, cb_lut));
+    extract_data_table_result data_tuple = extract_data_table(res->results, cb_lut);
+    const data_table& data_table = std::get<1>(data_tuple);
+
+    if (data_table.empty()) {
+        spdlog::error("Person {} not found", person_id);
+        return 3;
+    }
+
+    assert(data_table.size() == 1);
+
+    const data_row& data_row = data_table[0];
+
+    nlohmann::json output = person_to_json(extract_person(data_row));
+    std::cout << output.dump(4) << std::endl;
 
     return 0;
 }
