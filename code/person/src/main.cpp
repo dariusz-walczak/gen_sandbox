@@ -45,11 +45,13 @@ int main(int argc, char** argv) {
         load_rdf(redland_ctx->world, redland_ctx->model, input_path);
     }
 
+#if 0
     std::cout << std::endl;
 
     librdf_model_print(redland_ctx->model, stdout);
 
     std::cout << std::endl;
+#endif
 
     const std::string person_iri = "http://example.org/" + person_id;
 
@@ -115,7 +117,20 @@ int main(int argc, char** argv) {
     Person person;
     extract_person_gender(person, data_row);
 
-    retrieve_person_preferred_name(person, person_iri, redland_ctx->world, redland_ctx->model);
+    retrieve_result name_res =
+        retrieve_person_name(person, person_iri, redland_ctx->world, redland_ctx->model);
+
+    assert(name_res != retrieve_result::Uninitialized);
+
+    if (name_res == retrieve_result::QueryError) {
+        spdlog::critical("Name retrieval failed due to a query error");
+
+        return 4;
+    }
+
+    if (name_res == retrieve_result::NotFound) {
+        spdlog::info("Name of person {} not found", person_id);
+    }
 
     nlohmann::json output = person_to_json(person);
     std::cout << output.dump(4) << std::endl;
