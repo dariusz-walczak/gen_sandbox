@@ -142,7 +142,19 @@ nlohmann::json person_to_json(const Person& person) {
     std::string full_name = person.get_full_name();
 
     if (!full_name.empty()) {
-        result["name"] = full_name;
+        result["name"]["full"] = full_name;
+
+        std::string given_names = person.get_given_names();
+
+        if (!given_names.empty()) {
+            result["name"]["given"] = given_names;
+        }
+
+        std::string last_names = person.get_last_names();
+
+        if (!last_names.empty()) {
+            result["name"]["last"] = last_names;
+        }
     }
 
     return result;
