@@ -17,10 +17,13 @@ enum class retrieve_result {
 retrieve_result retrieve_person_name(
     Person& person, const std::string& person_iri, librdf_world* world, librdf_model* model);
 
-retrieve_result retrieve_person_preferred_name(
+retrieve_result retrieve_person_any_name(
     Person& person, const std::string& person_iri, librdf_world* world, librdf_model* model);
 
 retrieve_result retrieve_person_birth_name(
+    Person& person, const std::string& person_iri, librdf_world* world, librdf_model* model);
+
+retrieve_result retrieve_person_preferred_name(
     Person& person, const std::string& person_iri, librdf_world* world, librdf_model* model);
 
 
