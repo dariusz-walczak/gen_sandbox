@@ -126,6 +126,52 @@ retrieve_result retrieve_person_any_name(
 }
 
 
+retrieve_result retrieve_person_birth_name(
+    Person& person, const std::string& person_iri, librdf_world* world, librdf_model* model) {
+
+    const std::string query = R"(
+        PREFIX gx: <http://gedcomx.org/>
+
+        SELECT
+            ?nameType, ?nameValue
+        WHERE
+        {
+            ?person a gx:Person ;
+                gx:name ?name .
+            ?name gx:type gx:BirthName ;
+                gx:nameForm ?form .
+            ?form gx:part ?part .
+            ?part gx:type ?nameType ;
+                gx:value ?nameValue .
+            FILTER (?person = <)" + person_iri + R"(>)
+        })";
+
+    spdlog::debug("retrieve_person_birth_name: The query: {}", query);
+
+    exec_query_result res = exec_query(world, model, query);
+
+    if (!res->success) {
+        spdlog::error("retrieve_person_birth_name: The query execution has failed");
+
+        return retrieve_result::QueryError;
+    }
+
+    extract_data_table_result data_tuple = extract_data_table(res->results);
+    const data_table& data_table = std::get<1>(data_tuple);
+
+    if (data_table.empty()) {
+        spdlog::debug(
+            "retrieve_person_birth_name: Properly formed birth names of person {} were not found",
+            person_iri);
+        return retrieve_result::NotFound;
+    }
+
+    extract_person_names(person, data_table);
+
+    return retrieve_result::Success;
+}
+
+
 retrieve_result retrieve_person_preferred_name(
     Person& person, const std::string& person_iri, librdf_world* world, librdf_model* model) {
 
@@ -164,52 +210,6 @@ retrieve_result retrieve_person_preferred_name(
         spdlog::debug(
             "retrieve_person_preferred_name: Properly formed preferred names of person {} were not"
             " found", person_iri);
-        return retrieve_result::NotFound;
-    }
-
-    extract_person_names(person, data_table);
-
-    return retrieve_result::Success;
-}
-
-
-retrieve_result retrieve_person_birth_name(
-    Person& person, const std::string& person_iri, librdf_world* world, librdf_model* model) {
-
-    const std::string query = R"(
-        PREFIX gx: <http://gedcomx.org/>
-
-        SELECT
-            ?nameType, ?nameValue
-        WHERE
-        {
-            ?person a gx:Person ;
-                gx:name ?name .
-            ?name gx:type gx:BirthName ;
-                gx:nameForm ?form .
-            ?form gx:part ?part .
-            ?part gx:type ?nameType ;
-                gx:value ?nameValue .
-            FILTER (?person = <)" + person_iri + R"(>)
-        })";
-
-    spdlog::debug("retrieve_person_birth_name: The query: {}", query);
-
-    exec_query_result res = exec_query(world, model, query);
-
-    if (!res->success) {
-        spdlog::error("retrieve_person_birth_name: The query execution has failed");
-
-        return retrieve_result::QueryError;
-    }
-
-    extract_data_table_result data_tuple = extract_data_table(res->results);
-    const data_table& data_table = std::get<1>(data_tuple);
-
-    if (data_table.empty()) {
-        spdlog::debug(
-            "retrieve_person_birth_name: Properly formed birth names of person {} were not found",
-            person_iri);
         return retrieve_result::NotFound;
     }
 
