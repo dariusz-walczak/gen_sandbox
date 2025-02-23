@@ -26,6 +26,11 @@ retrieve_result retrieve_person_birth_name(
 retrieve_result retrieve_person_preferred_name(
     Person& person, const std::string& person_iri, librdf_world* world, librdf_model* model);
 
+retrieve_result retrieve_person_relatives(
+    Person& person, const std::string& person_iri, librdf_world* world, librdf_model* model);
+
+retrieve_result retrieve_person_parents(
+    Person& person, const std::string& person_iri, librdf_world* world, librdf_model* model);
 
 /** @brief Formatter for the retrieve_result (spdlog requires it) */
 template <> struct fmt::formatter<retrieve_result>: formatter<string_view> {

@@ -83,8 +83,10 @@ std::string extract_gender_raw(librdf_node* node) {
 }
 
 
-void extract_person_gender(Person& person, const data_row& row) {
-    auto gender_it = row.find("genderType");
+void extract_person_gender(
+    Person& person, const data_row& row, const std::string& gender_type_bn) {
+
+    auto gender_it = row.find(gender_type_bn);
 
     if (gender_it != row.end()) {
         if (gender_it->second == g_male) {
@@ -155,6 +157,14 @@ nlohmann::json person_to_json(const Person& person) {
         if (!last_names.empty()) {
             result["name"]["last"] = last_names;
         }
+    }
+
+    if (person.father) {
+        result["father"] = person_to_json(*person.father);
+    }
+
+    if (person.mother) {
+        result["mother"] = person_to_json(*person.mother);
     }
 
     return result;

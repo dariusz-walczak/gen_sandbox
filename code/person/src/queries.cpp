@@ -219,6 +219,101 @@ retrieve_result retrieve_person_preferred_name(
 }
 
 
+retrieve_result retrieve_person_relatives(
+    Person& person, const std::string& person_iri, librdf_world* world, librdf_model* model) {
+
+    return retrieve_result::NotFound;
+}
+
+
+retrieve_result retrieve_person_parents(
+    Person& person, const std::string& person_iri, librdf_world* world, librdf_model* model) {
+
+    const std::string query = R"(
+        PREFIX gx: <http://gedcomx.org/>
+        PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+        SELECT
+            ?relPerson ?relGender
+        WHERE
+        {
+            ?rel a gx:Relationship ;
+                gx:person1 ?relPerson ;
+                gx:person2 ?proband ;
+                gx:type gx:ParentChild .
+            ?relPerson a gx:Person ;
+                gx:gender ?genderConclusion .
+            ?genderConclusion gx:type ?relGender .
+            FILTER (?proband = <)" + person_iri + R"(>)
+        })";
+
+    spdlog::debug("retrieve_person_parents: The query: {}", query);
+
+    exec_query_result res = exec_query(world, model, query);
+
+    if (!res->success) {
+        spdlog::error("retrieve_person_parents: The query execution has failed");
+
+        return retrieve_result::QueryError;
+    }
+
+    const extract_data_table_result data_tuple = extract_data_table(res->results);
+    const data_table& data_table = std::get<1>(data_tuple);
+
+    if (data_table.empty()) {
+        spdlog::debug(
+            "retrieve_person_parents: No parents of person {} were found", person_iri);
+
+        return retrieve_result::NotFound;
+    }
+
+    for (data_row row : data_table) {
+        Person parent;
+
+        extract_person_gender(parent, row, "relGender");
+
+        retrieve_result name_res = retrieve_person_name(
+            parent, row["relPerson"], world, model);
+
+        assert(name_res != retrieve_result::Uninitialized);
+
+        if (name_res == retrieve_result::QueryError) {
+            spdlog::error(
+                "retrieve_person_parents: Retrieval of the name of person {} failed due to a query"
+                " error", row["relPerson"]);
+
+            return retrieve_result::QueryError;
+        }
+
+        if (parent.gender == Gender::Male) {
+            if (person.father) {
+                spdlog::error(
+                    "retrieve_person_parents: Found multiple fathers of the person {}. Ignoring"
+                    " the later occurrence", person_iri);
+            } else {
+                spdlog::debug("retrieve_person_parents: Father found");
+
+                person.father = std::make_shared<Person>(parent);
+            }
+        } else if (parent.gender == Gender::Female) {
+            if (person.mother) {
+                spdlog::error(
+                    "retrieve_person_parents: Found multiple mothers of the person {}. Ignoring"
+                    " the later occurrence", person_iri);
+            } else {
+                spdlog::debug("retrieve_person_parents: Mother found");
+
+                person.mother = std::make_shared<Person>(parent);
+            }
+        }
+    }
+
+    //extract_person_names(person, data_table);
+
+    return retrieve_result::Success;
+}
+
+
 auto fmt::formatter<retrieve_result>::format(retrieve_result r, format_context& ctx) const
     -> format_context::iterator {
   string_view name = "<unknown>";

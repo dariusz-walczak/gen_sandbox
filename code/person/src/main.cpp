@@ -15,7 +15,7 @@
 
 
 int main(int argc, char** argv) {
-    spdlog::set_level(spdlog::level::info);
+    spdlog::set_level(spdlog::level::debug);
     spdlog::set_default_logger(spdlog::stderr_color_mt("stderr_logger"));
 
     CLI::App app{"My Program Description"};
@@ -115,7 +115,7 @@ int main(int argc, char** argv) {
     const data_row& data_row = data_table[0];
 
     Person person;
-    extract_person_gender(person, data_row);
+    extract_person_gender(person, data_row, "genderType");
 
     retrieve_result name_res =
         retrieve_person_name(person, person_iri, redland_ctx->world, redland_ctx->model);
@@ -129,6 +129,21 @@ int main(int argc, char** argv) {
     }
 
     if (name_res == retrieve_result::NotFound) {
+        spdlog::info("Name of person {} not found", person_id);
+    }
+
+    retrieve_result parents_res = retrieve_person_parents(
+        person, person_iri, redland_ctx->world, redland_ctx->model);
+
+    assert(parents_res != retrieve_result::Uninitialized);
+
+    if (parents_res == retrieve_result::QueryError) {
+        spdlog::critical("Name retrieval failed due to a query error");
+
+        return 4;
+    }
+
+    if (parents_res == retrieve_result::NotFound) {
         spdlog::info("Name of person {} not found", person_id);
     }
 
