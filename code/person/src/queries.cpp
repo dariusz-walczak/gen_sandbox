@@ -1,6 +1,75 @@
 #include "queries.hpp"
 
 
+retrieve_result retrieve_person(
+    Person& person, const std::string& person_iri, librdf_world* world, librdf_model* model) {
+
+    spdlog::trace("retrieve_person: Entry checkpoint");
+
+    const std::string query = R"(
+        PREFIX gx: <http://gedcomx.org/>
+
+        SELECT ?person, ?genderType, ?birthDate, ?deathDate, ?father, ?fatherName,
+            ?motherName
+        WHERE {
+            ?person a gx:Person .
+            OPTIONAL {
+                ?person gx:gender ?gender .
+                ?gender a gx:Gender ;
+                    gx:type ?genderType .
+            }
+            OPTIONAL {
+                ?person gx:parent ?father .
+                ?father a gx:Person ;
+                    gx:name ?fatherName ;
+                    gx:gender ?fatherGender .
+                ?fatherGender a gx:Gender ;
+                    gx:type gx:Male .
+            }
+            OPTIONAL {
+                ?person gx:parent ?mother .
+                ?mother a gx:Person ;
+                    gx:name ?motherName ;
+                    gx:gender ?motherGender .
+                ?motherGender a gx:Gender ;
+                    gx:type gx:Female .
+            }
+            ?person gx:birthDate ?birthDate .
+            OPTIONAL {
+                ?person gx:deathDate ?deathDate
+            }
+            FILTER (?person = <)" + person_iri + R"(>)
+        })";
+
+    spdlog::debug("retrieve_person: The query: {}", query);
+
+    exec_query_result res = exec_query(world, model, query);
+
+    if (!res->success) {
+        spdlog::error("retrieve_person: The query execution has failed");
+
+        return retrieve_result::QueryError;
+    }
+
+    const extract_data_table_result data_tuple = extract_data_table(res->results);
+    const data_table& data_table = std::get<1>(data_tuple);
+
+    if (data_table.empty()) {
+        spdlog::error("retrieve_person: Person {} was not found", person_iri);
+
+        return retrieve_result::NotFound;
+    }
+
+    assert(data_table.size() == 1);
+
+    const data_row& data_row = data_table.front();
+
+    extract_person_gender(person, data_row, "genderType");
+
+    return retrieve_result::Success;
+}
+
+
 retrieve_result retrieve_person_name(
     Person& person, const std::string& person_iri, librdf_world* world, librdf_model* model) {
 

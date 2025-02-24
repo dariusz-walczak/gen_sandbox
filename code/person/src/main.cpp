@@ -55,67 +55,24 @@ int main(int argc, char** argv) {
 
     const std::string person_iri = "http://example.org/" + person_id;
 
-    const std::string query = R"(
-        PREFIX gx: <http://gedcomx.org/>
+    Person person;
 
-        SELECT ?person, ?genderType, ?birthDate, ?deathDate, ?father, ?fatherName,
-            ?motherName
-        WHERE {
-            ?person a gx:Person .
-            OPTIONAL {
-                ?person gx:gender ?gender .
-                ?gender a gx:Gender ;
-                    gx:type ?genderType .
-            }
-            OPTIONAL {
-                ?person gx:parent ?father .
-                ?father a gx:Person ;
-                    gx:name ?fatherName ;
-                    gx:gender ?fatherGender .
-                ?fatherGender a gx:Gender ;
-                    gx:type gx:Male .
-            }
-            OPTIONAL {
-                ?person gx:parent ?mother .
-                ?mother a gx:Person ;
-                    gx:name ?motherName ;
-                    gx:gender ?motherGender .
-                ?motherGender a gx:Gender ;
-                    gx:type gx:Female .
-            }
-            ?person gx:birthDate ?birthDate .
-            OPTIONAL {
-                ?person gx:deathDate ?deathDate
-            }
-            FILTER (?person = <)" + person_iri + R"(>)
-        })";
+    retrieve_result person_res =
+        retrieve_person(person, person_iri, redland_ctx->world, redland_ctx->model);
 
-    exec_query_result res = exec_query(redland_ctx->world, redland_ctx->model, query);
+    assert(person_res != retrieve_result::Uninitialized);
 
-    if (!res->success) {
-        spdlog::critical("The Redland query execution has failed");
+    if (person_res == retrieve_result::QueryError) {
+        spdlog::critical("Person retrieval failed due to a query error");
 
         return 2;
     }
 
-    extract_cb_lut cb_lut = {
-        {"genderType", extract_gender_raw}
-    };
+    if (person_res == retrieve_result::NotFound) {
+        spdlog::info("Person {} not found", person_id);
 
-    extract_data_table_result data_tuple = extract_data_table(res->results, cb_lut);
-    const data_table& data_table = std::get<1>(data_tuple);
-
-    if (data_table.empty()) {
-        spdlog::error("Person {} not found", person_id);
         return 3;
     }
-
-    assert(data_table.size() == 1);
-
-    const data_row& data_row = data_table[0];
-
-    Person person;
-    extract_person_gender(person, data_row, "genderType");
 
     retrieve_result name_res =
         retrieve_person_name(person, person_iri, redland_ctx->world, redland_ctx->model);
