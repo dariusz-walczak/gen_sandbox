@@ -65,26 +65,11 @@ int main(int argc, char** argv) {
     if (person_res == retrieve_result::NotFound) {
         spdlog::info("Person {} not found", person_id);
 
-        return 3;
+        return 2;
     }
 
-    retrieve_result name_res =
-        retrieve_person_name(person, person_iri, redland_ctx->world, redland_ctx->model);
-
-    assert(name_res != retrieve_result::Uninitialized);
-
-    if (name_res == retrieve_result::NotFound) {
-        spdlog::info("Name of person {} not found", person_id);
-    }
-
-    retrieve_result parents_res = retrieve_person_parents(
-        person, person_iri, redland_ctx->world, redland_ctx->model);
-
-    assert(parents_res != retrieve_result::Uninitialized);
-
-    if (parents_res == retrieve_result::NotFound) {
-        spdlog::info("Name of person {} not found", person_id);
-    }
+    retrieve_person_name(person, person_iri, redland_ctx->world, redland_ctx->model);
+    retrieve_person_parents(person, person_iri, redland_ctx->world, redland_ctx->model);
 
     nlohmann::json output = person_to_json(person);
     std::cout << output.dump(4) << std::endl;
