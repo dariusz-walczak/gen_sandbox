@@ -86,8 +86,6 @@ retrieve_result retrieve_person_name(
         "retrieve_person_name: The result code of the retrieve_person_preferred_name function is:"
         " {}", preferred_res);
 
-    assert(preferred_res != retrieve_result::Uninitialized);
-
     if (preferred_res == retrieve_result::Success) {
         spdlog::debug("retrieve_person_name: Preferred name retrieved");
 
@@ -103,8 +101,6 @@ retrieve_result retrieve_person_name(
         "retrieve_person_name: The result code of the retrieve_person_birth_name function is: {}",
         birth_res);
 
-    assert(birth_res != retrieve_result::Uninitialized);
-
     if (birth_res == retrieve_result::Success) {
         spdlog::debug("retrieve_person_name: Birth name retrieved");
 
@@ -119,8 +115,6 @@ retrieve_result retrieve_person_name(
     spdlog::debug(
         "retrieve_person_name: The result code of the retrieve_person_any_name function is: {}",
         any_res);
-
-    assert(any_res != retrieve_result::Uninitialized);
 
     if (any_res == retrieve_result::Success) {
         spdlog::debug("retrieve_person_name: Some name retrieved");
@@ -343,8 +337,6 @@ retrieve_result retrieve_person_parents(
         retrieve_result name_res = retrieve_person_name(
             parent, row["relPerson"], world, model);
 
-        assert(name_res != retrieve_result::Uninitialized);
-
         if (parent.gender == Gender::Male) {
             if (person.father) {
                 spdlog::error(
@@ -378,7 +370,6 @@ auto fmt::formatter<retrieve_result>::format(retrieve_result r, format_context& 
     -> format_context::iterator {
   string_view name = "<unknown>";
   switch (r) {
-  case retrieve_result::Uninitialized: name = "<uninitialized>"; break;
   case retrieve_result::NotFound: name = "<not found>"; break;
   case retrieve_result::Success: name = "<success>"; break;
   }

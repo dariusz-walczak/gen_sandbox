@@ -60,8 +60,6 @@ int main(int argc, char** argv) {
     retrieve_result person_res =
         retrieve_person(person, person_iri, redland_ctx->world, redland_ctx->model);
 
-    assert(person_res != retrieve_result::Uninitialized);
-
     if (person_res == retrieve_result::NotFound) {
         spdlog::info("Person {} not found", person_id);
 

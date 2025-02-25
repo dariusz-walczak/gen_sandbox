@@ -8,8 +8,7 @@
 #include "person.hpp"
 
 enum class retrieve_result {
-    Uninitialized = 0,
-    NotFound,
+    NotFound = 0,
     Success
 };
 
