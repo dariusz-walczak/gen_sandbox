@@ -167,5 +167,13 @@ nlohmann::json person_to_json(const Person& person) {
         result["mother"] = person_to_json(*person.mother);
     }
 
+    if (!person.partners.empty()) {
+        result["partners"] = nlohmann::json::array();
+
+        for (auto partner : person.partners) {
+            result["partners"].push_back(person_to_json(*partner));
+        }
+    }
+
     return result;
 }

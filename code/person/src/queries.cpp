@@ -366,6 +366,79 @@ retrieve_result retrieve_person_parents(
 }
 
 
+retrieve_result retrieve_person_partners(
+    Person& person, const std::string& person_iri, librdf_world* world, librdf_model* model) {
+
+    const std::string query = R"(
+        PREFIX gx: <http://gedcomx.org/>
+        PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+        SELECT
+            ?partner ?partnerGender
+        WHERE
+        {
+            {
+                SELECT DISTINCT ?partner
+                WHERE
+                {
+                    {
+                        ?rel a gx:Relationship ;
+                            gx:person1 ?partner ;
+                            gx:person2 ?proband ;
+                            gx:type gx:Couple .
+                    }
+                    UNION
+                    {
+                        ?rel a gx:Relationship ;
+                            gx:person1 ?proband ;
+                            gx:person2 ?partner ;
+                            gx:type gx:Couple .
+                    }
+                    FILTER (?proband = <)" + person_iri + R"(>)
+                }
+            }
+            ?partner a gx:Person ;
+                gx:gender ?genderConclusion .
+            ?genderConclusion gx:type ?partnerGender .
+        })";
+
+    spdlog::debug("retrieve_person_partners: The query: {}", query);
+
+    exec_query_result res = exec_query(world, model, query);
+
+    if (!res->success) {
+        spdlog::error("retrieve_person_partners: The query execution has failed");
+
+        throw person_exception(
+            person_exception::error_code::query_error,
+            "Failed to execute the 'retrieve person partners' query");
+    }
+
+    const extract_data_table_result data_tuple = extract_data_table(res->results);
+    const data_table& data_table = std::get<1>(data_tuple);
+
+    if (data_table.empty()) {
+        spdlog::debug(
+            "retrieve_person_partners: No partners of person {} were found", person_iri);
+
+        return retrieve_result::NotFound;
+    }
+
+    for (data_row row : data_table) {
+        Person partner;
+
+        extract_person_gender(partner, row, "partnerGender");
+
+        retrieve_result name_res = retrieve_person_name(
+            partner, row["partner"], world, model);
+
+        person.partners.push_back(std::make_shared<Person>(partner));
+    }
+
+    return retrieve_result::Success;
+}
+
+
 auto fmt::formatter<retrieve_result>::format(retrieve_result r, format_context& ctx) const
     -> format_context::iterator {
   string_view name = "<unknown>";

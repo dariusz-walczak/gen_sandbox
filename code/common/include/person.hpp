@@ -10,6 +10,7 @@
 
 #include "redland_utils.hpp"
 
+
 enum class Gender {
     Uninitialized = 0,
     Male,
@@ -31,6 +32,9 @@ public:
 
     std::shared_ptr<Person> mother;
     std::shared_ptr<Person> father;
+
+    std::vector<std::shared_ptr<Person>> partners;
+    std::map<std::string, std::vector<std::shared_ptr<Person>>> children;
 };
 
 /* @brief Extract the string representation of the gender from the Redland Node
