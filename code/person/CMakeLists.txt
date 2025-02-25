@@ -1,5 +1,6 @@
 add_executable(
   gen_person
+  src/error.cpp
   src/main.cpp
   src/queries.cpp
 )

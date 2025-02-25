@@ -1,5 +1,7 @@
 #include "queries.hpp"
 
+#include "error.hpp"
+
 
 retrieve_result retrieve_person(
     Person& person, const std::string& person_iri, librdf_world* world, librdf_model* model) {
@@ -48,7 +50,9 @@ retrieve_result retrieve_person(
     if (!res->success) {
         spdlog::error("retrieve_person: The query execution has failed");
 
-        return retrieve_result::QueryError;
+        throw person_exception(
+            person_exception::error_code::query_error,
+            "Failed to execute the 'retrieve person' query");
     }
 
     const extract_data_table_result data_tuple = extract_data_table(res->results);
@@ -175,7 +179,9 @@ retrieve_result retrieve_person_any_name(
         spdlog::error(
             "retrieve_person_any_name: The query execution has failed");
 
-        return retrieve_result::QueryError;
+        throw person_exception(
+            person_exception::error_code::query_error,
+            "Failed to execute the 'retrieve any name of a person' query");
     }
 
     extract_data_table_result data_tuple = extract_data_table(res->results);
@@ -222,7 +228,9 @@ retrieve_result retrieve_person_birth_name(
     if (!res->success) {
         spdlog::error("retrieve_person_birth_name: The query execution has failed");
 
-        return retrieve_result::QueryError;
+        throw person_exception(
+            person_exception::error_code::query_error,
+            "Failed to execute the 'retrieve person birth name' query");
     }
 
     extract_data_table_result data_tuple = extract_data_table(res->results);
@@ -269,7 +277,9 @@ retrieve_result retrieve_person_preferred_name(
     if (!res->success) {
         spdlog::error("retrieve_person_preferred_name: The query execution has failed");
 
-        return retrieve_result::QueryError;
+        throw person_exception(
+            person_exception::error_code::query_error,
+            "Failed to execute the 'retrieve person preferred name' query");
     }
 
     extract_data_table_result data_tuple = extract_data_table(res->results);
@@ -323,7 +333,9 @@ retrieve_result retrieve_person_parents(
     if (!res->success) {
         spdlog::error("retrieve_person_parents: The query execution has failed");
 
-        return retrieve_result::QueryError;
+        throw person_exception(
+            person_exception::error_code::query_error,
+            "Failed to execute the 'retrieve person parents' query");
     }
 
     const extract_data_table_result data_tuple = extract_data_table(res->results);
