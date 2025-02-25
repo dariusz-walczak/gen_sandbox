@@ -88,12 +88,7 @@ retrieve_result retrieve_person_name(
 
     assert(preferred_res != retrieve_result::Uninitialized);
 
-    if (preferred_res == retrieve_result::QueryError) {
-        spdlog::critical(
-            "retrieve_person_name: Preferred name retrieval failed due to a query error");
-
-        return retrieve_result::QueryError;
-    } else if (preferred_res == retrieve_result::Success) {
+    if (preferred_res == retrieve_result::Success) {
         spdlog::debug("retrieve_person_name: Preferred name retrieved");
 
         return retrieve_result::Success;
@@ -110,11 +105,7 @@ retrieve_result retrieve_person_name(
 
     assert(birth_res != retrieve_result::Uninitialized);
 
-    if (birth_res == retrieve_result::QueryError) {
-        spdlog::critical("retrieve_person_name: Birth name retrieval failed due to a query error");
-
-        return retrieve_result::QueryError;
-    } else if (birth_res == retrieve_result::Success) {
+    if (birth_res == retrieve_result::Success) {
         spdlog::debug("retrieve_person_name: Birth name retrieved");
 
         return retrieve_result::Success;
@@ -131,11 +122,7 @@ retrieve_result retrieve_person_name(
 
     assert(any_res != retrieve_result::Uninitialized);
 
-    if (any_res == retrieve_result::QueryError) {
-        spdlog::critical("retrieve_person_name: Any name retrieval failed due to a query error");
-
-        return retrieve_result::QueryError;
-    } else if (any_res == retrieve_result::Success) {
+    if (any_res == retrieve_result::Success) {
         spdlog::debug("retrieve_person_name: Some name retrieved");
 
         return retrieve_result::Success;
@@ -358,14 +345,6 @@ retrieve_result retrieve_person_parents(
 
         assert(name_res != retrieve_result::Uninitialized);
 
-        if (name_res == retrieve_result::QueryError) {
-            spdlog::error(
-                "retrieve_person_parents: Retrieval of the name of person {} failed due to a query"
-                " error", row["relPerson"]);
-
-            return retrieve_result::QueryError;
-        }
-
         if (parent.gender == Gender::Male) {
             if (person.father) {
                 spdlog::error(
@@ -400,7 +379,6 @@ auto fmt::formatter<retrieve_result>::format(retrieve_result r, format_context& 
   string_view name = "<unknown>";
   switch (r) {
   case retrieve_result::Uninitialized: name = "<uninitialized>"; break;
-  case retrieve_result::QueryError: name = "<query error>"; break;
   case retrieve_result::NotFound: name = "<not found>"; break;
   case retrieve_result::Success: name = "<success>"; break;
   }

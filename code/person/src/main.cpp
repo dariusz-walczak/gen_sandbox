@@ -62,12 +62,6 @@ int main(int argc, char** argv) {
 
     assert(person_res != retrieve_result::Uninitialized);
 
-    if (person_res == retrieve_result::QueryError) {
-        spdlog::critical("Person retrieval failed due to a query error");
-
-        return 2;
-    }
-
     if (person_res == retrieve_result::NotFound) {
         spdlog::info("Person {} not found", person_id);
 
@@ -79,12 +73,6 @@ int main(int argc, char** argv) {
 
     assert(name_res != retrieve_result::Uninitialized);
 
-    if (name_res == retrieve_result::QueryError) {
-        spdlog::critical("Name retrieval failed due to a query error");
-
-        return 4;
-    }
-
     if (name_res == retrieve_result::NotFound) {
         spdlog::info("Name of person {} not found", person_id);
     }
@@ -93,12 +81,6 @@ int main(int argc, char** argv) {
         person, person_iri, redland_ctx->world, redland_ctx->model);
 
     assert(parents_res != retrieve_result::Uninitialized);
-
-    if (parents_res == retrieve_result::QueryError) {
-        spdlog::critical("Name retrieval failed due to a query error");
-
-        return 4;
-    }
 
     if (parents_res == retrieve_result::NotFound) {
         spdlog::info("Name of person {} not found", person_id);

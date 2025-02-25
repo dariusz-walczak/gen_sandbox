@@ -9,7 +9,6 @@
 
 enum class retrieve_result {
     Uninitialized = 0,
-    QueryError,
     NotFound,
     Success
 };
