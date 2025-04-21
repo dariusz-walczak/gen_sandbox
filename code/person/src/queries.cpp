@@ -36,7 +36,9 @@ retrieve_result retrieve_person(
                 ?motherGender a gx:Gender ;
                     gx:type gx:Female .
             }
-            ?person gx:birthDate ?birthDate .
+            OPTIONAL {
+                ?person gx:birthDate ?birthDate
+            }
             OPTIONAL {
                 ?person gx:deathDate ?deathDate
             }
