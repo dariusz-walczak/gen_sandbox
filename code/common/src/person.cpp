@@ -227,5 +227,17 @@ nlohmann::json person_to_json(const Person& person) {
         }
     }
 
+    const auto single_parent_children_it = person.children.find("");
+
+    if (single_parent_children_it != person.children.end())
+    {
+        result["children"] = nlohmann::json::array();
+
+        for (auto child_it : single_parent_children_it->second)
+        {
+            result["children"].push_back(person_to_json(*child_it));
+        }
+    }
+
     return result;
 }
