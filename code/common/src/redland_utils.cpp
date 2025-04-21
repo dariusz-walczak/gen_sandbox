@@ -347,3 +347,9 @@ void print_data_table(const extract_data_table_result& data_table) {
 
     std::cout << table << std::endl;
 }
+
+
+bool has_binding(const data_row& row, const std::string& binding_name)
+{
+    return (row.find(binding_name) != row.end());
+}
