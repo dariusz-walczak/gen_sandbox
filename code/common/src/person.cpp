@@ -4,6 +4,8 @@
 
 #include <spdlog/spdlog.h>
 
+#include "common_exception.hpp"
+
 namespace {
     const char* g_male = "male";
     const char* g_female = "female";
@@ -84,7 +86,8 @@ std::string extract_gender_raw(librdf_node* node) {
 
 
 void extract_person_gender(
-    Person& person, const data_row& row, const std::string& gender_type_bn) {
+    Person& person, const data_row& row, const std::string& gender_type_bn)
+{
 
     auto gender_it = row.find(gender_type_bn);
 
@@ -98,6 +101,42 @@ void extract_person_gender(
         }
     } else {
         person.gender = Gender::Unknown;
+    }
+}
+
+namespace
+{
+    const std::string g_person_prefix = { "http://example.org/" };
+}
+
+std::string compose_person_iri(const std::string& id)
+{
+    return g_person_prefix + id;
+}
+
+
+void extract_person_id(Person& person, const data_row& row, const std::string& person_iri_bn)
+{
+    auto iri_it = row.find(person_iri_bn);
+
+    if (iri_it != row.end()) {
+        if (iri_it->second.starts_with(g_person_prefix))
+        {
+            person.id = iri_it->second.substr(g_person_prefix.size());
+            person.iri = iri_it->second;
+        }
+        else
+        {
+            throw common_exception(
+                common_exception::error_code::data_format_error,
+                fmt::format("The person iri has unexpected format: '{}'", iri_it->second));
+        }
+    }
+    else
+    {
+        throw common_exception(
+            common_exception::error_code::binding_not_found,
+            fmt::format("The data row is missing the '{}' binding", person_iri_bn));
     }
 }
 
@@ -171,7 +210,20 @@ nlohmann::json person_to_json(const Person& person) {
         result["partners"] = nlohmann::json::array();
 
         for (auto partner : person.partners) {
-            result["partners"].push_back(person_to_json(*partner));
+            auto json_partner = person_to_json(*partner);
+            auto children_it = person.children.find(partner->id);
+
+            if (children_it != person.children.end())
+            {
+                json_partner["children"] = nlohmann::json::array();
+
+                for (auto child_it : children_it->second)
+                {
+                    json_partner["children"].push_back(person_to_json(*child_it));
+                }
+            }
+
+            result["partners"].push_back(json_partner);
         }
     }
 
