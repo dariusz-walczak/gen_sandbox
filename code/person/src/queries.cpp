@@ -453,14 +453,17 @@ retrieve_result retrieve_person_children(
                 gx:person1 ?proband ;
                 gx:person2 ?child ;
                 gx:type gx:ParentChild .
-            ?rel2 a gx:Relationship ;
-                gx:person1 ?partner ;
-                gx:person2 ?child ;
-                gx:type gx:ParentChild .
+            OPTIONAL {
+                ?rel2 a gx:Relationship ;
+                    gx:person1 ?partner ;
+                    gx:person2 ?child ;
+                    gx:type gx:ParentChild .
+                FILTER(?partner != ?proband)
+            }
             ?child a gx:Person ;
                 gx:gender ?childGenderConclusion .
             ?childGenderConclusion gx:type ?childGender .
-            FILTER (?proband = <)" + person_iri + R"(> && ?partner != ?proband)
+            FILTER (?proband = <)" + person_iri + R"(>)
         })";
 
     spdlog::debug("retrieve_person_children: The query: {}", query);
@@ -487,16 +490,22 @@ retrieve_result retrieve_person_children(
 
     for (data_row row : data_table) {
         std::shared_ptr<Person> child = std::make_shared<Person>();
-        Person partner;
 
         extract_person_gender(*child, row, "childGender");
 
         retrieve_result name_res = retrieve_person_name(
             *child, row["child"], world, model);
 
-        extract_person_id(partner, row, "partner");
-
-        person.children[partner.id].push_back(child);
+        if (has_binding(row, "partner"))
+        {
+            Person partner;
+            extract_person_id(partner, row, "partner");
+            person.children[partner.id].push_back(child);
+        }
+        else
+        {
+            person.children[""].push_back(child);
+        }
     }
 
     return retrieve_result::Success;
