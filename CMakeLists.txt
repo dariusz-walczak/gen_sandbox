@@ -8,7 +8,7 @@ project(
   LANGUAGES CXX)
 
 set(
-  CMAKE_CXX_STANDARD 17)
+  CMAKE_CXX_STANDARD 20)
 
 # ===[ Dependencies ]=========================================================================== #
 
