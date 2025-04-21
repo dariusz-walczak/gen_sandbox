@@ -65,7 +65,7 @@ int main(int argc, char** argv) {
     std::cout << std::endl;
 #endif
 
-    const std::string person_iri = "http://example.org/" + person_id;
+    const std::string person_iri = compose_person_iri(person_id);
 
     Person person;
 
@@ -81,6 +81,7 @@ int main(int argc, char** argv) {
     retrieve_person_name(person, person_iri, redland_ctx->world, redland_ctx->model);
     retrieve_person_parents(person, person_iri, redland_ctx->world, redland_ctx->model);
     retrieve_person_partners(person, person_iri, redland_ctx->world, redland_ctx->model);
+    retrieve_person_children(person, person_iri, redland_ctx->world, redland_ctx->model);
 
     nlohmann::json output = person_to_json(person);
     std::cout << output.dump(4) << std::endl;

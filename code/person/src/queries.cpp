@@ -68,6 +68,7 @@ retrieve_result retrieve_person(
 
     const data_row& data_row = data_table.front();
 
+    extract_person_id(person, data_row, "person");
     extract_person_gender(person, data_row, "genderType");
 
     return retrieve_result::Success;
@@ -291,7 +292,6 @@ retrieve_result retrieve_person_parents(
 
     const std::string query = R"(
         PREFIX gx: <http://gedcomx.org/>
-        PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
         SELECT
             ?relPerson ?relGender
@@ -360,8 +360,6 @@ retrieve_result retrieve_person_parents(
         }
     }
 
-    //extract_person_names(person, data_table);
-
     return retrieve_result::Success;
 }
 
@@ -371,7 +369,6 @@ retrieve_result retrieve_person_partners(
 
     const std::string query = R"(
         PREFIX gx: <http://gedcomx.org/>
-        PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
         SELECT
             ?partner ?partnerGender
@@ -425,14 +422,79 @@ retrieve_result retrieve_person_partners(
     }
 
     for (data_row row : data_table) {
-        Person partner;
+        std::shared_ptr<Person> partner = std::make_shared<Person>();
 
-        extract_person_gender(partner, row, "partnerGender");
+        extract_person_id(*partner, row, "partner");
+        extract_person_gender(*partner, row, "partnerGender");
 
         retrieve_result name_res = retrieve_person_name(
-            partner, row["partner"], world, model);
+            *partner, row["partner"], world, model);
 
-        person.partners.push_back(std::make_shared<Person>(partner));
+        person.partners.push_back(partner);
+    }
+
+    return retrieve_result::Success;
+}
+
+
+retrieve_result retrieve_person_children(
+    Person& person, const std::string& person_iri, librdf_world* world, librdf_model* model) {
+
+    const std::string query = R"(
+        PREFIX gx: <http://gedcomx.org/>
+
+        SELECT
+            ?child ?childGender ?partner
+        WHERE
+        {
+            ?rel1 a gx:Relationship ;
+                gx:person1 ?proband ;
+                gx:person2 ?child ;
+                gx:type gx:ParentChild .
+            ?rel2 a gx:Relationship ;
+                gx:person1 ?partner ;
+                gx:person2 ?child ;
+                gx:type gx:ParentChild .
+            ?child a gx:Person ;
+                gx:gender ?childGenderConclusion .
+            ?childGenderConclusion gx:type ?childGender .
+            FILTER (?proband = <)" + person_iri + R"(> && ?partner != ?proband)
+        })";
+
+    spdlog::debug("retrieve_person_children: The query: {}", query);
+
+    exec_query_result res = exec_query(world, model, query);
+
+    if (!res->success) {
+        spdlog::error("retrieve_person_children: The query execution has failed");
+
+        throw person_exception(
+            person_exception::error_code::query_error,
+            "Failed to execute the 'retrieve person children' query");
+    }
+
+    const extract_data_table_result data_tuple = extract_data_table(res->results);
+    const data_table& data_table = std::get<1>(data_tuple);
+
+    if (data_table.empty()) {
+        spdlog::debug(
+            "retrieve_person_children: No children of person {} were found", person_iri);
+
+        return retrieve_result::NotFound;
+    }
+
+    for (data_row row : data_table) {
+        std::shared_ptr<Person> child = std::make_shared<Person>();
+        Person partner;
+
+        extract_person_gender(*child, row, "childGender");
+
+        retrieve_result name_res = retrieve_person_name(
+            *child, row["child"], world, model);
+
+        extract_person_id(partner, row, "partner");
+
+        person.children[partner.id].push_back(child);
     }
 
     return retrieve_result::Success;
