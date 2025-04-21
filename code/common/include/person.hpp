@@ -47,10 +47,13 @@ std::string extract_gender_raw(librdf_node* node);
 
 void extract_person_gender(Person& person, const data_row& row, const std::string& gender_type_bn);
 void extract_person_names(Person& person, const data_table& table);
+
 /* @brief Extract the person identifier from the person IRI binding in the data row and store it
  *        in the `id` field of the provided `Person` object.
  *
- * Store an empty string if the IRI has unexpected format.
+ * Throw the common_exception when:
+ * * the IRI has unexpected format,
+ * * the binding is not found in the row.
  *
  * @param person The output object to store the extracted identifier in.
  * @param row    The input data row.
