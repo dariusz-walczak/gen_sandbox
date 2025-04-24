@@ -11,30 +11,13 @@ retrieve_result retrieve_person(
     const std::string query = R"(
         PREFIX gx: <http://gedcomx.org/>
 
-        SELECT ?person, ?genderType, ?birthDate, ?deathDate, ?father, ?fatherName,
-            ?motherName
+        SELECT ?person, ?genderType, ?birthDate, ?deathDate
         WHERE {
             ?person a gx:Person .
             OPTIONAL {
                 ?person gx:gender ?gender .
                 ?gender a gx:Gender ;
                     gx:type ?genderType .
-            }
-            OPTIONAL {
-                ?person gx:parent ?father .
-                ?father a gx:Person ;
-                    gx:name ?fatherName ;
-                    gx:gender ?fatherGender .
-                ?fatherGender a gx:Gender ;
-                    gx:type gx:Male .
-            }
-            OPTIONAL {
-                ?person gx:parent ?mother .
-                ?mother a gx:Person ;
-                    gx:name ?motherName ;
-                    gx:gender ?motherGender .
-                ?motherGender a gx:Gender ;
-                    gx:type gx:Female .
             }
             OPTIONAL {
                 ?person gx:birthDate ?birthDate
