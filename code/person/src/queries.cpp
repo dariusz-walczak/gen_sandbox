@@ -1,12 +1,14 @@
 #include "person/queries.hpp"
 
+#include <fmt/format.h>
+
 #include "person/error.hpp"
 
 
-retrieve_result retrieve_person(
+retrieve_result retrieve_person_base_data(
     Person& person, const std::string& person_iri, librdf_world* world, librdf_model* model) {
 
-    spdlog::trace("retrieve_person: Entry checkpoint");
+    spdlog::trace(fmt::format("retrieve_person: Entry checkpoint ({})", person_iri));
 
     const std::string query = R"(
         PREFIX gx: <http://gedcomx.org/>
