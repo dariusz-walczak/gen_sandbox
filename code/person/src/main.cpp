@@ -6,13 +6,14 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
-#include "redland_utils.hpp"
 #include <CLI/CLI.hpp>
 #include <nlohmann/json.hpp>
 
-#include "person.hpp"
-#include "command_line_utils.hpp"
-#include "file_system_utils.hpp"
+#include "common/command_line_utils.hpp"
+#include "common/file_system_utils.hpp"
+#include "common/person.hpp"
+#include "common/redland_utils.hpp"
+
 #include "queries.hpp"
 
 

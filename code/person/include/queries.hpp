@@ -5,7 +5,8 @@
 
 #include <spdlog/spdlog.h>
 
-#include "person.hpp"
+#include "common/person.hpp"
+
 
 enum class retrieve_result {
     NotFound = 0,

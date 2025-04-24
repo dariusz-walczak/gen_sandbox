@@ -1,10 +1,10 @@
-#include "person.hpp"
+#include "common/person.hpp"
 
 #include <cassert>
 
 #include <spdlog/spdlog.h>
 
-#include "common_exception.hpp"
+#include "common/common_exception.hpp"
 
 namespace {
     const char* g_male = "male";
