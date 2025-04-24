@@ -1,6 +1,6 @@
-#include "queries.hpp"
+#include "person/queries.hpp"
 
-#include "error.hpp"
+#include "person/error.hpp"
 
 
 retrieve_result retrieve_person(

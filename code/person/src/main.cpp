@@ -14,7 +14,7 @@
 #include "common/person.hpp"
 #include "common/redland_utils.hpp"
 
-#include "queries.hpp"
+#include "person/queries.hpp"
 
 
 int main(int argc, char** argv) {
