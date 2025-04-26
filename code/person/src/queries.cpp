@@ -435,7 +435,7 @@ retrieve_result retrieve_person_children(
         PREFIX gx: <http://gedcomx.org/>
 
         SELECT
-            ?child ?childGender ?partner
+            ?child ?partner
         WHERE
         {
             ?rel1 a gx:Relationship ;
@@ -449,9 +449,7 @@ retrieve_result retrieve_person_children(
                     gx:type gx:ParentChild .
                 FILTER(?partner != ?proband)
             }
-            ?child a gx:Person ;
-                gx:gender ?childGenderConclusion .
-            ?childGenderConclusion gx:type ?childGender .
+            ?child a gx:Person .
             FILTER (?proband = <)" + person_iri + R"(>)
         })";
 
@@ -478,12 +476,11 @@ retrieve_result retrieve_person_children(
     }
 
     for (data_row row : data_table) {
+        auto iri_it = get_binding_value_req(row, "child");
+
         std::shared_ptr<Person> child = std::make_shared<Person>();
-
-        extract_person_gender(*child, row, "childGender");
-
-        retrieve_result name_res = retrieve_person_name(
-            *child, row["child"], world, model);
+        retrieve_person_base_data_req(*child, iri_it->second, world, model);
+        retrieve_result name_res = retrieve_person_name(*child, iri_it->second, world, model);
 
         if (has_binding(row, "partner"))
         {
