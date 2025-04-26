@@ -57,6 +57,8 @@ retrieve_result retrieve_person_base_data(
 
     extract_person_id(person, data_row, "person");
     extract_person_gender(person, data_row, "genderType");
+    extract_person_birth_date(person, data_row, "birthDate");
+    extract_person_death_date(person, data_row, "deathDate");
 
     return retrieve_result::Success;
 }

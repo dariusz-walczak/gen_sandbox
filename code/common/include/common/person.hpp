@@ -1,9 +1,10 @@
 #if !defined COMMON__PERSON_HPP
 #define COMMON__PERSON_HPP
 
+#include <chrono>
 #include <memory>
-#include <string>
 #include <optional>
+#include <string>
 
 #include <nlohmann/json.hpp>
 #include <redland.h>
@@ -30,6 +31,8 @@ public:
     std::optional<Gender> gender;
     std::vector<std::string> given_names;
     std::vector<std::string> last_names;
+    std::optional<std::chrono::year_month_day> birth_date;
+    std::optional<std::chrono::year_month_day> death_date;
 
     std::shared_ptr<Person> mother;
     std::shared_ptr<Person> father;
@@ -45,6 +48,8 @@ std::string compose_person_iri(const std::string& id);
  * @note This function work as an extraction callback provided to the extract_cb_lut function */
 std::string extract_gender_raw(librdf_node* node);
 
+void extract_person_birth_date(Person& person, const data_row& row, const std::string& date_bn);
+void extract_person_death_date(Person& person, const data_row& row, const std::string& date_bn);
 void extract_person_gender(Person& person, const data_row& row, const std::string& gender_type_bn);
 void extract_person_names(Person& person, const data_table& table);
 

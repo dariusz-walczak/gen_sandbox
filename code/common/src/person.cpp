@@ -1,6 +1,9 @@
 #include "common/person.hpp"
 
 #include <cassert>
+#include <chrono>
+#include <format>
+#include <sstream>
 
 #include <spdlog/spdlog.h>
 
@@ -85,21 +88,91 @@ std::string extract_gender_raw(librdf_node* node) {
 }
 
 
+#if defined(__GNUC__) && (__GNUC__ < 14)
+# error "g++-14 is required to use the std::chrono::parse function"
+#endif
+
+std::chrono::year_month_day convert_date(const std::string& raw)
+{
+    std::chrono::year_month_day result;
+
+    std::istringstream is{raw};
+    is >> std::chrono::parse("%F", result);
+
+    // is.fail() will return true when:
+    //  * the input format is not valid (%F stands for ISO-8601, so '01-02-2003' in not valid while
+    //    '2003-02-01' is valid);
+    //  * the successfully parsed input value doesn't represent a valid date, e.g. the month number
+    //     is out of range or the day is out of range for given year and month:
+    if (is.fail())
+    {
+        throw common_exception(
+            common_exception::error_code::data_format_error,
+            fmt::format("The birth date has unexpected format: '{}'", raw));
+    }
+
+    return result;
+}
+
+
+void extract_person_birth_date(Person& person, const data_row& row, const std::string& date_bn)
+{
+    auto date_it = row.find(date_bn);
+
+    if (date_it != row.end())
+    {
+        person.birth_date = convert_date(date_it->second);
+    }
+    else
+    {
+        spdlog::debug(
+            fmt::format(
+                "extract_person_birth_date: The '{}' binding not found for person '{}'",
+                date_bn, (person.id.empty() ? "<unknown>" : person.id)));
+    }
+}
+
+
+void extract_person_death_date(Person& person, const data_row& row, const std::string& date_bn)
+{
+    auto date_it = row.find(date_bn);
+
+    if (date_it != row.end())
+    {
+        person.death_date = convert_date(date_it->second);
+    }
+    else
+    {
+        spdlog::debug(
+            fmt::format(
+                "extract_person_death_date: The '{}' binding not found for person '{}'",
+                date_bn, (person.id.empty() ? "<unknown>" : person.id)));
+    }
+}
+
+
 void extract_person_gender(
     Person& person, const data_row& row, const std::string& gender_type_bn)
 {
-
     auto gender_it = row.find(gender_type_bn);
 
-    if (gender_it != row.end()) {
-        if (gender_it->second == g_male) {
+    if (gender_it != row.end())
+    {
+        if (gender_it->second == g_male)
+        {
             person.gender = Gender::Male;
-        } else if (gender_it->second == g_female) {
+        }
+        else if (gender_it->second == g_female)
+        {
             person.gender = Gender::Female;
-        } else {
+        }
+        else
+        {
             person.gender = Gender::Unknown;
         }
-    } else {
+    }
+    else
+    {
         person.gender = Gender::Unknown;
     }
 }
@@ -196,6 +269,14 @@ nlohmann::json person_to_json(const Person& person) {
         if (!last_names.empty()) {
             result["name"]["last"] = last_names;
         }
+    }
+
+    if (person.birth_date) {
+        result["birth_date"] = std::format("{:%Y-%m-%d}", person.birth_date.value());
+    }
+
+    if (person.death_date) {
+        result["death_date"] = std::format("{:%Y-%m-%d}", person.death_date.value());
     }
 
     if (person.father) {
