@@ -65,6 +65,10 @@ extract_data_table_result extract_data_table(librdf_query_results* results);
 extract_data_table_result extract_data_table(
     librdf_query_results* results, const extract_cb_lut& cb_lut);
 
+data_row::const_iterator get_binding_value_req(
+    const data_row& row,
+    const std::string& binding_name);
+
 bool has_binding(const data_row& row, const std::string& binding_name);
 
 void print_data_table(const extract_data_table_result& data_table);

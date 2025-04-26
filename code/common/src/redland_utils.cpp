@@ -13,6 +13,8 @@
 #include <spdlog/spdlog.h>
 #include <tabulate/tabulate.hpp>
 
+#include "common/common_exception.hpp"
+
 
 void release_redland_ctx(redland_context* ctx) {
     librdf_free_model(ctx->model);
@@ -348,6 +350,21 @@ void print_data_table(const extract_data_table_result& data_table) {
     std::cout << table << std::endl;
 }
 
+
+data_row::const_iterator get_binding_value_req(
+    const data_row& row, const std::string& binding_name)
+{
+    auto binding_it = row.find(binding_name);
+
+    if (binding_it != row.end())
+    {
+        return binding_it;
+    }
+
+    throw common_exception(
+        common_exception::error_code::binding_not_found,
+        fmt::format("The '{}' binding not found in the data row", binding_name));
+}
 
 bool has_binding(const data_row& row, const std::string& binding_name)
 {
