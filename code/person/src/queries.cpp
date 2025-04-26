@@ -372,33 +372,23 @@ retrieve_result retrieve_person_partners(
     const std::string query = R"(
         PREFIX gx: <http://gedcomx.org/>
 
-        SELECT
-            ?partner ?partnerGender
+        SELECT DISTINCT ?partner
         WHERE
         {
             {
-                SELECT DISTINCT ?partner
-                WHERE
-                {
-                    {
-                        ?rel a gx:Relationship ;
-                            gx:person1 ?partner ;
-                            gx:person2 ?proband ;
-                            gx:type gx:Couple .
-                    }
-                    UNION
-                    {
-                        ?rel a gx:Relationship ;
-                            gx:person1 ?proband ;
-                            gx:person2 ?partner ;
-                            gx:type gx:Couple .
-                    }
-                    FILTER (?proband = <)" + person_iri + R"(>)
-                }
+                ?rel a gx:Relationship ;
+                    gx:person1 ?partner ;
+                    gx:person2 ?proband ;
+                    gx:type gx:Couple .
             }
-            ?partner a gx:Person ;
-                gx:gender ?genderConclusion .
-            ?genderConclusion gx:type ?partnerGender .
+            UNION
+            {
+                ?rel a gx:Relationship ;
+                    gx:person1 ?proband ;
+                    gx:person2 ?partner ;
+                    gx:type gx:Couple .
+            }
+            FILTER (?proband = <)" + person_iri + R"(>)
         })";
 
     spdlog::debug("retrieve_person_partners: The query: {}", query);
@@ -424,13 +414,12 @@ retrieve_result retrieve_person_partners(
     }
 
     for (data_row row : data_table) {
+        auto iri_it = get_binding_value_req(row, "partner");
+
         std::shared_ptr<Person> partner = std::make_shared<Person>();
 
-        extract_person_id(*partner, row, "partner");
-        extract_person_gender(*partner, row, "partnerGender");
-
-        retrieve_result name_res = retrieve_person_name(
-            *partner, row["partner"], world, model);
+        retrieve_person_base_data_req(*partner, iri_it->second, world, model);
+        retrieve_person_name(*partner, iri_it->second, world, model);
 
         person.partners.push_back(partner);
     }
