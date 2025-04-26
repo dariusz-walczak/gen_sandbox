@@ -335,11 +335,11 @@ retrieve_result retrieve_person_parents(
     for (data_row row : data_table) {
         auto iri_it = get_binding_value_req(row, "relPerson");
 
-        Person parent;
-        retrieve_person_base_data_req(parent, iri_it->second, world, model);
-        retrieve_person_name(parent, iri_it->second, world, model);
+        std::shared_ptr<Person> parent = std::make_shared<Person>();
+        retrieve_person_base_data_req(*parent, iri_it->second, world, model);
+        retrieve_person_name(*parent, iri_it->second, world, model);
 
-        if (parent.gender == Gender::Male) {
+        if (parent->gender == Gender::Male) {
             if (person.father) {
                 spdlog::error(
                     "retrieve_person_parents: Found multiple fathers of the person {}. Ignoring"
@@ -347,9 +347,9 @@ retrieve_result retrieve_person_parents(
             } else {
                 spdlog::debug("retrieve_person_parents: Father found");
 
-                person.father = std::make_shared<Person>(parent);
+                person.father = parent;
             }
-        } else if (parent.gender == Gender::Female) {
+        } else if (parent->gender == Gender::Female) {
             if (person.mother) {
                 spdlog::error(
                     "retrieve_person_parents: Found multiple mothers of the person {}. Ignoring"
@@ -357,7 +357,7 @@ retrieve_result retrieve_person_parents(
             } else {
                 spdlog::debug("retrieve_person_parents: Mother found");
 
-                person.mother = std::make_shared<Person>(parent);
+                person.mother = parent;
             }
         }
     }
