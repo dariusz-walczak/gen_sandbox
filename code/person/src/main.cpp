@@ -71,7 +71,7 @@ int main(int argc, char** argv) {
     Person person;
 
     retrieve_result person_res =
-        retrieve_person_base_data(person, person_iri, redland_ctx->world, redland_ctx->model);
+        retrieve_person_base_data_opt(person, person_iri, redland_ctx->world, redland_ctx->model);
 
     if (person_res == retrieve_result::NotFound) {
         spdlog::info("Person {} not found", person_id);

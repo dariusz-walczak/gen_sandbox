@@ -13,7 +13,10 @@ enum class retrieve_result {
     Success
 };
 
-retrieve_result retrieve_person_base_data(
+retrieve_result retrieve_person_base_data_opt(
+    Person& person, const std::string& person_iri, librdf_world* world, librdf_model* model);
+
+void retrieve_person_base_data_req(
     Person& person, const std::string& person_iri, librdf_world* world, librdf_model* model);
 
 retrieve_result retrieve_person_name(

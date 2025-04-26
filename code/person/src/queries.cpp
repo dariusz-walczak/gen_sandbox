@@ -5,7 +5,7 @@
 #include "person/error.hpp"
 
 
-retrieve_result retrieve_person_base_data(
+retrieve_result retrieve_person_base_data_opt(
     Person& person, const std::string& person_iri, librdf_world* world, librdf_model* model) {
 
     spdlog::trace(fmt::format("retrieve_person: Entry checkpoint ({})", person_iri));
@@ -61,6 +61,22 @@ retrieve_result retrieve_person_base_data(
     extract_person_death_date(person, data_row, "deathDate");
 
     return retrieve_result::Success;
+}
+
+void retrieve_person_base_data_req(
+    Person& person,
+    const std::string& person_iri,
+    librdf_world* world,
+    librdf_model* model)
+{
+    retrieve_result result = retrieve_person_base_data_opt(person, person_iri, world, model);
+
+    if (result == retrieve_result::NotFound)
+    {
+        throw person_exception(
+            person_exception::error_code::resource_not_found,
+            fmt::format("Person not found: '{}'", person_iri));
+    }
 }
 
 
@@ -283,16 +299,14 @@ retrieve_result retrieve_person_parents(
         PREFIX gx: <http://gedcomx.org/>
 
         SELECT
-            ?relPerson ?relGender
+            ?relPerson
         WHERE
         {
             ?rel a gx:Relationship ;
                 gx:person1 ?relPerson ;
                 gx:person2 ?proband ;
                 gx:type gx:ParentChild .
-            ?relPerson a gx:Person ;
-                gx:gender ?genderConclusion .
-            ?genderConclusion gx:type ?relGender .
+            ?relPerson a gx:Person .
             FILTER (?proband = <)" + person_iri + R"(>)
         })";
 
@@ -319,12 +333,11 @@ retrieve_result retrieve_person_parents(
     }
 
     for (data_row row : data_table) {
+        auto iri_it = get_binding_value_req(row, "relPerson");
+
         Person parent;
-
-        extract_person_gender(parent, row, "relGender");
-
-        retrieve_result name_res = retrieve_person_name(
-            parent, row["relPerson"], world, model);
+        retrieve_person_base_data_req(parent, iri_it->second, world, model);
+        retrieve_person_name(parent, iri_it->second, world, model);
 
         if (parent.gender == Gender::Male) {
             if (person.father) {
