@@ -247,6 +247,11 @@ void extract_person_names(Person& person, const data_table& table) {
 nlohmann::json person_to_json(const Person& person) {
     nlohmann::json result;
 
+    if (!person.id.empty())
+    {
+        result["id"] = person.id;
+    }
+
     if (person.gender == Gender::Male) {
         result["gender"] = g_male;
     } else if (person.gender == Gender::Female) {
