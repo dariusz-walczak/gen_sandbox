@@ -388,7 +388,20 @@ retrieve_result retrieve_person_partners(
                     gx:person2 ?partner ;
                     gx:type gx:Couple .
             }
-            FILTER (?proband = <)" + person_iri + R"(>)
+            UNION
+            {
+                ?rel1 a gx:Relationship ;
+                    gx:person1 ?proband ;
+                    gx:person2 ?child ;
+                    gx:type gx:ParentChild .
+                ?rel2 a gx:Relationship ;
+                    gx:person1 ?partner ;
+                    gx:person2 ?child ;
+                    gx:type gx:ParentChild .
+                ?child a gx:Person .
+            }
+            FILTER ((?partner != ?proband) &&
+                    (?proband = <)" + person_iri + R"(>))
         })";
 
     spdlog::debug("retrieve_person_partners: The query: {}", query);
