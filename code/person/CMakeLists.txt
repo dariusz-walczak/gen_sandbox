@@ -2,6 +2,7 @@ add_executable(
   gen_person
   src/error.cpp
   src/main.cpp
+  src/option_parser.cpp
   src/queries.cpp
 )
 

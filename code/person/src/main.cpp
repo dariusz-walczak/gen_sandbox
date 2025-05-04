@@ -6,7 +6,6 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
-#include <CLI/CLI.hpp>
 #include <nlohmann/json.hpp>
 
 #include "common/command_line_utils.hpp"
@@ -14,37 +13,26 @@
 #include "common/person.hpp"
 #include "common/redland_utils.hpp"
 
+#include "person/option_parser.hpp"
 #include "person/queries.hpp"
 
 
 int main(int argc, char** argv) {
-    spdlog::set_level(spdlog::level::debug);
+    spdlog::set_level(spdlog::level::trace);
     spdlog::set_default_logger(spdlog::stderr_color_mt("stderr_logger"));
 
-    CLI::App app{"My Program Description"};
+    CLI::App parser{};
+    app_options options;
 
-    std::vector<std::string> input_paths;
-    std::string base_path_raw;
-    std::string person_id;
-    app.add_option(
-        "-i,--input", input_paths, "Path to an individual turtle file to be loaded into the RDF"
-        " model");
-    app.add_option(
-        "--base-path", base_path_raw, "Path to the turtle files storage")
-        ->check(validate_existing_dir_path);
-    app.add_option(
-        "-p,--person", person_id, "Person Local Name in the 'P00000' format")
-        ->option_text("PID")
-        ->required()
-        ->check(validate_person_local_name);
+    init_option_parser(parser, options);
 
-    CLI11_PARSE(app, argc, argv);
+    CLI11_PARSE(parser, argc, argv);
 
-    auto base_path = std::filesystem::path(base_path_raw);
+    auto base_path = std::filesystem::path(options.base_path_raw);
 
     auto all_input_paths = merge_input_files(
         find_input_files(base_path, ".ttl"),
-        adapt_string_paths(input_paths));
+        adapt_string_paths(options.input_paths));
 
     scoped_redland_ctx redland_ctx = create_redland_ctx();
 
@@ -66,26 +54,33 @@ int main(int argc, char** argv) {
     std::cout << std::endl;
 #endif
 
-    const std::string person_iri = compose_person_iri(person_id);
-
-    Person person;
-
-    retrieve_result person_res =
-        retrieve_person_base_data_opt(person, person_iri, redland_ctx->world, redland_ctx->model);
-
-    if (person_res == retrieve_result::NotFound) {
-        spdlog::info("Person {} not found", person_id);
-
-        return 2;
+    if (parser.got_subcommand("list"))
+    {
+        spdlog::error("The list command is not implemented");
     }
+    else if (parser.got_subcommand("details"))
+    {
+        const std::string person_iri = compose_person_iri(options.details_cmd.person_id);
 
-    retrieve_person_name(person, person_iri, redland_ctx->world, redland_ctx->model);
-    retrieve_person_parents(person, person_iri, redland_ctx->world, redland_ctx->model);
-    retrieve_person_partners(person, person_iri, redland_ctx->world, redland_ctx->model);
-    retrieve_person_children(person, person_iri, redland_ctx->world, redland_ctx->model);
+        Person person;
 
-    nlohmann::json output = person_to_json(person);
-    std::cout << output.dump(4) << std::endl;
+        retrieve_result person_res =
+            retrieve_person_base_data_opt(person, person_iri, redland_ctx->world, redland_ctx->model);
+
+        if (person_res == retrieve_result::NotFound) {
+            spdlog::info("Person {} not found", options.details_cmd.person_id);
+
+            return 2;
+        }
+
+        retrieve_person_name(person, person_iri, redland_ctx->world, redland_ctx->model);
+        retrieve_person_parents(person, person_iri, redland_ctx->world, redland_ctx->model);
+        retrieve_person_partners(person, person_iri, redland_ctx->world, redland_ctx->model);
+        retrieve_person_children(person, person_iri, redland_ctx->world, redland_ctx->model);
+
+        nlohmann::json output = person_to_json(person);
+        std::cout << output.dump(4) << std::endl;
+    }
 
     return 0;
 }
