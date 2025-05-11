@@ -66,5 +66,6 @@ void extract_person_names(Person& person, const data_table& table);
 void extract_person_id(Person& person, const data_row& row, const std::string& person_iri_bn);
 
 nlohmann::json person_to_json(const Person& person);
+nlohmann::json person_list_to_json(const std::vector<Person>& person_list);
 
 #endif // !defined COMMON__PERSON_HPP

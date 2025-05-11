@@ -327,3 +327,15 @@ nlohmann::json person_to_json(const Person& person) {
 
     return result;
 }
+
+nlohmann::json person_list_to_json(const std::vector<Person>& person_list)
+{
+    nlohmann::json result;
+
+    for (const auto& person : person_list)
+    {
+        result.push_back(person_to_json(person));
+    }
+
+    return result;
+}
