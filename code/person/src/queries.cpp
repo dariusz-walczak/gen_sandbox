@@ -493,7 +493,7 @@ retrieve_result retrieve_person_children(
 
         std::shared_ptr<Person> child = std::make_shared<Person>();
         retrieve_person_base_data_req(*child, iri_it->second, world, model);
-        retrieve_result name_res = retrieve_person_name(*child, iri_it->second, world, model);
+        retrieve_person_name(*child, iri_it->second, world, model);
 
         if (has_binding(row, "partner"))
         {
@@ -508,6 +508,62 @@ retrieve_result retrieve_person_children(
     }
 
     return retrieve_result::Success;
+}
+
+
+std::vector<Person> retrieve_person_list(librdf_world* world, librdf_model* model)
+{
+    spdlog::trace("retrieve_person_list: Entry checkpoint");
+
+    const std::string query = R"(
+        PREFIX gx: <http://gedcomx.org/>
+
+        SELECT ?person, ?genderType, ?birthDate, ?deathDate
+        WHERE {
+            ?person a gx:Person .
+            OPTIONAL {
+                ?person gx:gender ?gender .
+                ?gender a gx:Gender ;
+                    gx:type ?genderType .
+            }
+            OPTIONAL {
+                ?person gx:birthDate ?birthDate
+            }
+            OPTIONAL {
+                ?person gx:deathDate ?deathDate
+            }
+        })";
+
+    spdlog::debug("retrieve_person_list: The query: {}", query);
+
+    exec_query_result res = exec_query(world, model, query);
+
+    if (!res->success) {
+        spdlog::error("retrieve_person_list: The query execution has failed");
+
+        throw person_exception(
+            person_exception::error_code::query_error,
+            "Failed to execute the 'retrieve person_list' query");
+    }
+
+    const extract_data_table_result data_tuple = extract_data_table(res->results);
+    const data_table& data_table = std::get<1>(data_tuple);
+
+    std::vector<Person> result;
+    result.reserve(data_table.size());
+
+    for (data_row row : data_table)
+    {
+        result.emplace_back();
+
+        extract_person_id(result.back(), row, "person");
+        extract_person_gender(result.back(), row, "genderType");
+        extract_person_birth_date(result.back(), row, "birthDate");
+        extract_person_death_date(result.back(), row, "deathDate");
+        retrieve_person_name(result.back(), result.back().iri, world, model);
+    }
+
+    return result;
 }
 
 
