@@ -31,7 +31,7 @@ int main(int argc, char** argv) {
     auto base_path = std::filesystem::path(options.base_path_raw);
 
     auto all_input_paths = merge_input_files(
-        find_input_files(base_path, ".ttl"),
+        find_input_files(base_path, "ttl"),
         adapt_string_paths(options.input_paths));
 
     scoped_redland_ctx redland_ctx = create_redland_ctx();
