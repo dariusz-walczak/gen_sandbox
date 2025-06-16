@@ -12,7 +12,9 @@ void init_option_parser(CLI::App& parser, app_options& result)
         "-i,--input", result.input_paths,
         "Path to an individual turtle file to be loaded into the RDF model");
     parser.add_option(
-        "--base-path", result.base_path_raw, "Path to the turtle files storage")
+        "STORAGE", result.base_path_raw, "PATH to the turtle files STORAGE")
+        ->option_text("PATH")
+        ->required()
         ->check(validate_existing_dir_path);
 
     CLI::App* details_cmd = parser.add_subcommand("details", "Provide details of a single person");
