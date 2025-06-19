@@ -5,6 +5,7 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
+#include "common/common_exception.hpp"
 #include "common/redland_utils.hpp"
 
 
@@ -14,8 +15,13 @@ int main() {
 
     scoped_redland_ctx redland_ctx = create_redland_ctx();
 
-    if (!initialize_redland_ctx(redland_ctx)) {
-        spdlog::critical("Redland Context: Failed to initialize");
+    try
+    {
+        initialize_redland_ctx(redland_ctx);
+    }
+    catch (const common_exception& e)
+    {
+        spdlog::critical("{}: {}", __func__, e.what());
 
         return 1;
     }

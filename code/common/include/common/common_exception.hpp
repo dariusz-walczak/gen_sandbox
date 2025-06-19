@@ -10,6 +10,8 @@ class common_exception : public std::exception {
 public:
     enum class error_code {
         uninitialized = 0,
+        /** Initialization of a new Redland RDF Library context has failed for unknown reasons */
+        redland_initialization_failed,
         binding_not_found,
         data_format_error
     };

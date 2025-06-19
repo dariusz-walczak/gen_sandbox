@@ -21,7 +21,11 @@ typedef
     scoped_redland_ctx;
 
 scoped_redland_ctx create_redland_ctx();
-bool initialize_redland_ctx(scoped_redland_ctx& ctx);
+/** Initialize a new Redland RDF Library context
+ *
+ * @throws common_exception when the context initialization fails. All Redland resources allocated
+ *     before the failure are released automatically. */
+void initialize_redland_ctx(scoped_redland_ctx& ctx);
 
 
 void load_rdf(librdf_world* world, librdf_model* model, const std::string& input_file_path);

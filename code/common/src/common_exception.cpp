@@ -24,6 +24,9 @@ void common_exception::set_what(error_code code, const char* msg) {
     case error_code::uninitialized:
         oss << "<uninitialized>";
         break;
+    case error_code::redland_initialization_failed:
+        oss << "<redland initialization failed>";
+        break;
     case error_code::binding_not_found:
         oss << "<binding not found>";
         break;

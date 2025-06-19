@@ -35,44 +35,48 @@ scoped_redland_ctx create_redland_ctx() {
     return { new redland_context(), release_redland_ctx };
 }
 
-bool initialize_redland_ctx(scoped_redland_ctx& ctx) {
+void initialize_redland_ctx(scoped_redland_ctx& ctx) {
     ctx->world = librdf_new_world();
 
     if (!ctx->world) {
-        spdlog::error("Redland Context: Failed to create a Redland World");
+        spdlog::error("{}: Failed to create a new Redland world", __func__);
 
-        return false;
+        throw new common_exception(
+            common_exception::error_code::redland_initialization_failed,
+            "Failed to create a new Redland world");
     }
 
-    spdlog::debug("Redland Context: Created a Redland World");
+    spdlog::debug("{}: Created a Redland world", __func__);
 
     librdf_world_open(ctx->world);
 
-    spdlog::debug("Redland Context: Initialized the Redland World");
+    spdlog::debug("{}: Initialized the Redland world", __func__);
 
     // https://librdf.org/docs/api/redland-storage.html#librdf-new-storage
     ctx->storage = librdf_new_storage(ctx->world, "memory", nullptr, nullptr);
 
     if (!ctx->storage) {
-        spdlog::error("Redland Context: Failed to create a Redland Storage");
+        spdlog::error("{}: Failed to create a new Redland storage", __func__);
 
-        return false;
+        throw new common_exception(
+            common_exception::error_code::redland_initialization_failed,
+            "Failed to create a new Redland storage");
     }
 
-    spdlog::debug("Redland Context: Created a Redland Storage");
+    spdlog::debug("{}: Created a new Redland storage", __func__);
 
     // https://librdf.org/docs/api/redland-model.html#librdf-new-model
     ctx->model = librdf_new_model(ctx->world, ctx->storage, nullptr);
 
     if (!ctx->model) {
-        spdlog::error("Redland Context: Failed to create a Redland Model");
+        spdlog::error("{}: Failed to create a new Redland model", __func__);
 
-        return false;
+        throw new common_exception(
+            common_exception::error_code::redland_initialization_failed,
+            "Failed to create a new Redland model");
     }
 
-    spdlog::debug("Redland Context: Created a Redland Model");
-
-    return true;
+    spdlog::debug("{}: Created a new Redland model", __func__);
 }
 
 

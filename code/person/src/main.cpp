@@ -36,11 +36,7 @@ int main(int argc, char** argv) {
 
     scoped_redland_ctx redland_ctx = create_redland_ctx();
 
-    if (!initialize_redland_ctx(redland_ctx)) {
-        spdlog::critical("Redland Context: Failed to initialize");
-
-        return 1;
-    }
+    initialize_redland_ctx(redland_ctx); // throws common_exception on initialization failure
 
     for (auto input_path : all_input_paths) {
         load_rdf(redland_ctx->world, redland_ctx->model, input_path.string());
