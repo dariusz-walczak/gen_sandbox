@@ -1,4 +1,4 @@
-set(CMAKE_CXX_CLANG_TIDY clang-tidy;-checks=modernize-*,performance-*,bugprone-*;)
+set(CMAKE_CXX_CLANG_TIDY clang-tidy;)
 
 add_executable(
   gen_sandbox

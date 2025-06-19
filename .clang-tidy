@@ -1,0 +1,9 @@
+Checks: >
+   modernize-*,
+   -modernize-use-trailing-return-type,
+   performance-*,
+   bugprone-*,
+WarningsAsErrors: ''
+HeaderFilterRegex: 'code/.*'
+FormatStyle: file
+CheckOptions: []
