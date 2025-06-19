@@ -1,5 +1,5 @@
-#if !defined COMMON__COMMON_EXCEPTION_HPP
-#define COMMON__COMMON_EXCEPTION_HPP
+#if !defined COMMON_COMMON_EXCEPTION_HPP
+#define COMMON_COMMON_EXCEPTION_HPP
 
 #include <exception>
 #include <optional>
@@ -28,4 +28,4 @@ protected:
     void set_what(error_code code, const char* msg);
 };
 
-#endif // !defined COMMON__COMMON_EXCEPTION_HPP
+#endif // !defined COMMON_COMMON_EXCEPTION_HPP
