@@ -1,3 +1,5 @@
+set(CMAKE_CXX_CLANG_TIDY clang-tidy;-checks=modernize-*,performance-*,bugprone-*;)
+
 add_library(
   gen_common
   src/command_line_utils.cpp
