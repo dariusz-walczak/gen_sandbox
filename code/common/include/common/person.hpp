@@ -22,9 +22,9 @@ enum class Gender {
 
 class Person {
 public:
-    std::string get_given_names() const;
-    std::string get_last_names() const;
-    std::string get_full_name() const;
+    [[nodiscard]] std::string get_given_names() const;
+    [[nodiscard]] std::string get_last_names() const;
+    [[nodiscard]] std::string get_full_name() const;
 
     std::string id;
     std::string iri;
