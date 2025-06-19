@@ -1,6 +1,7 @@
 #if !defined COMMON_COMMON_EXCEPTION_HPP
 #define COMMON_COMMON_EXCEPTION_HPP
 
+#include <cstdint>
 #include <exception>
 #include <optional>
 #include <string>
@@ -8,7 +9,7 @@
 
 class common_exception : public std::exception {
 public:
-    enum class error_code {
+    enum class error_code : std::uint8_t {
         uninitialized = 0,
         /** Initialization of a new Redland RDF Library context has failed for unknown reasons */
         redland_initialization_failed,

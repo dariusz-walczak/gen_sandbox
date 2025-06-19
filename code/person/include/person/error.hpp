@@ -1,14 +1,14 @@
 #if !defined PERSON__ERROR_HPP
 #define PERSON__ERROR_HPP
 
+#include <cstdint>
 #include <exception>
 #include <optional>
 #include <string>
 
-
 class person_exception : public std::exception {
 public:
-    enum class error_code {
+    enum class error_code : std::uint8_t {
         uninitialized = 0,
         query_error,
         resource_not_found
