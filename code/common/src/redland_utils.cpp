@@ -18,15 +18,15 @@
 
 void release_redland_ctx(redland_context* ctx) {
     librdf_free_model(ctx->model);
-    spdlog::debug("Released the Redland Model");
+    spdlog::debug("{}: Released the redland model", __func__);
 
     librdf_free_storage(ctx->storage);
-    spdlog::debug("Released the Redland Storage");
+    spdlog::debug("{}: Released the redland storage", __func__);
 
     librdf_free_world(ctx->world);
-    spdlog::debug("Released the Redland World");
+    spdlog::debug("{}: Released the redland world", __func__);
 
-    spdlog::info("Released the Redland Context");
+    spdlog::info("{}: Released the redland context", __func__);
 
     delete ctx;
 }
@@ -39,44 +39,44 @@ void initialize_redland_ctx(scoped_redland_ctx& ctx) {
     ctx->world = librdf_new_world();
 
     if (!ctx->world) {
-        spdlog::error("{}: Failed to create a new Redland world", __func__);
+        spdlog::error("{}: Failed to create a new redland world", __func__);
 
         throw new common_exception(
             common_exception::error_code::redland_initialization_failed,
-            "Failed to create a new Redland world");
+            "Failed to create a new redland world");
     }
 
-    spdlog::debug("{}: Created a Redland world", __func__);
+    spdlog::debug("{}: Created a redland world", __func__);
 
     librdf_world_open(ctx->world);
 
-    spdlog::debug("{}: Initialized the Redland world", __func__);
+    spdlog::debug("{}: Initialized the redland world", __func__);
 
     // https://librdf.org/docs/api/redland-storage.html#librdf-new-storage
     ctx->storage = librdf_new_storage(ctx->world, "memory", nullptr, nullptr);
 
     if (!ctx->storage) {
-        spdlog::error("{}: Failed to create a new Redland storage", __func__);
+        spdlog::error("{}: Failed to create a new redland storage", __func__);
 
-        throw new common_exception(
+        throw common_exception(
             common_exception::error_code::redland_initialization_failed,
-            "Failed to create a new Redland storage");
+            "Failed to create a new redland storage");
     }
 
-    spdlog::debug("{}: Created a new Redland storage", __func__);
+    spdlog::debug("{}: Created a new redland storage", __func__);
 
     // https://librdf.org/docs/api/redland-model.html#librdf-new-model
     ctx->model = librdf_new_model(ctx->world, ctx->storage, nullptr);
 
     if (!ctx->model) {
-        spdlog::error("{}: Failed to create a new Redland model", __func__);
+        spdlog::error("{}: Failed to create a new redland model", __func__);
 
         throw new common_exception(
             common_exception::error_code::redland_initialization_failed,
-            "Failed to create a new Redland model");
+            "Failed to create a new redland model");
     }
 
-    spdlog::debug("{}: Created a new Redland model", __func__);
+    spdlog::debug("{}: Created a new redland model", __func__);
 }
 
 
@@ -91,7 +91,7 @@ namespace {
         spdlog::debug("Released the Base URI");
 
         librdf_free_parser(ctx->parser);
-        spdlog::debug("Released the Redland Parser");
+        spdlog::debug("Released the redland parser");
 
         delete ctx;
     }
@@ -109,12 +109,12 @@ void load_rdf(librdf_world* world, librdf_model* model, const std::string& input
     ctx->parser = librdf_new_parser(world, "turtle", nullptr, nullptr);
 
     if (!ctx->parser) {
-        spdlog::error("load_rdf: Failed to create a Redland Parser");
+        spdlog::error("load_rdf: Failed to create a redland parser");
 
         return;
     }
 
-    spdlog::debug("load_rdf: Created a Redland Parser");
+    spdlog::debug("load_rdf: Created a redland parser");
 
     const unsigned char base_uri_str[] = "https://aurochsoft.com/";
     ctx->base_uri = librdf_new_uri(world, base_uri_str);
@@ -154,10 +154,10 @@ void load_rdf(librdf_world* world, librdf_model* model, const std::string& input
 
 void release_exec_query_ctx(exec_query_ctx* ctx) {
     librdf_free_query_results(ctx->results);
-    spdlog::debug("Released the Redland Query Results");
+    spdlog::debug("Released the redland query results");
 
     librdf_free_query(ctx->query);
-    spdlog::debug("Released the Redland Query");
+    spdlog::debug("Released the redland query");
 
     delete ctx;
 }
@@ -172,22 +172,22 @@ exec_query_result exec_query(librdf_world* world, librdf_model* model, const std
         world, "sparql", nullptr, reinterpret_cast<const unsigned char*>(query.c_str()), nullptr);
 
     if (!res->query) {
-        spdlog::error("exec_query: Failed to create a Redland Query");
+        spdlog::error("exec_query: Failed to create a redland query");
 
         return res;
     }
 
-    spdlog::debug("exec_query: Created a Redland Query");
+    spdlog::debug("exec_query: Created a redland query");
 
     res->results = librdf_query_execute(res->query, model);
 
     if (!res->results) {
-        spdlog::error("exec_query: Redland Query execution failed");
+        spdlog::error("exec_query: Redland query execution failed");
 
         return res;
     }
 
-    spdlog::debug("exec_query: Redland Query execution succeeded");
+    spdlog::debug("exec_query: Redland query execution succeeded");
 
     res->success = true;
     return res;
