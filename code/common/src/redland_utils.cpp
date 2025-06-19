@@ -96,9 +96,7 @@ namespace {
         delete ctx;
     }
 
-    typedef
-        std::unique_ptr<load_rdf_ctx, decltype(&release_load_rdf_ctx)>
-        scoped_load_rdf_ctx;
+    using scoped_load_rdf_ctx = std::unique_ptr<load_rdf_ctx, decltype(&release_load_rdf_ctx)>;
 }
 
 void load_rdf(librdf_world* world, librdf_model* model, const std::string& input_file_path) {
@@ -206,11 +204,8 @@ namespace {
         spdlog::debug("Released the result row context");
     }
 
-    typedef
-        std::unique_ptr<binding_ctx, decltype(&release_binding_ctx)>
-        scoped_binding_ctx;
-
-    typedef std::unordered_set<binding_name> tmp_name_lut;
+    using scoped_binding_ctx = std::unique_ptr<binding_ctx, decltype(&release_binding_ctx)>;
+    using tmp_name_lut = std::unordered_set<binding_name>;
 }
 
 

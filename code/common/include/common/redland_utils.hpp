@@ -16,9 +16,7 @@ struct redland_context {
 
 void release_redland_ctx(redland_context* ctx);
 
-typedef
-    std::unique_ptr<redland_context, decltype(&release_redland_ctx)>
-    scoped_redland_ctx;
+using scoped_redland_ctx = std::unique_ptr<redland_context, decltype(&release_redland_ctx)>;
 
 scoped_redland_ctx create_redland_ctx();
 /** Initialize a new Redland RDF Library context
@@ -38,25 +36,22 @@ struct exec_query_ctx {
 
 void release_exec_query_ctx(exec_query_ctx* ctx);
 
-typedef
-    std::unique_ptr<exec_query_ctx, decltype(&release_exec_query_ctx)>
-    exec_query_result;
+using exec_query_result = std::unique_ptr<exec_query_ctx, decltype(&release_exec_query_ctx)>;
 
 exec_query_result exec_query(librdf_world* world, librdf_model* model, const std::string& query);
 
-typedef std::string binding_name;
-typedef std::string binding_value;
-typedef std::map<binding_name, binding_value> data_row;
-typedef std::vector<data_row> data_table;
-typedef std::vector<binding_name> head_row;
+using binding_name = std::string;
+using binding_value = std::string;
+using data_row = std::map<binding_name, binding_value>;
+using data_table = std::vector<data_row>;
+using head_row = std::vector<binding_name>;
 
 
-typedef std::string (*extract_cb)(librdf_node*);
-typedef std::map<std::string, extract_cb> extract_cb_lut;
+using extract_cb = std::string (*)(librdf_node*);
+using extract_cb_lut = std::map<std::string, extract_cb>;
 
-typedef
-    std::tuple<head_row, data_table>
-    extract_data_table_result;
+using extract_data_table_result = std::tuple<head_row, data_table>;
+
 
 /**
  * @brief Extract the query results and prepare them for further presentation
