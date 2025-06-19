@@ -1,5 +1,9 @@
 add_executable(
   gen_person
+  src/command/common.cpp
+  src/command/deps.cpp
+  src/command/details.cpp
+  src/command/list.cpp
   src/error.cpp
   src/main.cpp
   src/option_parser.cpp

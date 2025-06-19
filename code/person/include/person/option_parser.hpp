@@ -5,12 +5,14 @@
 #include <string>
 
 #include <CLI/CLI.hpp>
+#include <spdlog/spdlog.h>
 
 
 struct app_options
 {
     std::vector<std::string> input_paths;
     std::string base_path_raw;
+    spdlog::level::level_enum log_level = { spdlog::level::info };
 
     struct details
     {
