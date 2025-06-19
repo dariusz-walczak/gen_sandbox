@@ -1,5 +1,5 @@
-#if !defined COMMON__REDLAND_UTILS_HPP
-#define COMMON__REDLAND_UTILS_HPP
+#if !defined COMMON_REDLAND_UTILS_HPP
+#define COMMON_REDLAND_UTILS_HPP
 
 #include <map>
 #include <string>
@@ -79,4 +79,4 @@ void print_data_table(const extract_data_table_result& data_table);
 
 //void exec_query(librdf_world* world, librdf_model* model, const std::string& query_text);
 
-#endif // !defined COMMON__REDLAND_UTILS_HPP
+#endif // !defined COMMON_REDLAND_UTILS_HPP

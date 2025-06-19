@@ -1,5 +1,5 @@
-#if !defined COMMON__FILE_SYSTEM_UTILS_HPP
-#define COMMON__FILE_SYSTEM_UTILS_HPP
+#if !defined COMMON_FILE_SYSTEM_UTILS_HPP
+#define COMMON_FILE_SYSTEM_UTILS_HPP
 
 #include <filesystem>
 #include <string>
@@ -17,4 +17,4 @@ input_files adapt_string_paths(std::vector<std::string> paths);
 
 input_files merge_input_files(input_files first, input_files second);
 
-#endif // !defined COMMON__FILE_SYSTEM_UTILS_HPP
+#endif // !defined COMMON_FILE_SYSTEM_UTILS_HPP

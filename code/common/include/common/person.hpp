@@ -1,5 +1,5 @@
-#if !defined COMMON__PERSON_HPP
-#define COMMON__PERSON_HPP
+#if !defined COMMON_PERSON_HPP
+#define COMMON_PERSON_HPP
 
 #include <chrono>
 #include <memory>
@@ -68,4 +68,4 @@ void extract_person_id(Person& person, const data_row& row, const std::string& p
 nlohmann::json person_to_json(const Person& person);
 nlohmann::json person_list_to_json(const std::vector<Person>& person_list);
 
-#endif // !defined COMMON__PERSON_HPP
+#endif // !defined COMMON_PERSON_HPP

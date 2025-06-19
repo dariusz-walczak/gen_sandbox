@@ -1,5 +1,5 @@
-#if !defined COMMON__COMMAND_LINE_UTILS_HPP
-#define COMMON__COMMAND_LINE_UTILS_HPP
+#if !defined COMMON_COMMAND_LINE_UTILS_HPP
+#define COMMON_COMMAND_LINE_UTILS_HPP
 
 #include <filesystem>
 #include <string>
@@ -17,4 +17,4 @@ template <> struct fmt::formatter<std::filesystem::path>: formatter<string_view>
     -> format_context::iterator;
 };
 
-#endif // !defined COMMON__COMMAND_LINE_UTILS_HPP
+#endif // !defined COMMON_COMMAND_LINE_UTILS_HPP
