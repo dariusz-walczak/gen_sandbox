@@ -332,7 +332,7 @@ retrieve_result retrieve_person_parents(
         return retrieve_result::NotFound;
     }
 
-    for (data_row row : data_table) {
+    for (const data_row& row : data_table) {
         auto iri_it = get_binding_value_req(row, "relPerson");
 
         std::shared_ptr<Person> parent = std::make_shared<Person>();
@@ -426,7 +426,7 @@ retrieve_result retrieve_person_partners(
         return retrieve_result::NotFound;
     }
 
-    for (data_row row : data_table) {
+    for (const data_row& row : data_table) {
         auto iri_it = get_binding_value_req(row, "partner");
 
         std::shared_ptr<Person> partner = std::make_shared<Person>();
@@ -488,7 +488,7 @@ retrieve_result retrieve_person_children(
         return retrieve_result::NotFound;
     }
 
-    for (data_row row : data_table) {
+    for (const data_row& row : data_table) {
         auto iri_it = get_binding_value_req(row, "child");
 
         std::shared_ptr<Person> child = std::make_shared<Person>();
@@ -552,7 +552,7 @@ std::vector<Person> retrieve_person_list(librdf_world* world, librdf_model* mode
     std::vector<Person> result;
     result.reserve(data_table.size());
 
-    for (data_row row : data_table)
+    for (const data_row& row : data_table)
     {
         result.emplace_back();
 

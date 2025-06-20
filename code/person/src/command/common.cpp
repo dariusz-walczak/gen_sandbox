@@ -17,7 +17,7 @@ scoped_redland_ctx load_input_data(const app_options& options)
 
     initialize_redland_ctx(redland_ctx); // throws common_exception on initialization failure
 
-    for (auto input_path : all_input_paths) {
+    for (const auto& input_path : all_input_paths) {
         load_rdf(redland_ctx->world, redland_ctx->model, input_path.string());
     }
 
