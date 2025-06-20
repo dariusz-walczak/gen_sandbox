@@ -2,6 +2,7 @@
 #define COMMON_PERSON_HPP
 
 #include <chrono>
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -12,7 +13,7 @@
 #include "redland_utils.hpp"
 
 
-enum class Gender {
+enum class Gender : std::uint8_t {
     Uninitialized = 0,
     Male,
     Female,
