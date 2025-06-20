@@ -108,7 +108,7 @@ void init_option_parser(CLI::App& parser, app_options& result)
         ->required()
         ->check(validate_person_local_name);
 
-    CLI::App* list_cmd = parser.add_subcommand("list", "Provide the person list");
+    parser.add_subcommand("list", "Provide the person list");
 
-    CLI::App* deps_cmd = parser.add_subcommand("deps", "Provide dependencies list");
+    parser.add_subcommand("deps", "Provide dependencies list");
 }
