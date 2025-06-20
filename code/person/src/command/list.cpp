@@ -20,5 +20,5 @@ void run_list_command(const app_options& options)
     std::vector<Person> persons = retrieve_person_list(redland_ctx->world, redland_ctx->model);
 
     nlohmann::json output = person_list_to_json(persons);
-        std::cout << output.dump(4) << std::endl;
+        std::cout << output.dump(4) << '\n';
 }

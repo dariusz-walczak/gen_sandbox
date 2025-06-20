@@ -17,5 +17,5 @@ void run_deps_command(const app_options& options)
 
     scoped_redland_ctx redland_ctx = load_input_data(options);
 
-    std::cout << "Dummy command" << std::endl;
+    std::cout << "Dummy command\n";
 }

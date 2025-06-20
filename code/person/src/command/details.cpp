@@ -40,5 +40,5 @@ void run_details_command(const app_options& options)
     retrieve_person_children(person, person_iri, redland_ctx->world, redland_ctx->model);
 
     nlohmann::json output = person_to_json(person);
-    std::cout << output.dump(4) << std::endl;
+    std::cout << output.dump(4) << '\n';
 }
