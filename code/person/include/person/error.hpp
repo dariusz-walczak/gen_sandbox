@@ -17,7 +17,7 @@ public:
     person_exception(error_code code, const std::string& msg);
     person_exception(error_code code, const char* msg);
 
-    virtual const char* what() const noexcept { return _what.c_str(); }
+    [[nodiscard]] virtual const char* what() const noexcept { return _what.c_str(); }
 
 protected:
     error_code  _code;
