@@ -1,5 +1,5 @@
-#if !defined PERSON__OPTION_PARSER_HPP
-#define PERSON__OPTION_PARSER_HPP
+#if !defined PERSON_OPTION_PARSER_HPP
+#define PERSON_OPTION_PARSER_HPP
 
 #include <vector>
 #include <string>
@@ -22,4 +22,4 @@ struct app_options
 
 void init_option_parser(CLI::App& parser, app_options& result);
 
-#endif // !defined PERSON__OPTION_PARSER_HPP
+#endif // !defined PERSON_OPTION_PARSER_HPP

@@ -1,5 +1,5 @@
-#if !defined PERSON__QUERIES_HPP
-#define PERSON__QUERIES_HPP
+#if !defined PERSON_QUERIES_HPP
+#define PERSON_QUERIES_HPP
 
 #include <redland.h>
 
@@ -51,4 +51,4 @@ template <> struct fmt::formatter<retrieve_result>: formatter<string_view> {
     -> format_context::iterator;
 };
 
-#endif // !defined PERSON__QUERIES_HPP
+#endif // !defined PERSON_QUERIES_HPP

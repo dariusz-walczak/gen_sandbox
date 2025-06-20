@@ -1,5 +1,5 @@
-#if !defined PERSON__ERROR_HPP
-#define PERSON__ERROR_HPP
+#if !defined PERSON_ERROR_HPP
+#define PERSON_ERROR_HPP
 
 #include <cstdint>
 #include <exception>
@@ -26,4 +26,4 @@ protected:
     void set_what(error_code code, const char* msg);
 };
 
-#endif // !defined PERSON__ERROR_HPP
+#endif // !defined PERSON_ERROR_HPP
