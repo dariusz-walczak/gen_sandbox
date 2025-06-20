@@ -27,7 +27,7 @@ namespace
  * * No direct conversion from spdlog::string_view_t to std::string_view is possible */
 std::string_view to_std_string_view(const spdlog::string_view_t& sv)
 {
-    return std::string_view(sv.data(), sv.size());
+    return {sv.data(), sv.size()};
 }
 
 /** Convert spdlog::string_view_t to std::string
@@ -36,7 +36,7 @@ std::string_view to_std_string_view(const spdlog::string_view_t& sv)
  *  std::string is possible */
 std::string to_std_string(const spdlog::string_view_t& sv)
 {
-    return std::string(sv.data(), sv.size());
+    return {sv.data(), sv.size()};
 }
 } // namespace
 
