@@ -114,8 +114,8 @@ void load_rdf(librdf_world* world, librdf_model* model, const std::string& input
 
     spdlog::debug("load_rdf: Created a redland parser");
 
-    const unsigned char base_uri_str[] = "https://aurochsoft.com/";
-    ctx->base_uri = librdf_new_uri(world, base_uri_str);
+    ctx->base_uri = librdf_new_uri(
+        world, reinterpret_cast<const unsigned char*>("https://aurochsoft.com/"));
 
     if (!ctx->base_uri) {
         spdlog::critical("load_rdf: Failed to create the Base URI");
