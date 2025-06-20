@@ -295,7 +295,7 @@ nlohmann::json person_to_json(const Person& person) {
     if (!person.partners.empty()) {
         result["partners"] = nlohmann::json::array();
 
-        for (auto partner : person.partners) {
+        for (const auto& partner : person.partners) {
             auto json_partner = person_to_json(*partner);
             auto children_it = person.children.find(partner->id);
 
@@ -303,7 +303,7 @@ nlohmann::json person_to_json(const Person& person) {
             {
                 json_partner["children"] = nlohmann::json::array();
 
-                for (auto child_it : children_it->second)
+                for (const auto& child_it : children_it->second)
                 {
                     json_partner["children"].push_back(person_to_json(*child_it));
                 }
@@ -319,7 +319,7 @@ nlohmann::json person_to_json(const Person& person) {
     {
         result["children"] = nlohmann::json::array();
 
-        for (auto child_it : single_parent_children_it->second)
+        for (const auto& child_it : single_parent_children_it->second)
         {
             result["children"].push_back(person_to_json(*child_it));
         }

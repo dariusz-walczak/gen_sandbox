@@ -331,7 +331,7 @@ void print_data_table(const extract_data_table_result& data_table) {
     for (data_row in_data_row : in_data_rows) {
         tabulate::Table::Row_t data_row;
 
-        for (binding_name name : in_head_row) {
+        for (const binding_name& name : in_head_row) {
             auto in_data_row_it = in_data_row.find(name);
 
             if (in_data_row_it != in_data_row.end()) {
