@@ -250,7 +250,7 @@ extract_data_table_result extract_data_table(
 
             if (head_row_lut.size() < static_cast<tmp_name_lut::size_type>(binding_count)) {
                 if (!head_row_lut.count(binding_name)) {
-                    head_row.push_back(binding_name);
+                    head_row.emplace_back(binding_name);
                     head_row_lut.insert(binding_name);
                 }
             }
@@ -322,7 +322,7 @@ void print_data_table(const extract_data_table_result& data_table) {
         tabulate::Table::Row_t head_row;
 
         for (binding_name name : in_head_row) {
-            head_row.push_back(name);
+            head_row.emplace_back(name);
         }
 
         table.add_row(head_row);
@@ -335,9 +335,9 @@ void print_data_table(const extract_data_table_result& data_table) {
             auto in_data_row_it = in_data_row.find(name);
 
             if (in_data_row_it != in_data_row.end()) {
-                data_row.push_back(in_data_row_it->second);
+                data_row.emplace_back(in_data_row_it->second);
             } else {
-                data_row.push_back("");
+                data_row.emplace_back("");
             }
         }
 
