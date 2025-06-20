@@ -88,7 +88,7 @@ std::string extract_gender_raw(librdf_node* node) {
 }
 
 
-#if defined(__GNUC__) && (__GNUC__ < 14)
+#if defined(__GNUC__) && !defined(__clang__) && (__GNUC__ < 14)
 # error "g++-14 is required to use the std::chrono::parse function"
 #endif
 
