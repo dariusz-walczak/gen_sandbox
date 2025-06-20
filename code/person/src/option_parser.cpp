@@ -15,7 +15,7 @@ namespace
         spdlog::level::off
     };
 
-    typedef std::map<std::string, spdlog::level::level_enum> level_map;
+    using level_map = std::map<std::string, spdlog::level::level_enum>;
 }
 
 namespace
