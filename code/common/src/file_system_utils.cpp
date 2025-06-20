@@ -35,7 +35,7 @@ input_files find_input_files(
     return result;
 }
 
-input_files adapt_string_paths(std::vector<std::string> paths)
+input_files adapt_string_paths(const std::vector<std::string>& paths)
 {
     input_files result;
 

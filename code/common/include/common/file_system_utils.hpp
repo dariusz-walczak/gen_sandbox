@@ -13,7 +13,7 @@ input_files find_input_files(
     const std::filesystem::path& root_dir_path,
     const std::string& extension);
 
-input_files adapt_string_paths(std::vector<std::string> paths);
+input_files adapt_string_paths(const std::vector<std::string>& paths);
 
 input_files merge_input_files(input_files first, input_files second);
 
