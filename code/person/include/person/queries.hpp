@@ -1,14 +1,15 @@
 #if !defined PERSON_QUERIES_HPP
 #define PERSON_QUERIES_HPP
 
-#include <redland.h>
+#include <cstdint>
 
+#include <redland.h>
 #include <spdlog/spdlog.h>
 
 #include "common/person.hpp"
 
 
-enum class retrieve_result {
+enum class retrieve_result : std::uint8_t {
     NotFound = 0,
     Success
 };
