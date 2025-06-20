@@ -346,7 +346,7 @@ void print_data_table(const extract_data_table_result& data_table) {
 
     table.format().multi_byte_characters(true);
 
-    std::cout << table << std::endl;
+    std::cout << table << '\n';
 }
 
 
