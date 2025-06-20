@@ -55,7 +55,7 @@ std::string validate_existing_dir_path(const std::string& raw) {
 
 
 auto fmt::formatter<std::filesystem::path>::format(
-    std::filesystem::path p, format_context& ctx) const
+    const std::filesystem::path& p, format_context& ctx) const
     -> format_context::iterator
 {
     return formatter<string_view>::format(p.string(), ctx);
