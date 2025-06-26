@@ -11,7 +11,7 @@
 #include "person/queries.hpp"
 
 
-void run_list_command(const app_options& options)
+void run_list_command(const cli_options& options)
 {
     spdlog::trace("{}: Entry checkpoint", __func__);
 

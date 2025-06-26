@@ -3,7 +3,7 @@
 #include "common/file_system_utils.hpp"
 
 
-scoped_redland_ctx load_input_data(const app_options& options)
+scoped_redland_ctx load_input_data(const cli_options& options)
 {
     spdlog::trace("{}: Entry checkpoint", __func__);
 

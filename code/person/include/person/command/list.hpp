@@ -4,7 +4,7 @@
 #include "person/option_parser.hpp"
 
 
-void run_list_command(const app_options& options);
+void run_list_command(const cli_options& options);
 
 
 #endif // !defined PERSON_COMMAND_LIST_HPP

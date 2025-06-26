@@ -72,24 +72,26 @@ level_map get_level_map(const std::vector<spdlog::level::level_enum>& levels)
 }
 
 
-void init_option_parser(CLI::App& parser, app_options& result)
+cli_context init_cli_context(spdlog::level::level_enum default_log_level)
 {
-    parser.name("Person Query Application");
-    parser.description("<app description>");
+    cli_context result = {};
+
+    result.parser = std::make_unique<CLI::App>();
+    result.parser->name("Person Query Application");
+    result.parser->description("<app description>");
 
     level_map log_level_map = get_level_map(g_levels);
 
-    parser.add_option(
-        "-i,--input", result.input_paths,
+    result.parser->add_option(
+        "-i,--input", result.options.input_paths,
         "Path to an individual turtle file to be loaded into the RDF model");
-    parser.add_option(
-        "STORAGE", result.base_path_raw, "PATH to the turtle files STORAGE")
+    result.parser->add_option(
+        "STORAGE", result.options.base_path_raw, "PATH to the turtle files STORAGE")
         ->option_text("PATH")
         ->required()
         ->check(validate_existing_dir_path);
-    const auto default_log_level = spdlog::level::info;
-    parser.add_option(
-        "--log-level", result.log_level,
+    result.parser->add_option(
+        "--log-level", result.options.log_level,
         fmt::format(
             "Set logging level. One of {{{}}}. The default is '{}'.",
             get_level_list_string(g_levels),
@@ -99,16 +101,18 @@ void init_option_parser(CLI::App& parser, app_options& result)
         ->transform(CLI::CheckedTransformer(log_level_map, CLI::ignore_case))
         ->default_val("info");
 
-    CLI::App* details_cmd = parser.add_subcommand("details", "Provide details of a single person");
+    CLI::App* details_cmd = result.parser->add_subcommand("details", "Provide details of a single person");
 
     details_cmd->add_option(
-        "-p,--person", result.details_cmd.person_id,
+        "-p,--person", result.options.details_cmd.person_id,
         "Person Local Name in the 'P00000' format")
         ->option_text("PID")
         ->required()
         ->check(validate_person_local_name);
 
-    parser.add_subcommand("list", "Provide the person list");
+    result.parser->add_subcommand("list", "Provide the person list");
 
-    parser.add_subcommand("deps", "Provide dependencies list");
+    result.parser->add_subcommand("deps", "Provide dependencies list");
+
+    return result;
 }
