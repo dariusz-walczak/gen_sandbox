@@ -13,6 +13,10 @@ public:
         uninitialized = 0,
         /** Initialization of a new Redland RDF Library context has failed for unknown reasons */
         redland_initialization_failed,
+        /** The Redland RDF Library has behaved unexpectedly. This error may occur due to a wrong
+         *   assumption about the library's functionality, an interface change related to the
+         *   library upgrade, or even a bug in the library implementation. */
+        redland_unexpected_behavior,
         binding_not_found,
         data_format_error
     };

@@ -41,7 +41,7 @@ void initialize_redland_ctx(scoped_redland_ctx& ctx) {
     if (!ctx->world) {
         spdlog::error("{}: Failed to create a new redland world", __func__);
 
-        throw new common_exception(
+        throw common_exception(
             common_exception::error_code::redland_initialization_failed,
             "Failed to create a new redland world");
     }
@@ -71,7 +71,7 @@ void initialize_redland_ctx(scoped_redland_ctx& ctx) {
     if (!ctx->model) {
         spdlog::error("{}: Failed to create a new redland model", __func__);
 
-        throw new common_exception(
+        throw common_exception(
             common_exception::error_code::redland_initialization_failed,
             "Failed to create a new redland model");
     }
@@ -209,7 +209,8 @@ namespace {
 }
 
 
-extract_data_table_result extract_data_table(librdf_query_results* results) {
+extract_data_table_result extract_data_table(librdf_query_results* results)
+{
     return extract_data_table(results, extract_cb_lut{});
 }
 
@@ -265,10 +266,14 @@ extract_data_table_result extract_data_table(
 
                 if (ecb_it != cb_lut.end()) {
                     value = ecb_it->second(ctx->node);
-                } else if (librdf_node_is_literal(ctx->node)) {
+                }
+                else if (librdf_node_is_literal(ctx->node))
+                {
                     value = reinterpret_cast<char*>(
                         librdf_node_get_literal_value(ctx->node));
-                } else if (librdf_node_is_resource(ctx->node)) {
+                }
+                else if (librdf_node_is_resource(ctx->node))
+                {
                     librdf_uri* uri = librdf_node_get_uri(ctx->node);
                     std::string_view raw_value(
                         reinterpret_cast<char*>(
@@ -281,16 +286,17 @@ extract_data_table_result extract_data_table(
                     } else {
                         value = raw_value;
                     }
-                } else {
-                    ctx->value = librdf_node_to_string(ctx->node);
-
-                    if (ctx->value) {
-                        value = reinterpret_cast<char*>(ctx->value);
-                    } else {
-                        spdlog::debug(
-                            "exec_query: Value of the node #{} of the row #{} couldn't be"
-                            " retrieved", binding_idx, row_idx);
-                    }
+                }
+                else if (librdf_node_is_blank(ctx->node))
+                {
+                    value = reinterpret_cast<char*>(
+                        librdf_node_get_blank_identifier(ctx->node));
+                }
+                else
+                {
+                    throw common_exception(
+                        common_exception::error_code::redland_unexpected_behavior,
+                        fmt::format("Unexpected redland node type"));
                 }
 
                 row.insert({std::string(binding_name), std::move(value)});
