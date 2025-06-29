@@ -21,14 +21,18 @@ enum class Gender : std::uint8_t {
 };
 
 
+using person_id = std::string;
+using person_iri = std::string;
+
+
 class Person {
 public:
     [[nodiscard]] std::string get_given_names() const;
     [[nodiscard]] std::string get_last_names() const;
     [[nodiscard]] std::string get_full_name() const;
 
-    std::string id;
-    std::string iri;
+    person_id id;
+    person_iri iri;
     std::optional<Gender> gender;
     std::vector<std::string> given_names;
     std::vector<std::string> last_names;
@@ -42,7 +46,7 @@ public:
     std::map<std::string, std::vector<std::shared_ptr<Person>>> children;
 };
 
-std::string compose_person_iri(const std::string& id);
+person_iri compose_person_iri(const person_id& id);
 
 /* @brief Extract the string representation of the gender from the Redland Node
  *

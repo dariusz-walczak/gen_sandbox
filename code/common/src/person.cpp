@@ -182,7 +182,7 @@ namespace
     const std::string g_person_prefix = { "http://example.org/" };
 }
 
-std::string compose_person_iri(const std::string& id)
+person_iri compose_person_iri(const person_id& id)
 {
     return g_person_prefix + id;
 }
