@@ -99,8 +99,8 @@ namespace {
     using scoped_load_rdf_ctx = std::unique_ptr<load_rdf_ctx, decltype(&release_load_rdf_ctx)>;
 }
 
-void load_rdf(librdf_world* world, librdf_model* model, const std::string& input_file_path) {
-
+void load_rdf(librdf_world* world, librdf_model* model, const std::string& input_file_path)
+{
     scoped_load_rdf_ctx ctx = { new load_rdf_ctx(), release_load_rdf_ctx };
 
     // https://librdf.org/docs/api/redland-parser.html#librdf-new-parser
@@ -147,6 +147,14 @@ void load_rdf(librdf_world* world, librdf_model* model, const std::string& input
     }
 
     spdlog::info("load_rdf: Successfully parsed the '{}' input file", input_file_path);
+}
+
+void load_rdf_set(librdf_world* world, librdf_model* model, const input_files& input_file_paths)
+{
+    for (const auto& input_path : input_file_paths)
+    {
+        load_rdf(world, model, input_path.string());
+    }
 }
 
 

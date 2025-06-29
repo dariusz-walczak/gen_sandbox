@@ -7,6 +7,8 @@
 #include <redland.h>
 #include <spdlog/spdlog.h>
 
+#include "common/file_system_utils.hpp"
+
 
 struct redland_context {
     librdf_world*   world;
@@ -27,6 +29,7 @@ void initialize_redland_ctx(scoped_redland_ctx& ctx);
 
 
 void load_rdf(librdf_world* world, librdf_model* model, const std::string& input_file_path);
+void load_rdf_set(librdf_world* world, librdf_model* model, const input_files& input_file_paths);
 
 struct exec_query_ctx {
     librdf_query* query = nullptr;
