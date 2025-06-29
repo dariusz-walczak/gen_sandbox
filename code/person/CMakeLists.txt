@@ -10,6 +10,7 @@ add_executable(
   src/main.cpp
   src/option_parser.cpp
   src/queries/common.cpp
+  src/queries/deps.cpp
 )
 
 target_include_directories(
