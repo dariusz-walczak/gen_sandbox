@@ -1,4 +1,4 @@
-#include "person/queries.hpp"
+#include "person/queries/common.hpp"
 
 #include <fmt/format.h>
 

@@ -9,7 +9,7 @@ add_executable(
   src/error.cpp
   src/main.cpp
   src/option_parser.cpp
-  src/queries.cpp
+  src/queries/common.cpp
 )
 
 target_include_directories(

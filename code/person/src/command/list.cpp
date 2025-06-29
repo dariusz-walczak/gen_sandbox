@@ -8,7 +8,7 @@
 #include "common/person.hpp"
 #include "common/redland_utils.hpp"
 #include "person/command/common.hpp"
-#include "person/queries.hpp"
+#include "person/queries/common.hpp"
 
 
 void run_list_command(const cli_options& options)

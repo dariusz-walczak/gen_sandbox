@@ -15,7 +15,7 @@
 
 #include "person/error.hpp"
 #include "person/option_parser.hpp"
-#include "person/queries.hpp"
+#include "person/queries/common.hpp"
 #include "person/command/deps.hpp"
 #include "person/command/details.hpp"
 #include "person/command/list.hpp"

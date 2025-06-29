@@ -9,7 +9,7 @@
 #include "common/redland_utils.hpp"
 #include "person/command/common.hpp"
 #include "person/error.hpp"
-#include "person/queries.hpp"
+#include "person/queries/common.hpp"
 
 
 
