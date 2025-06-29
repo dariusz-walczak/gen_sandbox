@@ -7,7 +7,8 @@
 #include <vector>
 
 
-using input_files = std::set<std::filesystem::path>;
+using file_set = std::set<std::filesystem::path>;
+using input_files = file_set;
 
 input_files find_input_files(
     const std::filesystem::path& root_dir_path,
