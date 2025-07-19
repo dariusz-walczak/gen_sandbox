@@ -18,7 +18,10 @@ public:
          *   library upgrade, or even a bug in the library implementation. */
         redland_unexpected_behavior,
         binding_not_found,
-        data_format_error
+        /** The input data format is invalid for some reason. */
+        data_format_error,
+        /** The input data size is invalid (too small, or more likely too large). */
+        data_size_error
     };
 
     common_exception(error_code code, const std::string& msg);

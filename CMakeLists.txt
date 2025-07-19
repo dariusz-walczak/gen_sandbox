@@ -97,6 +97,18 @@ FetchContent_MakeAvailable(json)
 
 include_directories(${cli11_SOURCE_DIR}/include)
 
+# ---[ GoogleTest Library ]--------------------------------------------------------------------- #
+
+# Unit testing framework
+#
+# https://github.com/google/googletest
+
+FetchContent_Declare(
+  googletest
+  GIT_REPOSITORY https://github.com/google/googletest.git
+  GIT_TAG v1.17.0
+)
+FetchContent_MakeAvailable(googletest)
 
 # ===[ Components ]============================================================================= #
 
