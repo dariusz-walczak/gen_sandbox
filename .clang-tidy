@@ -3,6 +3,7 @@ Checks: >
    -modernize-use-trailing-return-type,
    performance-*,
    bugprone-*,
+   -bugprone-easily-swappable-parameters,
 WarningsAsErrors: ''
 HeaderFilterRegex: 'code/.*'
 FormatStyle: file

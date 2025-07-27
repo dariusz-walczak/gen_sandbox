@@ -199,6 +199,47 @@ exec_query_result exec_query(librdf_world* world, librdf_model* model, const std
     return res;
 }
 
+#include <stdexcept>
+
+bool extract_boolean_result(librdf_query_results* results)
+{
+    if (!results)
+    {
+        spdlog::debug("{}: Provided query results is null", __func__);
+
+        throw common_exception(
+            common_exception::error_code::input_contract_error,
+            "The results input argument is null");
+    }
+
+    if (!librdf_query_results_is_boolean(results))
+    {
+        spdlog::debug("{}: Provided query results is not of the boolean type", __func__);
+
+        throw common_exception(
+            common_exception::error_code::input_contract_error,
+            "Expected the query result argument to be of the boolean type, got something else"
+            " instead.");
+    }
+
+    int val = librdf_query_results_get_boolean(results);
+
+    if (val < 0)
+    {
+        spdlog::debug(
+            "{}: Couldn't retrieve the boolean query result due to some unexpected error",
+            __func__);
+
+        throw common_exception(
+            common_exception::error_code::redland_unexpected_behavior,
+            fmt::format(
+                "Failed to retrieve the result of a boolean query due to a redland error (return"
+                " code: {})", val));
+    }
+
+    return (val != 0);
+}
+
 namespace {
     struct binding_ctx {
         librdf_node*   node;

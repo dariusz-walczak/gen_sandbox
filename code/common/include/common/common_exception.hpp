@@ -21,12 +21,15 @@ public:
         /** The input data format is invalid for some reason. */
         data_format_error,
         /** The input data size is invalid (too small, or more likely too large). */
-        data_size_error
+        data_size_error,
+        /** The input data failed to fulfill a contract condition */
+        input_contract_error
     };
 
     common_exception(error_code code, const std::string& msg);
     common_exception(error_code code, const char* msg);
 
+    [[nodiscard]] error_code get_code() const noexcept { return _code; }
     [[nodiscard]] const char* what() const noexcept override { return _what.c_str(); }
 
 protected:
