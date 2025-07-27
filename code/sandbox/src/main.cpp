@@ -29,11 +29,11 @@ int main() {
     load_rdf(redland_ctx->world, redland_ctx->model, "data/people/batch1.ttl");
     load_rdf(redland_ctx->world, redland_ctx->model, "data/people/batch2.ttl");
 
-    std::cout << std::endl;
+    std::cout << '\n';
 
     librdf_model_print(redland_ctx->model, stdout);
 
-    std::cout << std::endl;
+    std::cout << '\n';
 
     const std::string query = {
         R"(
