@@ -48,6 +48,8 @@ void initialize_redland_ctx(scoped_redland_ctx& ctx) {
 
     spdlog::debug("{}: Created a redland world", __func__);
 
+    librdf_world_set_logger(ctx->world, nullptr, redland_log_cb);
+
     librdf_world_open(ctx->world);
 
     spdlog::debug("{}: Initialized the redland world", __func__);
@@ -198,8 +200,6 @@ exec_query_result exec_query(librdf_world* world, librdf_model* model, const std
     res->success = true;
     return res;
 }
-
-#include <stdexcept>
 
 bool extract_boolean_result(librdf_query_results* results)
 {
@@ -423,4 +423,111 @@ data_row::const_iterator get_binding_value_req(
 bool has_binding(const data_row& row, const std::string& binding_name)
 {
     return (row.find(binding_name) != row.end());
+}
+
+/** @brief Formatter for the retrieve_result (spdlog requires it) */
+template <> struct fmt::formatter<librdf_log_facility>: formatter<string_view> {
+  auto format(librdf_log_facility r, format_context& ctx) const
+    -> format_context::iterator;
+};
+
+auto fmt::formatter<librdf_log_facility>::format(
+    librdf_log_facility facility, format_context& ctx) const -> format_context::iterator
+{
+    string_view code = "<unknown>";
+    switch (facility) {
+    case LIBRDF_FROM_NONE:
+        code = "none";
+        break;
+    case LIBRDF_FROM_CONCEPTS:
+        code = "concepts";
+        break;
+    case LIBRDF_FROM_DIGEST:
+        code = "digest";
+        break;
+    case LIBRDF_FROM_FILES:
+        code = "files";
+        break;
+    case LIBRDF_FROM_HASH:
+        code = "hash";
+        break;
+    case LIBRDF_FROM_INIT:
+        code = "init";
+        break;
+    case LIBRDF_FROM_ITERATOR:
+        code = "iterator";
+        break;
+    case LIBRDF_FROM_LIST:
+        code = "list";
+        break;
+    case LIBRDF_FROM_MODEL:
+        code = "model";
+        break;
+    case LIBRDF_FROM_NODE:
+        code = "node";
+        break;
+    case LIBRDF_FROM_PARSER:
+        code = "parser";
+        break;
+    case LIBRDF_FROM_QUERY:
+        code = "query";
+        break;
+    case LIBRDF_FROM_SERIALIZER:
+        code = "serializer";
+        break;
+    case LIBRDF_FROM_STATEMENT:
+        code = "statement";
+        break;
+    case LIBRDF_FROM_STORAGE:
+        code = "storage";
+        break;
+    case LIBRDF_FROM_STREAM:
+        code = "stream";
+        break;
+    case LIBRDF_FROM_URI:
+        code = "uri";
+        break;
+    case LIBRDF_FROM_UTF8:
+        code = "utf8";
+        break;
+    case LIBRDF_FROM_MEMORY:
+        code = "memory";
+        break;
+    case LIBRDF_FROM_RAPTOR:
+        code = "raptor";
+        break;
+    }
+
+    return formatter<string_view>::format(code, ctx);
+}
+
+int redland_log_cb(void* user_data, librdf_log_message* message)
+{
+    librdf_log_level level = librdf_log_message_level(message);
+    librdf_log_facility facility = librdf_log_message_facility(message);
+    const char* msg = librdf_log_message_message(message);
+    constexpr const char* fmt = "librdf: {}: {}";
+
+    switch (level)
+    {
+    case LIBRDF_LOG_FATAL:
+        spdlog::critical(fmt, facility, msg);
+        break;
+    case LIBRDF_LOG_ERROR:
+        spdlog::error(fmt, facility, msg);
+        break;
+    case LIBRDF_LOG_WARN:
+        spdlog::warn(fmt, facility, msg);
+        break;
+    case LIBRDF_LOG_INFO:
+        spdlog::info(fmt, facility, msg);
+        break;
+    case LIBRDF_LOG_DEBUG:
+        spdlog::debug(fmt, facility, msg);
+        break;
+    default:
+        spdlog::trace(fmt, facility, msg);
+    }
+
+    return 1;
 }
