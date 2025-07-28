@@ -205,11 +205,11 @@ bool extract_boolean_result(librdf_query_results* results)
 {
     if (!results)
     {
-        spdlog::debug("{}: Provided query results is null", __func__);
+        spdlog::debug("{}: The `results` argument is null", __func__);
 
         throw common_exception(
             common_exception::error_code::input_contract_error,
-            "The results input argument is null");
+            "The `results` argument is null");
     }
 
     if (!librdf_query_results_is_boolean(results))
