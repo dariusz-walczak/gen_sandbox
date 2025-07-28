@@ -4,7 +4,6 @@
 
 #include <redland.h>
 #include <spdlog/spdlog.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
 
 #include <nlohmann/json.hpp>
 
@@ -12,6 +11,7 @@
 #include "common/file_system_utils.hpp"
 #include "common/person.hpp"
 #include "common/redland_utils.hpp"
+#include "common/spdlog_utils.hpp"
 
 #include "person/error.hpp"
 #include "person/option_parser.hpp"
@@ -20,12 +20,6 @@
 #include "person/command/details.hpp"
 #include "person/command/list.hpp"
 
-
-void init_spdlog(spdlog::level::level_enum log_level)
-{
-    spdlog::set_level(log_level);
-    spdlog::set_default_logger(spdlog::stderr_color_mt("stderr_logger"));
-}
 
 int run_main(int argc, char** argv) {
     spdlog::level::level_enum default_log_level = spdlog::level::info;

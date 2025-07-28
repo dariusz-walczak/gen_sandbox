@@ -14,6 +14,7 @@ add_library(
   src/person.cpp
   src/redland_utils.cpp
   src/resource.cpp
+  src/spdlog_utils.cpp
 )
 
 target_include_directories(
