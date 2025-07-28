@@ -567,12 +567,20 @@ std::vector<Person> retrieve_person_list(librdf_world* world, librdf_model* mode
 }
 
 
-auto fmt::formatter<retrieve_result>::format(retrieve_result r, format_context& ctx) const
-    -> format_context::iterator {
-  string_view name = "<unknown>";
-  switch (r) {
-  case retrieve_result::NotFound: name = "<not found>"; break;
-  case retrieve_result::Success: name = "<success>"; break;
-  }
-  return formatter<string_view>::format(name, ctx);
+auto fmt::formatter<retrieve_result>::format(retrieve_result res, format_context& ctx) const
+    -> format_context::iterator
+{
+    string_view name = "<unknown>";
+
+    switch (res)
+    {
+    case retrieve_result::NotFound:
+        name = "<not found>";
+        break;
+    case retrieve_result::Success:
+        name = "<success>";
+        break;
+    }
+
+    return formatter<string_view>::format(name, ctx);
 }

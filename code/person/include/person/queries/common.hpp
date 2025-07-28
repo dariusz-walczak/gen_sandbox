@@ -1,5 +1,5 @@
-#if !defined PERSON_QUERIES_HPP
-#define PERSON_QUERIES_HPP
+#if !defined PERSON_QUERIES_COMMON_HPP
+#define PERSON_QUERIES_COMMON_HPP
 
 #include <cstdint>
 
@@ -47,9 +47,9 @@ retrieve_result retrieve_person_children(
 std::vector<Person> retrieve_person_list(librdf_world* world, librdf_model* model);
 
 /** @brief Formatter for the retrieve_result (spdlog requires it) */
-template <> struct fmt::formatter<retrieve_result>: formatter<string_view> {
-  auto format(retrieve_result r, format_context& ctx) const
-    -> format_context::iterator;
+template <> struct fmt::formatter<retrieve_result>: formatter<string_view>
+{
+    auto format(retrieve_result res, format_context& ctx) const -> format_context::iterator;
 };
 
-#endif // !defined PERSON_QUERIES_HPP
+#endif // !defined PERSON_QUERIES_COMMON_HPP
