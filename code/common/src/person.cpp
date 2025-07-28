@@ -187,12 +187,12 @@ person_iri compose_person_iri(const person_id& id)
     return g_person_prefix + id;
 }
 
-
 void extract_person_id(Person& person, const data_row& row, const std::string& person_iri_bn)
 {
     auto iri_it = row.find(person_iri_bn);
 
-    if (iri_it != row.end()) {
+    if (iri_it != row.end())
+    {
         if (iri_it->second.starts_with(g_person_prefix))
         {
             person.id = iri_it->second.substr(g_person_prefix.size());

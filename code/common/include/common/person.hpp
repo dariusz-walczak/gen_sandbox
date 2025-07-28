@@ -10,7 +10,7 @@
 #include <nlohmann/json.hpp>
 #include <redland.h>
 
-#include "redland_utils.hpp"
+#include "common/redland_utils.hpp"
 
 
 enum class Gender : std::uint8_t {
@@ -25,7 +25,8 @@ using person_id = std::string;
 using person_iri = std::string;
 
 
-class Person {
+class Person
+{
 public:
     [[nodiscard]] std::string get_given_names() const;
     [[nodiscard]] std::string get_last_names() const;
