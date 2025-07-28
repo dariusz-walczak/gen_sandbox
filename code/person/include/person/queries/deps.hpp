@@ -4,11 +4,15 @@
 #include <redland.h>
 
 #include "person/queries/common.hpp"
-#include "common/person.hpp"
+#include "common/resource.hpp"
 
-using person_iri_set = std::set<person_iri>;
+/**
+ *
+ * @throw common_exception
+ */
+resource_set retrieve_person_iris(librdf_world* world, librdf_model* model);
 
-person_iri_set retrieve_person_iris(librdf_world* world, librdf_model* model);
-
+bool ask_resource_referenced(librdf_world* world, librdf_model* model, const std::string& resource_iri);
+bool ask_resource_referenced(librdf_world* world, librdf_model* model, const Resource& resource);
 
 #endif // !defined PERSON_QUERIES_DEPS_HPP
