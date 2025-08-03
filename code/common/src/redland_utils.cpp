@@ -49,7 +49,6 @@ void initialize_redland_ctx(scoped_redland_ctx& ctx) {
     spdlog::debug("{}: Created a redland world", __func__);
 
     librdf_world_set_logger(ctx->world, nullptr, redland_log_cb);
-
     librdf_world_open(ctx->world);
 
     spdlog::debug("{}: Initialized the redland world", __func__);

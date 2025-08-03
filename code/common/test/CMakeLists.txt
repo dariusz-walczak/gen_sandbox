@@ -2,6 +2,7 @@ set(CMAKE_CXX_CLANG_TIDY clang-tidy;)
 
 add_executable(
   gen_common_test
+  src/main.cpp
   src/redland_utils.cpp
   src/resource.cpp
 )

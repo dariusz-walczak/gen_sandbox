@@ -98,8 +98,7 @@ void add_log_level_cli_option(
             spdlog::level::to_string_view(default_log_level)))
         ->option_text("LEVEL")
         ->default_val(default_log_level)
-        ->transform(CLI::CheckedTransformer(log_level_map, CLI::ignore_case))
-        ->default_val("info");
+        ->transform(CLI::CheckedTransformer(log_level_map, CLI::ignore_case));
 }
 
 void init_spdlog(spdlog::level::level_enum log_level)
