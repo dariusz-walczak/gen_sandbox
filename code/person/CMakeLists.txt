@@ -21,7 +21,9 @@ target_include_directories(
   $<INSTALL_INTERFACE:include>
 )
 
-target_link_libraries(gen_person_lib PRIVATE gen_common)
+target_link_libraries(gen_person_lib PUBLIC gen_common)
+
+set_target_properties(gen_person_lib PROPERTIES OUTPUT_NAME "gen_person")
 
 # ===[ Application Target ]====================================================================== #
 
@@ -37,7 +39,12 @@ target_include_directories(
   $<INSTALL_INTERFACE:include>
 )
 
-target_link_libraries(gen_person_app PRIVATE gen_common)
 target_link_libraries(gen_person_app PRIVATE gen_person_lib)
 target_link_libraries(gen_person_app PRIVATE CLI11::CLI11)
 target_link_libraries(gen_person_app PRIVATE nlohmann_json::nlohmann_json)
+
+set_target_properties(gen_person_app PROPERTIES OUTPUT_NAME "gen_person")
+
+# ===[ Components ]============================================================================= #
+
+add_subdirectory(test)

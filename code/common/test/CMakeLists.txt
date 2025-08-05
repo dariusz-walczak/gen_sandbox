@@ -20,6 +20,8 @@ target_link_libraries(gen_test_lib PUBLIC spdlog::spdlog)
 target_link_libraries(gen_test_lib PUBLIC CLI11::CLI11)
 target_link_libraries(gen_test_lib PUBLIC gen_common)
 
+set_target_properties(gen_test_lib PROPERTIES OUTPUT_NAME "gen_test")
+
 # ===[ Application Target ]====================================================================== #
 
 add_executable(
