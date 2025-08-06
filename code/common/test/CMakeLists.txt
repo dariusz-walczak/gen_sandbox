@@ -6,6 +6,8 @@ add_library(
   gen_test_lib
   src/application.cpp
   src/assertions.cpp
+  src/tools/error.cpp
+  src/tools/redland.cpp
 )
 
 target_include_directories(
