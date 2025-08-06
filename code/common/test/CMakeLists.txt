@@ -39,3 +39,5 @@ target_include_directories(
 )
 
 target_link_libraries(gen_common_test PRIVATE gen_test_lib)
+
+gtest_discover_tests(gen_common_test)
