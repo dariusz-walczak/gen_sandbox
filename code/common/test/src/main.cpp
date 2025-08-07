@@ -2,7 +2,7 @@
 
 #include <gtest/gtest.h>
 
-#include "test/common/application.hpp"
+#include "test/tools/application.hpp"
 
 
 int main(int argc, char **argv)

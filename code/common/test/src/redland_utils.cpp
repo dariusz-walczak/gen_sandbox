@@ -6,7 +6,7 @@
 
 #include "common/common_exception.hpp"
 #include "common/resource.hpp"
-#include "test/common/assertions.hpp"
+#include "test/tools/assertions.hpp"
 #include "test/tools/redland.hpp"
 
 

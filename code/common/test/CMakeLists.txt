@@ -4,8 +4,8 @@ set(CMAKE_CXX_CLANG_TIDY clang-tidy;)
 
 add_library(
   gen_test_lib
-  src/application.cpp
-  src/assertions.cpp
+  src/tools/application.cpp
+  src/tools/assertions.cpp
   src/tools/error.cpp
   src/tools/redland.cpp
 )
