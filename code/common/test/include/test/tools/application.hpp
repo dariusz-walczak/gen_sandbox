@@ -1,5 +1,5 @@
-#if !defined TEST_COMMON_APPLICATION_HPP
-#define TEST_COMMON_APPLICATION_HPP
+#if !defined TEST_TOOLS_APPLICATION_HPP
+#define TEST_TOOLS_APPLICATION_HPP
 
 #include <CLI/CLI.hpp>
 #include <spdlog/spdlog.h>
@@ -81,4 +81,4 @@ init_outcome init_app(int argc, char** argv) noexcept
 
 } // namespace test::tools
 
-#endif // !defined TEST_COMMON_APPLICATION_HPP
+#endif // !defined TEST_TOOLS_APPLICATION_HPP

@@ -1,5 +1,5 @@
-#if !defined TEST_COMMON_ASSERTIONS_HPP
-#define TEST_COMMON_ASSERTIONS_HPP
+#if !defined TEST_TOOLS_ASSERTIONS_HPP
+#define TEST_TOOLS_ASSERTIONS_HPP
 
 #include <gtest/gtest.h>
 #include <gtest/internal/gtest-port.h>
@@ -30,4 +30,4 @@ do                                                                              
 } while (0)
 
 
-#endif // !defined TEST_COMMON_ASSERTIONS_HPP
+#endif // !defined TEST_TOOLS_ASSERTIONS_HPP
