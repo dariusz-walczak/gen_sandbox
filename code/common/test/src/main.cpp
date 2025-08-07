@@ -8,7 +8,7 @@
 int main(int argc, char **argv)
 {
     ::testing::InitGoogleTest(&argc, argv);
-    app_init_outcome outcome = init_app(argc, argv);
+    test::tools::init_outcome outcome = test::tools::init_app(argc, argv);
 
     if (outcome.exit_flag)
     {

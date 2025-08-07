@@ -5,7 +5,7 @@
 #include <gtest/internal/gtest-port.h>
 
 #define EXPECT_THROW_WITH_CODE(statement, expected_exception, expected_code)                      \
-    do                                                                                            \
+do                                                                                                \
 {                                                                                                 \
     try                                                                                           \
     {                                                                                             \

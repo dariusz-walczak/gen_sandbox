@@ -8,18 +8,19 @@
 #include "common/common_exception.hpp"
 #include "common/spdlog_utils.hpp"
 
-struct app_init_outcome
+namespace test::tools
+{
+
+struct init_outcome
 {
     bool exit_flag;
     int exit_code;
 };
 
-//app_init_outcome init_app(int argc, char **argv) noexcept;
-
 namespace detail
 {
 
-app_init_outcome init_app(int argc, char** argv)
+init_outcome init_app(int argc, char** argv)
 {
     // Default logger initialization. The log level can be changed using the command line option.
     const spdlog::level::level_enum default_log_level = spdlog::level::err;
@@ -53,7 +54,7 @@ app_init_outcome init_app(int argc, char** argv)
 } // namespace detail
 
 
-app_init_outcome init_app(int argc, char** argv) noexcept
+init_outcome init_app(int argc, char** argv) noexcept
 {
     try
     {
@@ -78,5 +79,6 @@ app_init_outcome init_app(int argc, char** argv) noexcept
     }
 }
 
+} // namespace test::tools
 
 #endif // !defined TEST_COMMON_APPLICATION_HPP
