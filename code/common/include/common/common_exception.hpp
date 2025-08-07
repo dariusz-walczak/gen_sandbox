@@ -6,6 +6,8 @@
 #include <optional>
 #include <string>
 
+namespace common
+{
 
 class common_exception : public std::exception {
 public:
@@ -38,5 +40,7 @@ protected:
 
     void set_what(error_code code, const char* msg);
 };
+
+} // namespace common
 
 #endif // !defined COMMON_COMMON_EXCEPTION_HPP

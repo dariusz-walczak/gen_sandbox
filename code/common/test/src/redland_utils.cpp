@@ -35,11 +35,13 @@ TEST(RedlandUtils_ExtractBooleanResult, ExpectedAskResult)
             <http://example.com/P00404> ?predicate ?object
         })";
 
-    exec_query_result positive_res = exec_query(ctx->world, ctx->model, positive_query);
-    exec_query_result negative_res = exec_query(ctx->world, ctx->model, negative_query);
+    common::exec_query_result positive_res = common::exec_query(
+        ctx->world, ctx->model, positive_query);
+    common::exec_query_result negative_res = common::exec_query(
+        ctx->world, ctx->model, negative_query);
 
-    EXPECT_TRUE(extract_boolean_result(positive_res->results));
-    EXPECT_FALSE(extract_boolean_result(negative_res->results));
+    EXPECT_TRUE(common::extract_boolean_result(positive_res->results));
+    EXPECT_FALSE(common::extract_boolean_result(negative_res->results));
 }
 
 // Check if the extract_boolean_result function has no side effects and can take the same query
@@ -59,10 +61,10 @@ TEST(RedlandUtils_ExtractBooleanResult, ExpectedPurity)
             ?subject ?predicate <http://gedcomx.org/Female>
         })";
 
-    exec_query_result query_res = exec_query(ctx->world, ctx->model, query);
+    common::exec_query_result query_res = common::exec_query(ctx->world, ctx->model, query);
 
-    EXPECT_TRUE(extract_boolean_result(query_res->results));
-    EXPECT_TRUE(extract_boolean_result(query_res->results));
+    EXPECT_TRUE(common::extract_boolean_result(query_res->results));
+    EXPECT_TRUE(common::extract_boolean_result(query_res->results));
 }
 
 // Check if the extract_boolean_result function throws the common_exception when the results
@@ -70,8 +72,8 @@ TEST(RedlandUtils_ExtractBooleanResult, ExpectedPurity)
 TEST(RedlandUtils_ExtractBooleanResult, NullResultsFailure)
 {
     EXPECT_THROW_WITH_CODE(
-        extract_boolean_result(nullptr),
-        common_exception, common_exception::error_code::input_contract_error);
+        common::extract_boolean_result(nullptr),
+        common::common_exception, common::common_exception::error_code::input_contract_error);
 }
 
 TEST(RedlandUtils_ExtractBooleanResult, ResultsTypeFailure)
@@ -98,13 +100,15 @@ TEST(RedlandUtils_ExtractBooleanResult, ResultsTypeFailure)
             ?subject ?predicate <http://gedcomx.org/Male>
         })";
 
-    exec_query_result positive_res = exec_query(ctx->world, ctx->model, positive_query);
-    exec_query_result negative_res = exec_query(ctx->world, ctx->model, negative_query);
+    common::exec_query_result positive_res = common::exec_query(
+        ctx->world, ctx->model, positive_query);
+    common::exec_query_result negative_res = common::exec_query(
+        ctx->world, ctx->model, negative_query);
 
     EXPECT_THROW_WITH_CODE(
-        extract_boolean_result(positive_res->results),
-        common_exception, common_exception::error_code::input_contract_error);
+        common::extract_boolean_result(positive_res->results),
+        common::common_exception, common::common_exception::error_code::input_contract_error);
     EXPECT_THROW_WITH_CODE(
-        extract_boolean_result(negative_res->results),
-        common_exception, common_exception::error_code::input_contract_error);
+        common::extract_boolean_result(negative_res->results),
+        common::common_exception, common::common_exception::error_code::input_contract_error);
 }

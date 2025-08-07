@@ -8,6 +8,9 @@
 
 #include "common/redland_utils.hpp"
 
+namespace common
+{
+
 struct Resource;
 
 using resource_set = std::set<std::shared_ptr<Resource>>;
@@ -42,5 +45,7 @@ private:
  *      when the iri format is invalid; */
 std::shared_ptr<Resource> extract_resource(
     const data_row& row, const std::string& resource_iri_bn);
+
+} // namespace common
 
 #endif // !defined COMMON_RESOURCE_HPP

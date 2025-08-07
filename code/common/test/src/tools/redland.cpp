@@ -26,7 +26,7 @@ scoped_redland_ctx initialize_redland_ctx()
         throw tc_error("Test Arrange: Failed to create a Redland world");
     }
 
-    librdf_world_set_logger(ctx->world, nullptr, redland_log_cb);
+    librdf_world_set_logger(ctx->world, nullptr, common::redland_log_cb);
     librdf_world_open(ctx->world);
 
     ctx->storage = librdf_new_storage(ctx->world, "memory", nullptr, nullptr);

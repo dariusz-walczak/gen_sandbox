@@ -15,6 +15,86 @@
 
 #include "common/common_exception.hpp"
 
+// ---[ Fmt Library Extensions ]---------------------------------------------------------------- //
+
+/** @brief Formatter for the librdf_log_facility (spdlog requires it) */
+template <> struct fmt::formatter<librdf_log_facility>: formatter<string_view> {
+  auto format(librdf_log_facility r, format_context& ctx) const
+    -> format_context::iterator;
+};
+
+auto fmt::formatter<librdf_log_facility>::format(
+    librdf_log_facility facility, format_context& ctx) const -> format_context::iterator
+{
+    string_view code = "<unknown>";
+    switch (facility) {
+    case LIBRDF_FROM_NONE:
+        code = "none";
+        break;
+    case LIBRDF_FROM_CONCEPTS:
+        code = "concepts";
+        break;
+    case LIBRDF_FROM_DIGEST:
+        code = "digest";
+        break;
+    case LIBRDF_FROM_FILES:
+        code = "files";
+        break;
+    case LIBRDF_FROM_HASH:
+        code = "hash";
+        break;
+    case LIBRDF_FROM_INIT:
+        code = "init";
+        break;
+    case LIBRDF_FROM_ITERATOR:
+        code = "iterator";
+        break;
+    case LIBRDF_FROM_LIST:
+        code = "list";
+        break;
+    case LIBRDF_FROM_MODEL:
+        code = "model";
+        break;
+    case LIBRDF_FROM_NODE:
+        code = "node";
+        break;
+    case LIBRDF_FROM_PARSER:
+        code = "parser";
+        break;
+    case LIBRDF_FROM_QUERY:
+        code = "query";
+        break;
+    case LIBRDF_FROM_SERIALIZER:
+        code = "serializer";
+        break;
+    case LIBRDF_FROM_STATEMENT:
+        code = "statement";
+        break;
+    case LIBRDF_FROM_STORAGE:
+        code = "storage";
+        break;
+    case LIBRDF_FROM_STREAM:
+        code = "stream";
+        break;
+    case LIBRDF_FROM_URI:
+        code = "uri";
+        break;
+    case LIBRDF_FROM_UTF8:
+        code = "utf8";
+        break;
+    case LIBRDF_FROM_MEMORY:
+        code = "memory";
+        break;
+    case LIBRDF_FROM_RAPTOR:
+        code = "raptor";
+        break;
+    }
+
+    return formatter<string_view>::format(code, ctx);
+}
+
+namespace common
+{
 
 void release_redland_ctx(redland_context* ctx) {
     librdf_free_model(ctx->model);
@@ -424,82 +504,6 @@ bool has_binding(const data_row& row, const std::string& binding_name)
     return (row.find(binding_name) != row.end());
 }
 
-/** @brief Formatter for the retrieve_result (spdlog requires it) */
-template <> struct fmt::formatter<librdf_log_facility>: formatter<string_view> {
-  auto format(librdf_log_facility r, format_context& ctx) const
-    -> format_context::iterator;
-};
-
-auto fmt::formatter<librdf_log_facility>::format(
-    librdf_log_facility facility, format_context& ctx) const -> format_context::iterator
-{
-    string_view code = "<unknown>";
-    switch (facility) {
-    case LIBRDF_FROM_NONE:
-        code = "none";
-        break;
-    case LIBRDF_FROM_CONCEPTS:
-        code = "concepts";
-        break;
-    case LIBRDF_FROM_DIGEST:
-        code = "digest";
-        break;
-    case LIBRDF_FROM_FILES:
-        code = "files";
-        break;
-    case LIBRDF_FROM_HASH:
-        code = "hash";
-        break;
-    case LIBRDF_FROM_INIT:
-        code = "init";
-        break;
-    case LIBRDF_FROM_ITERATOR:
-        code = "iterator";
-        break;
-    case LIBRDF_FROM_LIST:
-        code = "list";
-        break;
-    case LIBRDF_FROM_MODEL:
-        code = "model";
-        break;
-    case LIBRDF_FROM_NODE:
-        code = "node";
-        break;
-    case LIBRDF_FROM_PARSER:
-        code = "parser";
-        break;
-    case LIBRDF_FROM_QUERY:
-        code = "query";
-        break;
-    case LIBRDF_FROM_SERIALIZER:
-        code = "serializer";
-        break;
-    case LIBRDF_FROM_STATEMENT:
-        code = "statement";
-        break;
-    case LIBRDF_FROM_STORAGE:
-        code = "storage";
-        break;
-    case LIBRDF_FROM_STREAM:
-        code = "stream";
-        break;
-    case LIBRDF_FROM_URI:
-        code = "uri";
-        break;
-    case LIBRDF_FROM_UTF8:
-        code = "utf8";
-        break;
-    case LIBRDF_FROM_MEMORY:
-        code = "memory";
-        break;
-    case LIBRDF_FROM_RAPTOR:
-        code = "raptor";
-        break;
-    }
-
-    return formatter<string_view>::format(code, ctx);
-}
-
 int redland_log_cb(void* user_data, librdf_log_message* message)
 {
     librdf_log_level level = librdf_log_message_level(message);
@@ -530,3 +534,5 @@ int redland_log_cb(void* user_data, librdf_log_message* message)
 
     return 1;
 }
+
+} // namespace common

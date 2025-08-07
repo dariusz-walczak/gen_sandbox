@@ -7,7 +7,7 @@
 
 struct ExtractResourceParams
 {
-    data_row input_row;
+    common::data_row input_row;
     std::string iri_bn; // IRI Binding Name
     std::string expected_iri;
 };
@@ -17,7 +17,7 @@ class Resource_ExtractResource : public ::testing::TestWithParam<ExtractResource
 TEST_P(Resource_ExtractResource, Success)
 {
     const ExtractResourceParams& params = GetParam();
-    std::shared_ptr<Resource> output = extract_resource(params.input_row, params.iri_bn);
+    std::shared_ptr<common::Resource> output = common::extract_resource(params.input_row, params.iri_bn);
 
 
     EXPECT_EQ(output->get_iri(), boost::urls::url_view(params.expected_iri));

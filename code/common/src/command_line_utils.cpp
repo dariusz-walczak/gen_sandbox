@@ -3,6 +3,10 @@
 #include <regex>
 #include <sstream>
 
+#include "common/file_system_utils.hpp"
+
+namespace common
+{
 
 std::string validate_person_local_name(const std::string& raw) {
     if (!std::regex_match(raw, std::regex(R"(^P\d{5}$)"))) {
@@ -53,10 +57,4 @@ std::string validate_existing_dir_path(const std::string& raw) {
     return "";
 }
 
-
-auto fmt::formatter<std::filesystem::path>::format(
-    const std::filesystem::path& p, format_context& ctx) const
-    -> format_context::iterator
-{
-    return formatter<string_view>::format(p.string(), ctx);
-}
+} // namespace common

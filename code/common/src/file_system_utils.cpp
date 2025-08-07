@@ -2,6 +2,8 @@
 
 #include <spdlog/spdlog.h>
 
+namespace common
+{
 
 input_files find_input_files(
     const std::filesystem::path& root_dir_path,
@@ -51,4 +53,15 @@ input_files merge_input_files(input_files first, input_files second)
 {
     first.merge(second);
     return first;
+}
+
+} // namespace common
+
+// ---[ Fmt Library Extensions ]---------------------------------------------------------------- //
+
+auto fmt::formatter<std::filesystem::path>::format(
+    const std::filesystem::path& p, format_context& ctx) const
+    -> format_context::iterator
+{
+    return formatter<string_view>::format(p.string(), ctx);
 }

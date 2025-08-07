@@ -33,7 +33,7 @@ init_outcome init_app(int argc, char** argv)
 
     {
         CLI::App app;
-        add_log_level_cli_option(&app, specified_log_level, default_log_level);
+        common::add_log_level_cli_option(&app, specified_log_level, default_log_level);
 
         // The following try-catch block is a modification of the CLI11_PARSE macro expansion:
         try
@@ -60,7 +60,7 @@ init_outcome init_app(int argc, char** argv) noexcept
     {
         return detail::init_app(argc, argv);
     }
-    catch (const common_exception& e)
+    catch (const common::common_exception& e)
     {
         std::cerr << "ERROR: " << e.what() << "\n";
 

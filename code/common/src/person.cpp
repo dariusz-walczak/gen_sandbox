@@ -9,6 +9,9 @@
 
 #include "common/common_exception.hpp"
 
+namespace common
+{
+
 namespace {
     const char* g_male = "male";
     const char* g_female = "female";
@@ -339,3 +342,5 @@ nlohmann::json person_list_to_json(const std::vector<Person>& person_list)
 
     return result;
 }
+
+} // namespace common

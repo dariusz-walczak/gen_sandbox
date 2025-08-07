@@ -5,6 +5,8 @@
 
 #include "common/common_exception.hpp"
 
+namespace common
+{
 
 void Resource::set_iri(const std::string& iri)
 {
@@ -102,3 +104,5 @@ std::shared_ptr<Resource> extract_resource(const data_row& row, const std::strin
     // The Resource::Resource counstructor may throw common_exception:
     return std::make_shared<Resource>(iri_it->second);
 }
+
+} // namespace common

@@ -2,6 +2,8 @@
 
 #include <sstream>
 
+namespace common
+{
 
 common_exception::common_exception(error_code code, const std::string& msg)
     : std::exception(), _code(code)
@@ -48,3 +50,5 @@ void common_exception::set_what(error_code code, const char* msg) {
     oss << ":" << int(code) << "]";
     _what = oss.str();
 }
+
+} // namespace common

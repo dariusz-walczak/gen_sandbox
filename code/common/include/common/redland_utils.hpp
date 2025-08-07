@@ -9,6 +9,8 @@
 
 #include "common/file_system_utils.hpp"
 
+namespace common
+{
 
 struct redland_context {
     librdf_world*   world;
@@ -80,5 +82,7 @@ void print_data_table(const extract_data_table_result& data_table);
 //void exec_query(librdf_world* world, librdf_model* model, const std::string& query_text);
 
 int redland_log_cb(void* user_data, librdf_log_message* message);
+
+} // namespace common
 
 #endif // !defined COMMON_REDLAND_UTILS_HPP

@@ -12,6 +12,8 @@
 
 #include "common/redland_utils.hpp"
 
+namespace common
+{
 
 enum class Gender : std::uint8_t {
     Uninitialized = 0,
@@ -73,5 +75,7 @@ void extract_person_id(Person& person, const data_row& row, const std::string& p
 
 nlohmann::json person_to_json(const Person& person);
 nlohmann::json person_list_to_json(const std::vector<Person>& person_list);
+
+} // namespace common
 
 #endif // !defined COMMON_PERSON_HPP

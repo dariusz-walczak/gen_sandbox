@@ -4,6 +4,9 @@
 
 #include "common/common_exception.hpp"
 
+namespace common
+{
+
 // ---[ Internal definitions ]------------------------------------------------------------------ //
 
 namespace internal
@@ -106,3 +109,5 @@ void init_spdlog(spdlog::level::level_enum log_level)
     spdlog::set_level(log_level);
     spdlog::set_default_logger(spdlog::stderr_color_mt("stderr_logger"));
 }
+
+} // namespace common
