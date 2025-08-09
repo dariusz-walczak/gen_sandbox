@@ -55,22 +55,94 @@ TEST_P(DepsQueries_RetrievePersonIris, NormalSuccessCases)
 }
 
 const std::vector<RetrievePersonIrisParams> g_expected_success_params {
+    // Case 0: Empty model
+    {
+        {
+        },
+        {
+        }
+    },
+    // Case 1: Single person triple
     {
         {
             {
                 "http://example.com/P00001",
                 "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
                 "http://gedcomx.org/Person"
+            }
+        },
+        {
+            "http://example.com/P00001"
+        }
+    },
+    // Case 2: Two person triples
+    {
+        {
+            {
+                "http://example.com/P00011",
+                "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                "http://gedcomx.org/Person"
             },
             {
-                "http://example.com/P00002",
+                "http://example.com/P00012",
                 "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
                 "http://gedcomx.org/Person"
             }
         },
         {
-            { "http://example.com/P00001" },
-            { "http://example.com/P00002" }
+            { "http://example.com/P00011" },
+            { "http://example.com/P00012" }
+        }
+    },
+    // Case 3: Single non-person triple
+    {
+        {
+            {
+                "http://example.com/R00021",
+                "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                "http://gedcomx.org/Relationship"
+            }
+        },
+        {
+        }
+    },
+    // Case 4: Two person and some non-person triples
+    {
+        {
+            {
+                "http://example.com/R00031",
+                "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                "http://gedcomx.org/Relationship"
+            },
+            {
+                "http://example.com/R00031",
+                "http://gedcomx.org/type"
+                "http://gedcomx.org/Couple"
+            },
+            {
+                "http://example.com/R00031",
+                "http://gedcomx.org/person1"
+                "http://example.com/P00032"
+            },
+            {
+                "http://example.com/R00031",
+                "http://gedcomx.org/person2"
+                "http://example.com/P00042"
+            },
+            {
+                "http://example.com/P00032",
+                "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                "http://gedcomx.org/Person"
+            },
+            {
+                "http://example.com/P00042",
+                "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                "http://gedcomx.org/Person"
+            }
+        },
+        {
+            "http://example.com/P00032",
+            "http://example.com/P00042"
         }
     }
 };
