@@ -3,6 +3,7 @@ set(CMAKE_CXX_CLANG_TIDY clang-tidy;)
 add_executable(
   gen_person_test
   src/main.cpp
+  src/queries/deps.cpp
 )
 
 target_include_directories(
