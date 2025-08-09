@@ -19,8 +19,9 @@ cli_context init_cli_context(spdlog::level::level_enum default_log_level)
         "STORAGE", result.options.base_path_raw, "PATH to the turtle files STORAGE")
         ->option_text("PATH")
         ->required()
-        ->check(validate_existing_dir_path);
-    add_log_level_cli_option(result.parser.get(), result.options.log_level, default_log_level);
+        ->check(common::validate_existing_dir_path);
+    common::add_log_level_cli_option(
+        result.parser.get(), result.options.log_level, default_log_level);
 
     CLI::App* details_cmd = result.parser->add_subcommand(
         "details", "Provide details of a single person");
@@ -30,7 +31,7 @@ cli_context init_cli_context(spdlog::level::level_enum default_log_level)
         "Person Local Name in the 'P00000' format")
         ->option_text("PID")
         ->required()
-        ->check(validate_person_local_name);
+        ->check(common::validate_person_local_name);
 
     result.parser->add_subcommand("list", "Provide the person list");
 

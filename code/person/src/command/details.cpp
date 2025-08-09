@@ -17,11 +17,11 @@ void run_details_command(const cli_options& options)
 {
     spdlog::trace("{}: Entry checkpoint", __func__);
 
-    scoped_redland_ctx redland_ctx = load_input_data(options);
+    common::scoped_redland_ctx redland_ctx = load_input_data(options);
 
-    const std::string person_iri = compose_person_iri(options.details_cmd.person_id);
+    const std::string person_iri = common::compose_person_iri(options.details_cmd.person_id);
 
-    Person person;
+    common::Person person;
 
     retrieve_result person_res =
         retrieve_person_base_data_opt(person, person_iri, redland_ctx->world, redland_ctx->model);

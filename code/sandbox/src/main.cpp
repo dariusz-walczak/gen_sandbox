@@ -13,21 +13,21 @@ int main() {
     spdlog::set_level(spdlog::level::info);
     spdlog::set_default_logger(spdlog::stderr_color_mt("stderr_logger"));
 
-    scoped_redland_ctx redland_ctx = create_redland_ctx();
+    common::scoped_redland_ctx redland_ctx = common::create_redland_ctx();
 
     try
     {
         initialize_redland_ctx(redland_ctx);
     }
-    catch (const common_exception& e)
+    catch (const common::common_exception& e)
     {
         spdlog::critical("{}: {}", __func__, e.what());
 
         return 1;
     }
 
-    load_rdf(redland_ctx->world, redland_ctx->model, "data/people/batch1.ttl");
-    load_rdf(redland_ctx->world, redland_ctx->model, "data/people/batch2.ttl");
+    common::load_rdf(redland_ctx->world, redland_ctx->model, "data/people/batch1.ttl");
+    common::load_rdf(redland_ctx->world, redland_ctx->model, "data/people/batch2.ttl");
 
     std::cout << '\n';
 
@@ -54,7 +54,7 @@ int main() {
         })"
     };
 
-    exec_query(redland_ctx->world, redland_ctx->model, query);
+    common::exec_query(redland_ctx->world, redland_ctx->model, query);
 
     return 0;
 }

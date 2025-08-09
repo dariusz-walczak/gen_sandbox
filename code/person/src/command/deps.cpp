@@ -14,7 +14,7 @@ void run_deps_command(const cli_options& options)
 {
     spdlog::trace("{}: Entry checkpoint", __func__);
 
-    scoped_redland_ctx redland_ctx = load_input_data(options);
+    common::scoped_redland_ctx redland_ctx = load_input_data(options);
 
     std::cout << "Dummy command\n";
 }

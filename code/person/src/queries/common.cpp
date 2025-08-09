@@ -6,7 +6,9 @@
 
 
 retrieve_result retrieve_person_base_data_opt(
-    Person& person, const std::string& person_iri, librdf_world* world, librdf_model* model) {
+    common::Person& person, const std::string& person_iri,
+    librdf_world* world, librdf_model* model)
+{
 
     spdlog::trace(fmt::format("retrieve_person: Entry checkpoint ({})", person_iri));
 
@@ -32,7 +34,7 @@ retrieve_result retrieve_person_base_data_opt(
 
     spdlog::debug("retrieve_person: The query: {}", query);
 
-    exec_query_result res = exec_query(world, model, query);
+    common::exec_query_result res = common::exec_query(world, model, query);
 
     if (!res->success) {
         spdlog::error("retrieve_person: The query execution has failed");
@@ -42,8 +44,8 @@ retrieve_result retrieve_person_base_data_opt(
             "Failed to execute the 'retrieve person' query");
     }
 
-    const extract_data_table_result data_tuple = extract_data_table(res->results);
-    const data_table& data_table = std::get<1>(data_tuple);
+    const common::extract_data_table_result data_tuple = common::extract_data_table(res->results);
+    const common::data_table& data_table = std::get<1>(data_tuple);
 
     if (data_table.empty()) {
         spdlog::error("retrieve_person: Person {} was not found", person_iri);
@@ -53,7 +55,7 @@ retrieve_result retrieve_person_base_data_opt(
 
     assert(data_table.size() == 1);
 
-    const data_row& data_row = data_table.front();
+    const common::data_row& data_row = data_table.front();
 
     extract_person_id(person, data_row, "person");
     extract_person_gender(person, data_row, "genderType");
@@ -64,10 +66,8 @@ retrieve_result retrieve_person_base_data_opt(
 }
 
 void retrieve_person_base_data_req(
-    Person& person,
-    const std::string& person_iri,
-    librdf_world* world,
-    librdf_model* model)
+    common::Person& person, const std::string& person_iri,
+    librdf_world* world, librdf_model* model)
 {
     retrieve_result result = retrieve_person_base_data_opt(person, person_iri, world, model);
 
@@ -81,7 +81,9 @@ void retrieve_person_base_data_req(
 
 
 retrieve_result retrieve_person_name(
-    Person& person, const std::string& person_iri, librdf_world* world, librdf_model* model) {
+    common::Person& person, const std::string& person_iri,
+    librdf_world* world, librdf_model* model)
+{
 
     spdlog::debug("retrieve_person_name: Attempting to retrieve the preferred name");
 
@@ -133,8 +135,9 @@ retrieve_result retrieve_person_name(
 
 
 retrieve_result retrieve_person_any_name(
-    Person& person, const std::string& person_iri, librdf_world* world, librdf_model* model) {
-
+    common::Person& person, const std::string& person_iri,
+    librdf_world* world, librdf_model* model)
+{
     const std::string query = R"(
         PREFIX gx: <http://gedcomx.org/>
 
@@ -160,7 +163,7 @@ retrieve_result retrieve_person_any_name(
 
     spdlog::debug("retrieve_person_any_name: The query: {}", query);
 
-    exec_query_result res = exec_query(world, model, query);
+    common::exec_query_result res = common::exec_query(world, model, query);
 
     if (!res->success) {
         spdlog::error(
@@ -171,8 +174,8 @@ retrieve_result retrieve_person_any_name(
             "Failed to execute the 'retrieve any name of a person' query");
     }
 
-    extract_data_table_result data_tuple = extract_data_table(res->results);
-    const data_table& data_table = std::get<1>(data_tuple);
+    const common::extract_data_table_result data_tuple = common::extract_data_table(res->results);
+    const common::data_table& data_table = std::get<1>(data_tuple);
 
     if (data_table.empty()) {
         spdlog::debug(
@@ -189,8 +192,9 @@ retrieve_result retrieve_person_any_name(
 
 
 retrieve_result retrieve_person_birth_name(
-    Person& person, const std::string& person_iri, librdf_world* world, librdf_model* model) {
-
+    common::Person& person, const std::string& person_iri,
+    librdf_world* world, librdf_model* model)
+{
     const std::string query = R"(
         PREFIX gx: <http://gedcomx.org/>
 
@@ -210,7 +214,7 @@ retrieve_result retrieve_person_birth_name(
 
     spdlog::debug("retrieve_person_birth_name: The query: {}", query);
 
-    exec_query_result res = exec_query(world, model, query);
+    common::exec_query_result res = common::exec_query(world, model, query);
 
     if (!res->success) {
         spdlog::error("retrieve_person_birth_name: The query execution has failed");
@@ -220,8 +224,8 @@ retrieve_result retrieve_person_birth_name(
             "Failed to execute the 'retrieve person birth name' query");
     }
 
-    extract_data_table_result data_tuple = extract_data_table(res->results);
-    const data_table& data_table = std::get<1>(data_tuple);
+    const common::extract_data_table_result data_tuple = common::extract_data_table(res->results);
+    const common::data_table& data_table = std::get<1>(data_tuple);
 
     if (data_table.empty()) {
         spdlog::debug(
@@ -237,8 +241,9 @@ retrieve_result retrieve_person_birth_name(
 
 
 retrieve_result retrieve_person_preferred_name(
-    Person& person, const std::string& person_iri, librdf_world* world, librdf_model* model) {
-
+    common::Person& person, const std::string& person_iri,
+    librdf_world* world, librdf_model* model)
+{
     const std::string query = R"(
         PREFIX gx: <http://gedcomx.org/>
         PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
@@ -259,7 +264,7 @@ retrieve_result retrieve_person_preferred_name(
 
     spdlog::debug("retrieve_person_preferred_name: The query: {}", query);
 
-    exec_query_result res = exec_query(world, model, query);
+    common::exec_query_result res = common::exec_query(world, model, query);
 
     if (!res->success) {
         spdlog::error("retrieve_person_preferred_name: The query execution has failed");
@@ -269,8 +274,8 @@ retrieve_result retrieve_person_preferred_name(
             "Failed to execute the 'retrieve person preferred name' query");
     }
 
-    extract_data_table_result data_tuple = extract_data_table(res->results);
-    const data_table& data_table = std::get<1>(data_tuple);
+    const common::extract_data_table_result data_tuple = common::extract_data_table(res->results);
+    const common::data_table& data_table = std::get<1>(data_tuple);
 
     if (data_table.empty()) {
         spdlog::debug(
@@ -286,15 +291,17 @@ retrieve_result retrieve_person_preferred_name(
 
 
 retrieve_result retrieve_person_relatives(
-    Person& person, const std::string& person_iri, librdf_world* world, librdf_model* model) {
-
+    common::Person& person, const std::string& person_iri,
+    librdf_world* world, librdf_model* model)
+{
     return retrieve_result::NotFound;
 }
 
 
 retrieve_result retrieve_person_parents(
-    Person& person, const std::string& person_iri, librdf_world* world, librdf_model* model) {
-
+    common::Person& person, const std::string& person_iri,
+    librdf_world* world, librdf_model* model)
+{
     const std::string query = R"(
         PREFIX gx: <http://gedcomx.org/>
 
@@ -312,7 +319,7 @@ retrieve_result retrieve_person_parents(
 
     spdlog::debug("retrieve_person_parents: The query: {}", query);
 
-    exec_query_result res = exec_query(world, model, query);
+    common::exec_query_result res = common::exec_query(world, model, query);
 
     if (!res->success) {
         spdlog::error("retrieve_person_parents: The query execution has failed");
@@ -322,8 +329,8 @@ retrieve_result retrieve_person_parents(
             "Failed to execute the 'retrieve person parents' query");
     }
 
-    const extract_data_table_result data_tuple = extract_data_table(res->results);
-    const data_table& data_table = std::get<1>(data_tuple);
+    const common::extract_data_table_result data_tuple = common::extract_data_table(res->results);
+    const common::data_table& data_table = std::get<1>(data_tuple);
 
     if (data_table.empty()) {
         spdlog::debug(
@@ -332,14 +339,14 @@ retrieve_result retrieve_person_parents(
         return retrieve_result::NotFound;
     }
 
-    for (const data_row& row : data_table) {
-        auto iri_it = get_binding_value_req(row, "relPerson");
+    for (const common::data_row& row : data_table) {
+        auto iri_it = common::get_binding_value_req(row, "relPerson");
 
-        std::shared_ptr<Person> parent = std::make_shared<Person>();
+        std::shared_ptr<common::Person> parent = std::make_shared<common::Person>();
         retrieve_person_base_data_req(*parent, iri_it->second, world, model);
         retrieve_person_name(*parent, iri_it->second, world, model);
 
-        if (parent->gender == Gender::Male) {
+        if (parent->gender == common::Gender::Male) {
             if (person.father) {
                 spdlog::error(
                     "retrieve_person_parents: Found multiple fathers of the person {}. Ignoring"
@@ -349,7 +356,7 @@ retrieve_result retrieve_person_parents(
 
                 person.father = parent;
             }
-        } else if (parent->gender == Gender::Female) {
+        } else if (parent->gender == common::Gender::Female) {
             if (person.mother) {
                 spdlog::error(
                     "retrieve_person_parents: Found multiple mothers of the person {}. Ignoring"
@@ -367,8 +374,9 @@ retrieve_result retrieve_person_parents(
 
 
 retrieve_result retrieve_person_partners(
-    Person& person, const std::string& person_iri, librdf_world* world, librdf_model* model) {
-
+    common::Person& person, const std::string& person_iri,
+    librdf_world* world, librdf_model* model)
+{
     const std::string query = R"(
         PREFIX gx: <http://gedcomx.org/>
 
@@ -406,7 +414,7 @@ retrieve_result retrieve_person_partners(
 
     spdlog::debug("retrieve_person_partners: The query: {}", query);
 
-    exec_query_result res = exec_query(world, model, query);
+    common::exec_query_result res = common::exec_query(world, model, query);
 
     if (!res->success) {
         spdlog::error("retrieve_person_partners: The query execution has failed");
@@ -416,8 +424,8 @@ retrieve_result retrieve_person_partners(
             "Failed to execute the 'retrieve person partners' query");
     }
 
-    const extract_data_table_result data_tuple = extract_data_table(res->results);
-    const data_table& data_table = std::get<1>(data_tuple);
+    const common::extract_data_table_result data_tuple = common::extract_data_table(res->results);
+    const common::data_table& data_table = std::get<1>(data_tuple);
 
     if (data_table.empty()) {
         spdlog::debug(
@@ -426,10 +434,10 @@ retrieve_result retrieve_person_partners(
         return retrieve_result::NotFound;
     }
 
-    for (const data_row& row : data_table) {
-        auto iri_it = get_binding_value_req(row, "partner");
+    for (const common::data_row& row : data_table) {
+        auto iri_it = common::get_binding_value_req(row, "partner");
 
-        std::shared_ptr<Person> partner = std::make_shared<Person>();
+        std::shared_ptr<common::Person> partner = std::make_shared<common::Person>();
 
         retrieve_person_base_data_req(*partner, iri_it->second, world, model);
         retrieve_person_name(*partner, iri_it->second, world, model);
@@ -442,8 +450,9 @@ retrieve_result retrieve_person_partners(
 
 
 retrieve_result retrieve_person_children(
-    Person& person, const std::string& person_iri, librdf_world* world, librdf_model* model) {
-
+    common::Person& person, const std::string& person_iri,
+    librdf_world* world, librdf_model* model)
+{
     const std::string query = R"(
         PREFIX gx: <http://gedcomx.org/>
 
@@ -468,7 +477,7 @@ retrieve_result retrieve_person_children(
 
     spdlog::debug("retrieve_person_children: The query: {}", query);
 
-    exec_query_result res = exec_query(world, model, query);
+    common::exec_query_result res = common::exec_query(world, model, query);
 
     if (!res->success) {
         spdlog::error("retrieve_person_children: The query execution has failed");
@@ -478,8 +487,8 @@ retrieve_result retrieve_person_children(
             "Failed to execute the 'retrieve person children' query");
     }
 
-    const extract_data_table_result data_tuple = extract_data_table(res->results);
-    const data_table& data_table = std::get<1>(data_tuple);
+    const common::extract_data_table_result data_tuple = common::extract_data_table(res->results);
+    const common::data_table& data_table = std::get<1>(data_tuple);
 
     if (data_table.empty()) {
         spdlog::debug(
@@ -488,16 +497,16 @@ retrieve_result retrieve_person_children(
         return retrieve_result::NotFound;
     }
 
-    for (const data_row& row : data_table) {
-        auto iri_it = get_binding_value_req(row, "child");
+    for (const common::data_row& row : data_table) {
+        auto iri_it = common::get_binding_value_req(row, "child");
 
-        std::shared_ptr<Person> child = std::make_shared<Person>();
+        std::shared_ptr<common::Person> child = std::make_shared<common::Person>();
         retrieve_person_base_data_req(*child, iri_it->second, world, model);
         retrieve_person_name(*child, iri_it->second, world, model);
 
-        if (has_binding(row, "partner"))
+        if (common::has_binding(row, "partner"))
         {
-            Person partner;
+            common::Person partner;
             extract_person_id(partner, row, "partner");
             person.children[partner.id].push_back(child);
         }
@@ -511,7 +520,7 @@ retrieve_result retrieve_person_children(
 }
 
 
-std::vector<Person> retrieve_person_list(librdf_world* world, librdf_model* model)
+std::vector<common::Person> retrieve_person_list(librdf_world* world, librdf_model* model)
 {
     spdlog::trace("retrieve_person_list: Entry checkpoint");
 
@@ -536,7 +545,7 @@ std::vector<Person> retrieve_person_list(librdf_world* world, librdf_model* mode
 
     spdlog::debug("retrieve_person_list: The query: {}", query);
 
-    exec_query_result res = exec_query(world, model, query);
+    common::exec_query_result res = common::exec_query(world, model, query);
 
     if (!res->success) {
         spdlog::error("retrieve_person_list: The query execution has failed");
@@ -546,13 +555,13 @@ std::vector<Person> retrieve_person_list(librdf_world* world, librdf_model* mode
             "Failed to execute the 'retrieve person_list' query");
     }
 
-    const extract_data_table_result data_tuple = extract_data_table(res->results);
-    const data_table& data_table = std::get<1>(data_tuple);
+    const common::extract_data_table_result data_tuple = common::extract_data_table(res->results);
+    const common::data_table& data_table = std::get<1>(data_tuple);
 
-    std::vector<Person> result;
+    std::vector<common::Person> result;
     result.reserve(data_table.size());
 
-    for (const data_row& row : data_table)
+    for (const common::data_row& row : data_table)
     {
         result.emplace_back();
 

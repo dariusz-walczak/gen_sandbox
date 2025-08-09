@@ -10,9 +10,11 @@
  *
  * @throw common_exception
  */
-resource_set retrieve_person_iris(librdf_world* world, librdf_model* model);
+common::resource_set retrieve_person_iris(librdf_world* world, librdf_model* model);
 
-bool ask_resource_referenced(librdf_world* world, librdf_model* model, const std::string& resource_iri);
-bool ask_resource_referenced(librdf_world* world, librdf_model* model, const Resource& resource);
+bool ask_resource_referenced(
+    librdf_world* world, librdf_model* model, const std::string& resource_iri);
+bool ask_resource_referenced(
+    librdf_world* world, librdf_model* model, const common::Resource& resource);
 
 #endif // !defined PERSON_QUERIES_DEPS_HPP

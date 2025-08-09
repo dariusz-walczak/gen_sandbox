@@ -15,9 +15,9 @@ void run_list_command(const cli_options& options)
 {
     spdlog::trace("{}: Entry checkpoint", __func__);
 
-    scoped_redland_ctx redland_ctx = load_input_data(options);
+    common::scoped_redland_ctx redland_ctx = load_input_data(options);
 
-    std::vector<Person> persons = retrieve_person_list(redland_ctx->world, redland_ctx->model);
+    std::vector<common::Person> persons = retrieve_person_list(redland_ctx->world, redland_ctx->model);
 
     nlohmann::json output = person_list_to_json(persons);
         std::cout << output.dump(4) << '\n';

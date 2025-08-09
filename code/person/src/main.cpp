@@ -23,7 +23,7 @@
 
 int run_main(int argc, char** argv) {
     spdlog::level::level_enum default_log_level = spdlog::level::info;
-    init_spdlog(default_log_level);
+    common::init_spdlog(default_log_level);
 
     cli_context cli_ctx = init_cli_context(default_log_level);
     CLI11_PARSE(*cli_ctx.parser, argc, argv);

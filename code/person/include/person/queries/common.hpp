@@ -15,36 +15,46 @@ enum class retrieve_result : std::uint8_t {
 };
 
 retrieve_result retrieve_person_base_data_opt(
-    Person& person, const std::string& person_iri, librdf_world* world, librdf_model* model);
+    common::Person& person, const std::string& person_iri,
+    librdf_world* world, librdf_model* model);
 
 void retrieve_person_base_data_req(
-    Person& person, const std::string& person_iri, librdf_world* world, librdf_model* model);
+    common::Person& person, const std::string& person_iri,
+    librdf_world* world, librdf_model* model);
 
 retrieve_result retrieve_person_name(
-    Person& person, const std::string& person_iri, librdf_world* world, librdf_model* model);
+    common::Person& person, const std::string& person_iri,
+    librdf_world* world, librdf_model* model);
 
 retrieve_result retrieve_person_any_name(
-    Person& person, const std::string& person_iri, librdf_world* world, librdf_model* model);
+    common::Person& person, const std::string& person_iri,
+    librdf_world* world, librdf_model* model);
 
 retrieve_result retrieve_person_birth_name(
-    Person& person, const std::string& person_iri, librdf_world* world, librdf_model* model);
+    common::Person& person, const std::string& person_iri,
+    librdf_world* world, librdf_model* model);
 
 retrieve_result retrieve_person_preferred_name(
-    Person& person, const std::string& person_iri, librdf_world* world, librdf_model* model);
+    common::Person& person, const std::string& person_iri,
+    librdf_world* world, librdf_model* model);
 
 retrieve_result retrieve_person_relatives(
-    Person& person, const std::string& person_iri, librdf_world* world, librdf_model* model);
+    common::Person& person, const std::string& person_iri,
+    librdf_world* world, librdf_model* model);
 
 retrieve_result retrieve_person_parents(
-    Person& person, const std::string& person_iri, librdf_world* world, librdf_model* model);
+    common::Person& person, const std::string& person_iri,
+    librdf_world* world, librdf_model* model);
 
 retrieve_result retrieve_person_partners(
-    Person& person, const std::string& person_iri, librdf_world* world, librdf_model* model);
+    common::Person& person, const std::string& person_iri,
+    librdf_world* world, librdf_model* model);
 
 retrieve_result retrieve_person_children(
-    Person& person, const std::string& person_iri, librdf_world* world, librdf_model* model);
+    common::Person& person, const std::string& person_iri,
+    librdf_world* world, librdf_model* model);
 
-std::vector<Person> retrieve_person_list(librdf_world* world, librdf_model* model);
+std::vector<common::Person> retrieve_person_list(librdf_world* world, librdf_model* model);
 
 /** @brief Formatter for the retrieve_result (spdlog requires it) */
 template <> struct fmt::formatter<retrieve_result>: formatter<string_view>

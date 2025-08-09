@@ -4,7 +4,7 @@
 
 #include "person/error.hpp"
 
-resource_set retrieve_person_iris(librdf_world* world, librdf_model* model)
+common::resource_set retrieve_person_iris(librdf_world* world, librdf_model* model)
 {
     spdlog::trace("{}: Entry checkpoint", __func__);
 
@@ -19,7 +19,7 @@ resource_set retrieve_person_iris(librdf_world* world, librdf_model* model)
 
     spdlog::debug("{}: The query: {}", __func__, query);
 
-    exec_query_result res = exec_query(world, model, query);
+    common::exec_query_result res = common::exec_query(world, model, query);
 
     if (!res->success) {
         spdlog::error("{}: The query execution has failed", __func__);
@@ -29,14 +29,14 @@ resource_set retrieve_person_iris(librdf_world* world, librdf_model* model)
             fmt::format("Failed to execute the '{}' query", __func__));
     }
 
-    const extract_data_table_result data_tuple = extract_data_table(res->results);
-    const data_table& data_table = std::get<1>(data_tuple);
+    const common::extract_data_table_result data_tuple = common::extract_data_table(res->results);
+    const common::data_table& data_table = std::get<1>(data_tuple);
 
-    resource_set result;
+    common::resource_set result;
 
-    for (const data_row& row : data_table)
+    for (const common::data_row& row : data_table)
     {
-        result.insert(extract_resource(row, "person")); // throws common_exception
+        result.insert(common::extract_resource(row, "person")); // throws common_exception
     }
 
     return result;
@@ -54,7 +54,7 @@ bool ask_resource_referenced(
 
     spdlog::debug("{}: The query: {}", __func__, query);
 
-    exec_query_result result = exec_query(world, model, query);
+    common::exec_query_result result = common::exec_query(world, model, query);
 
     if (!result->success)
     {
@@ -66,14 +66,15 @@ bool ask_resource_referenced(
                 "Failed to execute the '{}' query", __func__));
     }
 
-    bool response = extract_boolean_result(result->results);
+    bool response = common::extract_boolean_result(result->results);
 
     spdlog::debug("{}: The ask query result is '{}'", __func__, response ? "true" : "false");
 
     return response;
 }
 
-bool ask_resource_referenced(librdf_world* world, librdf_model* model, const Resource& resource)
+bool ask_resource_referenced(
+    librdf_world* world, librdf_model* model, const common::Resource& resource)
 {
     return ask_resource_referenced(world, model, resource.get_iri().buffer());
 }
