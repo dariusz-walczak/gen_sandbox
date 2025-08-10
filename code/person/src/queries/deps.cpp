@@ -72,9 +72,3 @@ bool ask_resource_referenced(
 
     return response;
 }
-
-bool ask_resource_referenced(
-    librdf_world* world, librdf_model* model, const common::Resource& resource)
-{
-    return ask_resource_referenced(world, model, resource.get_iri().buffer());
-}

@@ -12,14 +12,27 @@
 #include "person/queries/common.hpp"
 #include "person/queries/deps.hpp"
 
-using file_deps_lut = std::map<common::person_id, common::file_set>;
-using person_id_set = std::set<common::person_id>;
-using person_deps_lut = std::map<common::person_id, person_id_set>;
+using file_deps_lut = std::map<common::Resource, common::file_set>;
+using person_deps_lut = std::map<common::Resource, common::resource_set>;
 
 
-void collect_deps(librdf_world* world, librdf_model* model, file_deps_lut& file_deps)
+void collect_dependent_resources(
+    librdf_world* world, librdf_model* model,
+    const common::resource_set& persons,
+    const std::filesystem::path& data_file_path,
+    file_deps_lut& data_file_deps)
 {
+    spdlog::debug("Collecting list of resources dependent on the '{}' data file", data_file_path);
 
+    for (const auto& person : persons)
+    {
+        if (ask_resource_referenced(world, model, person))
+        {
+            data_file_deps[*person].insert(data_file_path);
+
+            spdlog::debug("{} is referenced in {}", person->get_unique_id(), data_file_path);
+        }
+    }
 }
 
 
@@ -34,21 +47,15 @@ common::resource_set retrieve_person_iris(
     return retrieve_person_iris(redland_ctx->world, redland_ctx->model);
 }
 
-
 void run_deps_command(const cli_options& options)
 {
     spdlog::trace("{}: Entry checkpoint", __func__);
 
-    file_deps_lut file_lut;
+    file_deps_lut data_file_lut;
     person_deps_lut person_lut;
 
     common::input_files input_paths = determine_input_paths(options);
     common::resource_set persons = retrieve_person_iris(options, input_paths);
-
-    for (const auto& res : persons)
-    {
-        spdlog::info(res->get_unique_id());
-    }
 
     for (const auto& path : input_paths)
     {
@@ -57,6 +64,8 @@ void run_deps_command(const cli_options& options)
 
         common::load_rdf(redland_ctx->world, redland_ctx->model, path.string());
 
-        collect_deps(redland_ctx->world, redland_ctx->model, file_lut);
+        collect_dependent_resources(
+            redland_ctx->world, redland_ctx->model,
+            persons, path, data_file_lut);
     }
 }

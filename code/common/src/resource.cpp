@@ -72,7 +72,7 @@ void Resource::set_iri(const std::string& iri)
     
 
 
-std::string Resource::get_unique_id() const
+resource_id Resource::get_unique_id() const
 {
     std::ostringstream oss;
     oss << m_iri.host() << m_iri.path();

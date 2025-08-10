@@ -14,6 +14,7 @@ namespace common
 struct Resource;
 
 using resource_set = std::set<std::shared_ptr<Resource>>;
+using resource_id = std::string;
 
 struct Resource
 {
@@ -24,7 +25,7 @@ public:
     void set_iri(const std::string& iri);
 
     [[nodiscard]] const boost::urls::url_view get_iri() const { return m_iri; }
-    [[nodiscard]] std::string get_unique_id() const;
+    [[nodiscard]] resource_id get_unique_id() const;
     [[nodiscard]] std::filesystem::path get_unique_path() const;
 
     bool operator<(const Resource& other) const { return m_iri < other.m_iri; }
