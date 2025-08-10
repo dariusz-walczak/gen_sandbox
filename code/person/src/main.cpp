@@ -8,6 +8,7 @@
 #include <nlohmann/json.hpp>
 
 #include "common/command_line_utils.hpp"
+#include "common/common_exception.hpp"
 #include "common/file_system_utils.hpp"
 #include "common/person.hpp"
 #include "common/redland_utils.hpp"
@@ -22,7 +23,7 @@
 
 
 int run_main(int argc, char** argv) {
-    spdlog::level::level_enum default_log_level = spdlog::level::info;
+    const spdlog::level::level_enum default_log_level = spdlog::level::info;
     common::init_spdlog(default_log_level);
 
     cli_context cli_ctx = init_cli_context(default_log_level);
@@ -60,12 +61,22 @@ int main(int argc, char** argv)
 
         return 1;
     }
+    catch (const common::common_exception& e)
+    {
+        // open: should the common_exception propagate to the parent app or is it a bug?
+        std::cerr << "ERROR: " << e.what() << "\n";
+
+        return 1; // intentional
+    }
     catch (const std::exception& e)
     {
         std::cerr << "ERROR: An unhandled exception occurred: " << e.what() << "\n";
+
+        return 2;
     }
     catch (...)
     {
         std::cerr << "ERROR: An unhandled, unrecognized exception occurred\n";
+        return 3;
     }
 }
