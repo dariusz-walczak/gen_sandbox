@@ -14,6 +14,8 @@
  */
 common::resource_set retrieve_person_iris(librdf_world* world, librdf_model* model);
 
+common::data_table retrieve_related_persons(librdf_world* world, librdf_model* model);
+
 bool ask_resource_referenced(
     librdf_world* world, librdf_model* model, const std::string& resource_iri);
 
