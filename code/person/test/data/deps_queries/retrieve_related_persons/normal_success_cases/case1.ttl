@@ -1,0 +1,80 @@
+@prefix gx: <http://gedcomx.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix ex: <http://example.org/> .
+
+
+ex:P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] ;
+    gx:name [
+        gx:type gx:BirthName ;
+        gx:preferred "true"^^xsd:boolean ;
+        gx:nameForm [
+            gx:lang "pl" ;
+            gx:part [
+                gx:type gx:Given ;
+                gx:value "Jan" ] ;
+            gx:part [
+                gx:type gx:Surname ;
+                gx:value "Kowalski"  ] ] ] ;
+    gx:birthDate "1970-05-12"^^xsd:date .
+
+ex:P2 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] ;
+    gx:name [
+        gx:type gx:BirthName ;
+        gx:preferred "true"^^xsd:boolean ;
+        gx:nameForm [
+            gx:lang "pl" ;
+            gx:part [
+                gx:type gx:Given ;
+                gx:value "Edyta" ] ;
+            gx:part [
+                gx:type gx:Surname ;
+                gx:value "Malinowska"  ] ] ] ;
+    gx:birthDate "1968-11-22"^^xsd:date .
+
+ex:R1 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:P1 ;
+    gx:person2 ex:P2 .
+
+
+ex:P3 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] ;
+    gx:name [
+        gx:type gx:BirthName ;
+        gx:preferred "true"^^xsd:boolean ;
+        gx:nameForm [
+            gx:lang "pl" ;
+            gx:part [
+                gx:type gx:Given ;
+            gx:value "Magdalena" ] ;
+            gx:part [
+                gx:type gx:Surname ;
+                gx:value "Kowalska"  ] ] ] ;
+    gx:birthDate "1990-03-20"^^xsd:date .
+
+
+ex:R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:P1 ;
+    gx:person2 ex:P3 .
+
+ex:R3 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:P2 ;
+    gx:person2 ex:P3 .
+
+ex:P4 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] ;
+    gx:name [
+        gx:type gx:BirthName ;
+        gx:nameForm [
+            gx:lang "pl" ;
+            gx:part [
+                gx:type gx:Given ;
+            gx:value "Janusz" ] ;
+            gx:part [
+                gx:type gx:Surname ;
+            gx:value "Nowak"  ] ] ] ;
+    gx:birthDate "1971-10-03"^^xsd:date .

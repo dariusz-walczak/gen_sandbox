@@ -195,13 +195,26 @@ TEST_P(DepsQueries_RetrieveRelatedPersons, NormalSuccessCases)
 
 const std::vector<Param> g_params {
     {
-        "abc",
+        "SingleRelation",
         "data/deps_queries/retrieve_related_persons/normal_success_cases/case0.ttl",
         {
-            {
-                "http://example.org/P1",
-                "http://example.org/P2"
-            }
+            { "http://example.org/P1", "http://example.org/P2" }
+        }
+    },
+    {
+        "SingleFamilyPlusOneUnrelated",
+        "data/deps_queries/retrieve_related_persons/normal_success_cases/case1.ttl",
+        {
+            { "http://example.org/P1", "http://example.org/P2" },
+            { "http://example.org/P1", "http://example.org/P3" },
+            { "http://example.org/P2", "http://example.org/P3" }
+        }
+    },
+    {
+        "DuplicateRelation",
+        "data/deps_queries/retrieve_related_persons/normal_success_cases/case2.ttl",
+        {
+            { "http://example.org/P1", "http://example.org/P2" }
         }
     }
 };
