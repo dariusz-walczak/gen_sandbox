@@ -13,6 +13,10 @@ class common_exception : public std::exception {
 public:
     enum class error_code : std::uint8_t {
         uninitialized = 0,
+        /** General runtime failure. Use when an operation fails and no more specific
+         *   classification applies. Typically wraps a third-party or OS error
+         *   (e.g., std::error_code). */
+        general_runtime_error,
         /** Initialization of a new Redland RDF Library context has failed for unknown reasons */
         redland_initialization_failed,
         /** The Redland RDF Library has behaved unexpectedly. This error may occur due to a wrong
