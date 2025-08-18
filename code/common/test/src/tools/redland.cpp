@@ -7,6 +7,9 @@
 namespace test::tools
 {
 
+//  Engine Initialization
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
+
 void release_redland_ctx(redland_context* ctx)
 {
     librdf_free_model(ctx->model);
@@ -45,6 +48,70 @@ scoped_redland_ctx initialize_redland_ctx()
 
     return ctx;
 }
+
+//  Data Loading
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
+
+namespace
+{
+
+struct load_rdf_ctx
+{
+    librdf_parser* parser;
+    librdf_uri*    base_uri;
+};
+
+void release_load_rdf_ctx(load_rdf_ctx* ctx)
+{
+    librdf_free_uri(ctx->base_uri);
+    librdf_free_parser(ctx->parser);
+    delete ctx;
+}
+
+using scoped_load_rdf_ctx = std::unique_ptr<load_rdf_ctx, decltype(&release_load_rdf_ctx)>;
+
+} // anonymous namespace
+
+void load_rdf(librdf_world* world, librdf_model* model, const std::string& input_file_path)
+{
+    scoped_load_rdf_ctx ctx = { new load_rdf_ctx(), release_load_rdf_ctx };
+
+    ctx->parser = librdf_new_parser(world, "turtle", nullptr, nullptr);
+
+    if (!ctx->parser)
+    {
+        throw tc_error("Test Arrange: Failed to create a redland parser");
+    }
+
+    ctx->base_uri = librdf_new_uri(
+        world, reinterpret_cast<const unsigned char*>("https://aurochsoft.com/"));
+
+    if (!ctx->base_uri)
+    {
+        throw tc_error("Test Arrange: Failed to create the base uri");
+    }
+
+    FILE* input_file = fopen(input_file_path.c_str(), "r");
+
+    if (!input_file)
+    {
+        throw tc_error(fmt::format("Test Arrange: Failed to open the '{}' file", input_file_path));
+    }
+
+    const int parser_error = librdf_parser_parse_file_handle_into_model(
+        ctx->parser, input_file, 0, ctx->base_uri, model);
+
+    fclose(input_file);
+
+    if (parser_error)
+    {
+        throw tc_error(
+            fmt::format("Test Arrange: Failed to parse the '{}' input file", input_file_path));
+    }
+}
+
+//  Data Insertion
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
 
 librdf_node* create_uri_node(librdf_world* world, const char* uri)
 {

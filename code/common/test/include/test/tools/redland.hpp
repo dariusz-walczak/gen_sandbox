@@ -21,6 +21,8 @@ using scoped_redland_ctx = std::unique_ptr<redland_context, decltype(&release_re
 
 scoped_redland_ctx initialize_redland_ctx();
 
+void load_rdf(librdf_world* world, librdf_model* model, const std::string& input_file_path);
+
 librdf_node* create_uri_node(librdf_world* world, const char* uri);
 void insert_statement(
     librdf_world* world, librdf_model* model,
