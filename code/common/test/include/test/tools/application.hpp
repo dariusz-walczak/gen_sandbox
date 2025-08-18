@@ -22,6 +22,11 @@ struct init_outcome
 
 std::filesystem::path get_program_location();
 
+inline std::filesystem::path get_program_path()
+{
+    return get_program_location().parent_path();
+}
+
 namespace detail
 {
 
