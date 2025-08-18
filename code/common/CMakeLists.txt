@@ -2,6 +2,12 @@ set(CMAKE_CXX_CLANG_TIDY clang-tidy;)
 
 # ===[ Dependencies ]=========================================================================== #
 
+# Dependency:
+#     boost::url library
+# Rationale:
+#     needed for resource URIs representation and transformation
+# Scope:
+#     the gen_common library and targets linking it
 find_package(Boost REQUIRED url)
 
 # ===[ Target ]================================================================================= #

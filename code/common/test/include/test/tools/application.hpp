@@ -1,11 +1,14 @@
 #if !defined TEST_TOOLS_APPLICATION_HPP
 #define TEST_TOOLS_APPLICATION_HPP
 
+#include <filesystem>
+
 #include <CLI/CLI.hpp>
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
 #include "common/common_exception.hpp"
+#include "common/file_system_utils.hpp"
 #include "common/spdlog_utils.hpp"
 
 namespace test::tools
@@ -17,10 +20,12 @@ struct init_outcome
     int exit_code;
 };
 
+std::filesystem::path get_program_location();
+
 namespace detail
 {
 
-init_outcome init_app(int argc, char** argv)
+inline init_outcome init_app(int argc, char** argv)
 {
     // Default logger initialization. The log level can be changed using the command line option.
     const spdlog::level::level_enum default_log_level = spdlog::level::err;
@@ -48,13 +53,18 @@ init_outcome init_app(int argc, char** argv)
 
     spdlog::set_level(specified_log_level);
 
+    const std::filesystem::path prog_path = get_program_location();
+    spdlog::debug(
+        "{}: Running the '{}' executable located in the '{}' directory",
+        __func__, prog_path.filename(), prog_path.parent_path());
+
     return {false, 0}; // The cli parsing succeeded
 }
 
 } // namespace detail
 
 
-init_outcome init_app(int argc, char** argv) noexcept
+inline init_outcome init_app(int argc, char** argv) noexcept
 {
     try
     {
