@@ -29,6 +29,7 @@ public:
     [[nodiscard]] std::filesystem::path get_unique_path() const;
 
     bool operator<(const Resource& other) const { return m_iri < other.m_iri; }
+    bool operator==(const Resource& other) const { return m_iri == other.m_iri; }
 
 private:
     /** This field stores the resource IRI

@@ -12,8 +12,13 @@
 #include "person/queries/common.hpp"
 #include "person/queries/deps.hpp"
 
+namespace person
+{
+namespace detail
+{
+
 using file_deps_lut = std::map<common::Resource, common::file_set>;
-using person_deps_lut = std::map<common::Resource, common::resource_set>;
+using person_deps_lut = std::map<common::Resource, std::set<common::Resource>>;
 
 
 void collect_dependent_resources(
@@ -36,36 +41,90 @@ void collect_dependent_resources(
 }
 
 
-common::resource_set retrieve_person_iris(
-    const cli_options& options, const common::input_files& input_file_paths)
+person_deps_lut collect_dependent_persons(librdf_world* world, librdf_model* model)
 {
-    common::scoped_redland_ctx redland_ctx = common::create_redland_ctx();
-    initialize_redland_ctx(redland_ctx); // throws common_exception on initialization failure
+    person_deps_lut deps;
+    const common::data_table related_persons = retrieve_related_persons(world, model);
+    //const common::data_table indirect_partners = ...
 
-    common::load_rdf_set(redland_ctx->world, redland_ctx->model, input_file_paths);
+    for (const common::data_row& row : related_persons)
+    {
+        // The common::get_binding_value_req function throws the common::common_exception on a
+        //  missing binding and always returns a valid binding, so it is safe to use the arrow
+        //  operator on its result.
+        const common::Resource p1 { common::get_binding_value_req(row, "person1")->second };
+        const common::Resource p2 { common::get_binding_value_req(row, "person2")->second };
 
-    return retrieve_person_iris(redland_ctx->world, redland_ctx->model);
+        deps[p1].insert(p2);
+        deps[p2].insert(p1);
+    }
+
+    return deps;
 }
+
+
+file_deps_lut merge_dependencies(
+    const person_deps_lut& person_deps, const file_deps_lut& file_deps)
+{
+    file_deps_lut merged_deps { file_deps };
+
+    for (const auto& [dependent, dependencies] : person_deps)
+    {
+        for (const auto& dependency : dependencies)
+        {
+            const common::file_set& src = file_deps.at(dependency);
+            merged_deps[dependent].insert(src.begin(), src.end());
+        }
+    }
+
+    return merged_deps;
+}
+
+} // namespace detail
 
 void run_deps_command(const cli_options& options)
 {
     spdlog::trace("{}: Entry checkpoint", __func__);
 
-    file_deps_lut data_file_lut;
-    person_deps_lut person_lut;
+    detail::file_deps_lut data_file_lut;
+    detail::person_deps_lut person_deps;
+    common::resource_set all_persons;
 
     common::input_files input_paths = determine_input_paths(options);
-    common::resource_set persons = retrieve_person_iris(options, input_paths);
+
+    {
+        common::scoped_redland_ctx redland_ctx = common::create_redland_ctx();
+        initialize_redland_ctx(redland_ctx); // throws common_exception on initialization failure
+        common::load_rdf_set(redland_ctx->world, redland_ctx->model, input_paths);
+
+        all_persons = retrieve_person_iris(redland_ctx->world, redland_ctx->model);
+        person_deps = detail::collect_dependent_persons(redland_ctx->world, redland_ctx->model);
+    }
 
     for (const auto& path : input_paths)
     {
         common::scoped_redland_ctx redland_ctx = common::create_redland_ctx();
         initialize_redland_ctx(redland_ctx); // throws common_exception on initialization failure
-
         common::load_rdf(redland_ctx->world, redland_ctx->model, path.string());
 
-        collect_dependent_resources(
+        detail::collect_dependent_resources(
             redland_ctx->world, redland_ctx->model,
-            persons, path, data_file_lut);
+            all_persons, path, data_file_lut);
+    }
+
+    detail::file_deps_lut final_file_lut = detail::merge_dependencies(person_deps, data_file_lut);
+
+    for (const auto& [p, deps] : final_file_lut)
+    {
+        std::cout << p.get_unique_id() << ":";
+
+        for (const auto& f : deps)
+        {
+            std::cout << " " << f;
+        }
+
+        std::cout << "\n";
     }
 }
+
+} // namespace person

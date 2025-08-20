@@ -43,7 +43,7 @@ int run_main(int argc, char** argv) {
     }
     else if (cli_ctx.parser->got_subcommand("deps"))
     {
-        run_deps_command(cli_ctx.options);
+        person::run_deps_command(cli_ctx.options);
     }
 
     return 0;

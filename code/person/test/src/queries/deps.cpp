@@ -171,8 +171,7 @@ struct Param
     std::set<std::pair<std::string, std::string>> expected_pairs;
 };
 
-class DepsQueries_RetrieveRelatedPersons
-    : public ::testing::TestWithParam<Param> {};
+class DepsQueries_RetrieveRelatedPersons : public ::testing::TestWithParam<Param> {};
 
 TEST_P(DepsQueries_RetrieveRelatedPersons, NormalSuccessCases)
 {
