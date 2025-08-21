@@ -29,7 +29,6 @@ const char* file5 { "fake/5.ttl" };
 const char* file6 { "fake/6.ttl" };
 const char* file7 { "fake/7.ttl" };
 const char* file8 { "fake/8.ttl" };
-const char* file9 { "fake/9.ttl" };
 
 const common::Resource person1 { "http://example.org/P1" };
 const common::Resource person2 { "http://example.org/P2" };
@@ -39,7 +38,6 @@ const common::Resource person5 { "http://example.org/P5" };
 const common::Resource person6 { "http://example.org/P6" };
 const common::Resource person7 { "http://example.org/P7" };
 const common::Resource person8 { "http://example.org/P8" };
-const common::Resource person9 { "http://example.org/P9" };
 
 struct Param
 {
@@ -60,6 +58,11 @@ TEST_P(DepsCommand_MergeDependencies, NormalSuccessCases)
 
     EXPECT_EQ(param.expected_deps, actual_deps);
 };
+
+#define father_of(x) x
+#define mother_of(x) x
+#define partner_of(x) x
+#define child_of(x) x
 
 const std::vector<Param> g_params {
     {
@@ -144,10 +147,16 @@ const std::vector<Param> g_params {
     {
         .case_name = "TwoPlusTwoFamilyDeps",
         .person_deps = {
-            { person1, { person2, person3, person4 } }, // father
-            { person2, { person1, person3, person4 } }, // mother
-            { person3, { person1, person2 } }, // child1
-            { person4, { person1, person2 } } // child2
+            { person1, {
+                    partner_of(person2),
+                    father_of(person3), father_of(person4) } },
+            { person2, {
+                    partner_of(person1),
+                    mother_of(person3), mother_of(person4) } },
+            { person3, {
+                    child_of(person1), child_of(person2) } },
+            { person4, {
+                    child_of(person1), child_of(person2) } }
         },
         .file_deps = {
             { person1, { file1 } },
@@ -165,14 +174,30 @@ const std::vector<Param> g_params {
     {
         .case_name = "SimpleThreeGenFamilyDeps",
         .person_deps = {
-            { person1, { person2, person5 } }, // father's father
-            { person2, { person1, person5 } }, // father's mother
-            { person3, { person4, person6 } }, // mother's father
-            { person4, { person3, person6 } }, // mother's mother
-            { person5, { person1, person2, person6, person7, person8 } }, // father
-            { person6, { person3, person4, person5, person7, person8 } }, // mother
-            { person7, { person5, person6 } }, // child1
-            { person8, { person5, person6 } } // child2
+            { person1, {
+                    partner_of(person2),
+                    father_of(person5) } },
+            { person2, {
+                    partner_of(person1),
+                    mother_of(person5) } },
+            { person3, {
+                    partner_of(person4),
+                    father_of(person6) } },
+            { person4, {
+                    partner_of(person3),
+                    mother_of(person6) } },
+            { person5, {
+                    child_of(person1), child_of(person2),
+                    partner_of(person6),
+                    father_of(person7), father_of(person8) } },
+            { person6, {
+                    child_of(person3), child_of(person4),
+                    partner_of(person5),
+                    mother_of(person7), mother_of(person8) } },
+            { person7, {
+                    child_of(person5), child_of(person6) } },
+            { person8, {
+                    child_of(person5), child_of(person6) } }
         },
         .file_deps = {
             { person1, { file1 } },
