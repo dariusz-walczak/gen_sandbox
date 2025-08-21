@@ -59,6 +59,16 @@ const std::vector<Param> g_params {
         .person_deps = {},
         .file_deps = {},
         .expected_deps = {}
+    },
+    {
+        .case_name = "EmptyFileDeps",
+        .person_deps = {
+            { person1, { person2 } },
+            { person2, { person1, person3 } },
+            { person3, { person2 } }
+        },
+        .file_deps = {},
+        .expected_deps = {}
     }
 };
 

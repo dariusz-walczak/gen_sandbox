@@ -72,8 +72,19 @@ file_deps_lut merge_dependencies(
     {
         for (const auto& dependency : dependencies)
         {
-            const common::file_set& src = file_deps.at(dependency);
-            merged_deps[dependent].insert(src.begin(), src.end());
+            const auto& src_it = file_deps.find(dependency);
+
+            if (src_it != file_deps.end())
+            {
+                const common::file_set& src = src_it->second;
+                merged_deps[dependent].insert(src.begin(), src.end());
+            }
+            else
+            {
+                spdlog::warn(
+                    "{}: No file dependencies found for the '{}' person",
+                    __func__, dependent.get_unique_id());
+            }
         }
     }
 
