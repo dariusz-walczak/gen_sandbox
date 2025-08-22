@@ -91,6 +91,36 @@ file_deps_lut merge_dependencies(
     return merged_deps;
 }
 
+void print_dependencies(
+    const file_deps_lut& final_file_lut, const std::string& src_path,
+    const std::string& src_var_name, const std::string& int_var_name,
+    const std::string& out_var_name)
+{
+    for (const auto& [person, deps] : final_file_lut)
+    {
+        const common::resource_id person_id = person.get_unique_id();
+        std::cout << fmt::format(
+            "$({})/{}.html: $({})/{}.json\n\n", out_var_name, person_id, int_var_name, person_id);
+        std::cout << fmt::format(
+            "$({})/{}.json:", int_var_name, person_id);
+
+        for (const auto& file : deps)
+        {
+            if (file.string().starts_with(src_path))
+            {
+                std::cout << fmt::format(
+                    " \\\n\t\t$({})/{}", src_var_name, file.string().substr(src_path.length()));
+            }
+            else
+            {
+                std::cout << fmt::format(" \\\n\t\t{}", file);
+            }
+        }
+
+        std::cout << "\n\n\n";
+    }
+}
+
 } // namespace detail
 
 void run_deps_command(const cli_options& options)
@@ -125,17 +155,9 @@ void run_deps_command(const cli_options& options)
 
     detail::file_deps_lut final_file_lut = detail::merge_dependencies(person_deps, data_file_lut);
 
-    for (const auto& [p, deps] : final_file_lut)
-    {
-        std::cout << p.get_unique_id() << ":";
-
-        for (const auto& f : deps)
-        {
-            std::cout << " " << f;
-        }
-
-        std::cout << "\n";
-    }
+    detail::print_dependencies(
+        final_file_lut, options.base_path_raw, options.deps_cmd.src_root_symbol,
+        options.deps_cmd.int_root_symbol, options.deps_cmd.out_root_symbol);
 }
 
 } // namespace person

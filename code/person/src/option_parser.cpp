@@ -23,6 +23,8 @@ cli_context init_cli_context(spdlog::level::level_enum default_log_level)
     common::add_log_level_cli_option(
         result.parser.get(), result.options.log_level, default_log_level);
 
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
+
     CLI::App* details_cmd = result.parser->add_subcommand(
         "details", "Provide details of a single person");
 
@@ -35,7 +37,27 @@ cli_context init_cli_context(spdlog::level::level_enum default_log_level)
 
     result.parser->add_subcommand("list", "Provide the person list");
 
-    result.parser->add_subcommand("deps", "Provide dependencies list");
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
+
+    CLI::App* deps_cmd = result.parser->add_subcommand("deps", "Provide dependencies list");
+
+    deps_cmd->add_option(
+        "--src-root-symbol", result.options.deps_cmd.src_root_symbol,
+        "The SYMBOL that should replace the source root path in the generated dependencies")
+        ->option_text("SYMBOL")
+        ->required();
+
+    deps_cmd->add_option(
+        "--int-root-symbol", result.options.deps_cmd.int_root_symbol,
+        "The SYMBOL that should replace the source root path in the generated dependencies")
+        ->option_text("SYMBOL")
+        ->required();
+
+    deps_cmd->add_option(
+        "--out-root-symbol", result.options.deps_cmd.out_root_symbol,
+        "The SYMBOL that should replace the source root path in the generated dependencies")
+        ->option_text("SYMBOL")
+        ->required();
 
     return result;
 }

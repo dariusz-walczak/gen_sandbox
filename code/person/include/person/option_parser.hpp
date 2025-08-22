@@ -19,6 +19,13 @@ struct cli_options
     {
         std::string person_id;
     } details_cmd;
+
+    struct deps
+    {
+        std::string src_root_symbol;
+        std::string int_root_symbol;
+        std::string out_root_symbol;
+    } deps_cmd;
 };
 
 struct cli_context
