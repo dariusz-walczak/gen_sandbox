@@ -27,7 +27,8 @@ auto fmt::formatter<librdf_log_facility>::format(
     librdf_log_facility facility, format_context& ctx) const -> format_context::iterator
 {
     string_view code = "<unknown>";
-    switch (facility) {
+    switch (facility)
+    {
     case LIBRDF_FROM_NONE:
         code = "none";
         break;
@@ -96,7 +97,8 @@ auto fmt::formatter<librdf_log_facility>::format(
 namespace common
 {
 
-void release_redland_ctx(redland_context* ctx) {
+void release_redland_ctx(redland_context* ctx)
+{
     librdf_free_model(ctx->model);
     spdlog::debug("{}: Released the redland model", __func__);
 
@@ -111,14 +113,17 @@ void release_redland_ctx(redland_context* ctx) {
     delete ctx;
 }
 
-scoped_redland_ctx create_redland_ctx() {
+scoped_redland_ctx create_redland_ctx()
+{
     return { new redland_context(), release_redland_ctx };
 }
 
-void initialize_redland_ctx(scoped_redland_ctx& ctx) {
+void initialize_redland_ctx(scoped_redland_ctx& ctx)
+{
     ctx->world = librdf_new_world();
 
-    if (!ctx->world) {
+    if (!ctx->world)
+    {
         spdlog::error("{}: Failed to create a new redland world", __func__);
 
         throw common_exception(
@@ -136,7 +141,8 @@ void initialize_redland_ctx(scoped_redland_ctx& ctx) {
     // https://librdf.org/docs/api/redland-storage.html#librdf-new-storage
     ctx->storage = librdf_new_storage(ctx->world, "memory", nullptr, nullptr);
 
-    if (!ctx->storage) {
+    if (!ctx->storage)
+    {
         spdlog::error("{}: Failed to create a new redland storage", __func__);
 
         throw common_exception(
@@ -149,7 +155,8 @@ void initialize_redland_ctx(scoped_redland_ctx& ctx) {
     // https://librdf.org/docs/api/redland-model.html#librdf-new-model
     ctx->model = librdf_new_model(ctx->world, ctx->storage, nullptr);
 
-    if (!ctx->model) {
+    if (!ctx->model)
+    {
         spdlog::error("{}: Failed to create a new redland model", __func__);
 
         throw common_exception(
@@ -161,13 +168,16 @@ void initialize_redland_ctx(scoped_redland_ctx& ctx) {
 }
 
 
-namespace {
-    struct load_rdf_ctx {
+namespace
+{
+    struct load_rdf_ctx
+    {
         librdf_parser* parser;
         librdf_uri*    base_uri;
     };
 
-    void release_load_rdf_ctx(load_rdf_ctx* ctx) {
+    void release_load_rdf_ctx(load_rdf_ctx* ctx)
+    {
         librdf_free_uri(ctx->base_uri);
         spdlog::debug("Released the Base URI");
 
@@ -187,7 +197,8 @@ void load_rdf(librdf_world* world, librdf_model* model, const std::string& input
     // https://librdf.org/docs/api/redland-parser.html#librdf-new-parser
     ctx->parser = librdf_new_parser(world, "turtle", nullptr, nullptr);
 
-    if (!ctx->parser) {
+    if (!ctx->parser)
+    {
         spdlog::error("{}: Failed to create a redland parser", __func__);
 
         return;
@@ -198,7 +209,8 @@ void load_rdf(librdf_world* world, librdf_model* model, const std::string& input
     ctx->base_uri = librdf_new_uri(
         world, reinterpret_cast<const unsigned char*>("https://aurochsoft.com/"));
 
-    if (!ctx->base_uri) {
+    if (!ctx->base_uri)
+    {
         spdlog::critical("{}: Failed to create the Base URI", __func__);
 
         return;
@@ -208,7 +220,8 @@ void load_rdf(librdf_world* world, librdf_model* model, const std::string& input
 
     FILE* input_file = fopen(input_file_path.c_str(), "r");
 
-    if (!input_file) {
+    if (!input_file)
+    {
         spdlog::error("{}: Failed to open the '{}' file", __func__, input_file_path);
 
         return;
@@ -221,7 +234,8 @@ void load_rdf(librdf_world* world, librdf_model* model, const std::string& input
 
     spdlog::debug("{}: Closed the '{}' file", __func__, input_file_path);
 
-    if (parser_error) {
+    if (parser_error)
+    {
         spdlog::error("{}: Failed to parse the '{}' input file", __func__, input_file_path);
 
         return;
@@ -258,7 +272,8 @@ exec_query_result exec_query(librdf_world* world, librdf_model* model, const std
     res->query = librdf_new_query(
         world, "sparql", nullptr, reinterpret_cast<const unsigned char*>(query.c_str()), nullptr);
 
-    if (!res->query) {
+    if (!res->query)
+    {
         spdlog::error("exec_query: Failed to create a redland query");
 
         return res;
@@ -268,7 +283,8 @@ exec_query_result exec_query(librdf_world* world, librdf_model* model, const std
 
     res->results = librdf_query_execute(res->query, model);
 
-    if (!res->results) {
+    if (!res->results)
+    {
         spdlog::error("exec_query: Redland query execution failed");
 
         return res;
@@ -320,12 +336,14 @@ bool extract_boolean_result(librdf_query_results* results)
 }
 
 namespace {
-    struct binding_ctx {
+    struct binding_ctx
+    {
         librdf_node*   node;
         unsigned char* value;
     };
 
-    void release_binding_ctx(binding_ctx* ctx) {
+    void release_binding_ctx(binding_ctx* ctx)
+    {
         free(ctx->value);
         librdf_free_node(ctx->node);
 
@@ -355,7 +373,8 @@ extract_data_table_result extract_data_table(
     data_table table;
     const int binding_count = librdf_query_results_get_bindings_count(results);
 
-    if (binding_count < 0) {
+    if (binding_count < 0)
+    {
         spdlog::error(
             "extract_data_table: Couldn't retrieve the number of bound variables. The "
             "librdf_query_results_get_bindings_count returned a negative number ({})",
@@ -366,7 +385,8 @@ extract_data_table_result extract_data_table(
 
     int row_idx = 0;
 
-    while (!librdf_query_results_finished(results)) {
+    while (!librdf_query_results_finished(results))
+    {
         assert(
             (binding_count == librdf_query_results_get_bindings_count(results)) &&
             "Assuming that the binding count returned by librdf_query_results_get_bindings_count"
@@ -374,11 +394,14 @@ extract_data_table_result extract_data_table(
 
         data_row row;
 
-        for (int binding_idx=0; binding_idx < binding_count; ++binding_idx) {
+        for (int binding_idx=0; binding_idx < binding_count; ++binding_idx)
+        {
             const char* binding_name = librdf_query_results_get_binding_name(results, binding_idx);
 
-            if (head_row_lut.size() < static_cast<tmp_name_lut::size_type>(binding_count)) {
-                if (!head_row_lut.count(binding_name)) {
+            if (head_row_lut.size() < static_cast<tmp_name_lut::size_type>(binding_count))
+            {
+                if (!head_row_lut.count(binding_name))
+                {
                     head_row.emplace_back(binding_name);
                     head_row_lut.insert(binding_name);
                 }
@@ -387,12 +410,14 @@ extract_data_table_result extract_data_table(
             scoped_binding_ctx ctx = { new binding_ctx(), release_binding_ctx };
             ctx->node = librdf_query_results_get_binding_value(results, binding_idx);
 
-            if (ctx->node) {
+            if (ctx->node)
+            {
                 std::string value;
 
                 auto ecb_it = cb_lut.find(binding_name);
 
-                if (ecb_it != cb_lut.end()) {
+                if (ecb_it != cb_lut.end())
+                {
                     value = ecb_it->second(ctx->node);
                 }
                 else if (librdf_node_is_literal(ctx->node))
@@ -407,11 +432,16 @@ extract_data_table_result extract_data_table(
                         reinterpret_cast<char*>(
                             librdf_uri_as_string(uri)));
 
-                    if (raw_value == "http://gedcomx.org/Male") {
+                    if (raw_value == "http://gedcomx.org/Male")
+                    {
                         value = "male";
-                    } else if (raw_value == "http://gedcomx.org/Female") {
+                    }
+                    else if (raw_value == "http://gedcomx.org/Female")
+                    {
                         value = "female";
-                    } else {
+                    }
+                    else
+                    {
                         value = raw_value;
                     }
                 }
@@ -428,7 +458,9 @@ extract_data_table_result extract_data_table(
                 }
 
                 row.insert({std::string(binding_name), std::move(value)});
-            } else {
+            }
+            else
+            {
                 spdlog::debug(
                     "exec_query: Node #{} of the row #{} couldn't be retrieved",
                     binding_idx, row_idx);
@@ -455,22 +487,28 @@ void print_data_table(const extract_data_table_result& data_table) {
     {
         tabulate::Table::Row_t head_row;
 
-        for (binding_name name : in_head_row) {
+        for (binding_name name : in_head_row)
+        {
             head_row.emplace_back(name);
         }
 
         table.add_row(head_row);
     }
 
-    for (data_row in_data_row : in_data_rows) {
+    for (data_row in_data_row : in_data_rows)
+    {
         tabulate::Table::Row_t data_row;
 
-        for (const binding_name& name : in_head_row) {
+        for (const binding_name& name : in_head_row)
+        {
             auto in_data_row_it = in_data_row.find(name);
 
-            if (in_data_row_it != in_data_row.end()) {
+            if (in_data_row_it != in_data_row.end())
+            {
                 data_row.emplace_back(in_data_row_it->second);
-            } else {
+            }
+            else
+            {
                 data_row.emplace_back("");
             }
         }
