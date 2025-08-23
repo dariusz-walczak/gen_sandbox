@@ -16,7 +16,8 @@ cli_context init_cli_context(spdlog::level::level_enum default_log_level)
         "-i,--input", result.options.input_paths,
         "Path to an individual turtle file to be loaded into the RDF model");
     result.parser->add_option(
-        "STORAGE", result.options.base_path_raw, "PATH to the turtle files STORAGE")
+        "-s,--src-root-path", result.options.base_path_raw,
+        "The source root PATH to be searched for the turtle files to be loaded into the RDF model")
         ->option_text("PATH")
         ->required()
         ->check(common::validate_existing_dir_path);
@@ -49,15 +50,35 @@ cli_context init_cli_context(spdlog::level::level_enum default_log_level)
 
     deps_cmd->add_option(
         "--int-root-symbol", result.options.deps_cmd.int_root_symbol,
-        "The SYMBOL that should replace the source root path in the generated dependencies")
+        "The SYMBOL that should replace the intermediate root path in the generated dependencies")
         ->option_text("SYMBOL")
         ->required();
 
     deps_cmd->add_option(
         "--out-root-symbol", result.options.deps_cmd.out_root_symbol,
-        "The SYMBOL that should replace the source root path in the generated dependencies")
+        "The SYMBOL that should replace the output root path in the generated dependencies")
         ->option_text("SYMBOL")
         ->required();
+
+    const char* int_meta_target_default = "int_person_all";
+
+    deps_cmd->add_option(
+        "--int-meta-target", result.options.deps_cmd.int_meta_target,
+        fmt::format(
+            "The NAME of the meta target aggregating the generated intermediate file targets."
+            " The default is '{}'.", int_meta_target_default))
+        ->option_text("NAME")
+        ->default_val(int_meta_target_default);
+
+    const char* out_meta_target_default = "out_person_all";
+
+    deps_cmd->add_option(
+        "--out-meta-target", result.options.deps_cmd.out_meta_target,
+        fmt::format(
+            "The NAME of the meta target aggregating the generated output file targets."
+            " The default is '{}'.", out_meta_target_default))
+        ->option_text("NAME")
+        ->default_val(out_meta_target_default);
 
     return result;
 }

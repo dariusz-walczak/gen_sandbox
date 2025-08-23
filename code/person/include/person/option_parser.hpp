@@ -25,6 +25,8 @@ struct cli_options
         std::string src_root_symbol;
         std::string int_root_symbol;
         std::string out_root_symbol;
+        std::string int_meta_target;
+        std::string out_meta_target;
     } deps_cmd;
 };
 

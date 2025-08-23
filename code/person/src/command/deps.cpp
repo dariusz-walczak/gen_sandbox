@@ -99,10 +99,13 @@ void print_dependencies(
     for (const auto& [person, deps] : final_file_lut)
     {
         const common::resource_id person_id = person.get_unique_id();
-        std::cout << fmt::format(
-            "$({})/{}.html: $({})/{}.json\n\n", out_var_name, person_id, int_var_name, person_id);
-        std::cout << fmt::format(
-            "$({})/{}.json:", int_var_name, person_id);
+        const std::string out_file_path = fmt::format("$({})/{}.html", out_var_name, person_id);
+        const std::string int_file_path = fmt::format("$({})/{}.json", int_var_name, person_id);
+
+        std::cout << fmt::format("{}: {}\n\n", out_file_path, int_file_path);
+        // The line-continuation character ('\') and the new-line character are added by the first
+        //  dependency line printed in the following loop.
+        std::cout << fmt::format("{}:", int_file_path);
 
         for (const auto& file : deps)
         {
@@ -117,7 +120,10 @@ void print_dependencies(
             }
         }
 
-        std::cout << "\n\n\n";
+        // The leading new-line characters are needed to close the last of the dependency lines
+        //  printed in the above loop.
+        std::cout << fmt::format("\n\nout_person_all: {}\n", out_file_path);
+        std::cout << fmt::format("int_person_all: {}\n\n", int_file_path);
     }
 }
 
