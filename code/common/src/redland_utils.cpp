@@ -265,7 +265,7 @@ void release_exec_query_ctx(exec_query_ctx* ctx) {
 
 exec_query_result exec_query(librdf_world* world, librdf_model* model, const std::string& query) {
 
-    spdlog::trace("exec_query: Entrypoint");
+    spdlog::trace("{}: Entrypoint", __func__);
 
     exec_query_result res = { new exec_query_ctx(), release_exec_query_ctx };
 
@@ -274,23 +274,23 @@ exec_query_result exec_query(librdf_world* world, librdf_model* model, const std
 
     if (!res->query)
     {
-        spdlog::error("exec_query: Failed to create a redland query");
+        spdlog::error("{}: Failed to create a redland query", __func__);
 
         return res;
     }
 
-    spdlog::debug("exec_query: Created a redland query");
+    spdlog::debug("{}: Created a redland query", __func__);
 
     res->results = librdf_query_execute(res->query, model);
 
     if (!res->results)
     {
-        spdlog::error("exec_query: Redland query execution failed");
+        spdlog::error("{}: Redland query execution failed", __func__);
 
         return res;
     }
 
-    spdlog::debug("exec_query: Redland query execution succeeded");
+    spdlog::debug("{}: Redland query execution succeeded", __func__);
 
     res->success = true;
     return res;
@@ -347,7 +347,7 @@ namespace {
         free(ctx->value);
         librdf_free_node(ctx->node);
 
-        spdlog::debug("Released the result row context");
+        spdlog::debug("{}: Released the result row context", __func__);
     }
 
     using scoped_binding_ctx = std::unique_ptr<binding_ctx, decltype(&release_binding_ctx)>;
@@ -364,7 +364,7 @@ extract_data_table_result extract_data_table(librdf_query_results* results)
 extract_data_table_result extract_data_table(
     librdf_query_results* results, const extract_cb_lut& cb_lut)
 {
-    spdlog::trace("extract_data_table: Entrypoint");
+    spdlog::trace("{}: Entrypoint", __func__);
 
     assert(results);
 
@@ -376,9 +376,9 @@ extract_data_table_result extract_data_table(
     if (binding_count < 0)
     {
         spdlog::error(
-            "extract_data_table: Couldn't retrieve the number of bound variables. The "
-            "librdf_query_results_get_bindings_count returned a negative number ({})",
-            binding_count);
+            "{}: Couldn't retrieve the number of bound variables. The"
+            " librdf_query_results_get_bindings_count returned a negative number ({})",
+            __func__, binding_count);
 
         return std::make_tuple(head_row, table);
     }
@@ -462,8 +462,8 @@ extract_data_table_result extract_data_table(
             else
             {
                 spdlog::debug(
-                    "exec_query: Node #{} of the row #{} couldn't be retrieved",
-                    binding_idx, row_idx);
+                    "{}: Node #{} of the row #{} couldn't be retrieved",
+                    __func__, binding_idx, row_idx);
             }
         }
 
@@ -478,7 +478,7 @@ extract_data_table_result extract_data_table(
 
 void print_data_table(const extract_data_table_result& data_table) {
 
-    spdlog::trace("print_data_table: Entrypoint");
+    spdlog::trace("{}: Entrypoint", __func__);
 
     auto [in_head_row, in_data_rows] = data_table;
 
