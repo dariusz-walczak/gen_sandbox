@@ -188,28 +188,28 @@ void load_rdf(librdf_world* world, librdf_model* model, const std::string& input
     ctx->parser = librdf_new_parser(world, "turtle", nullptr, nullptr);
 
     if (!ctx->parser) {
-        spdlog::error("load_rdf: Failed to create a redland parser");
+        spdlog::error("{}: Failed to create a redland parser", __func__);
 
         return;
     }
 
-    spdlog::debug("load_rdf: Created a redland parser");
+    spdlog::debug("{}: Created a redland parser", __func__);
 
     ctx->base_uri = librdf_new_uri(
         world, reinterpret_cast<const unsigned char*>("https://aurochsoft.com/"));
 
     if (!ctx->base_uri) {
-        spdlog::critical("load_rdf: Failed to create the Base URI");
+        spdlog::critical("{}: Failed to create the Base URI", __func__);
 
         return;
     }
 
-    spdlog::debug("load_rdf: Created the Base URI");
+    spdlog::debug("{}: Created the Base URI", __func__);
 
     FILE* input_file = fopen(input_file_path.c_str(), "r");
 
     if (!input_file) {
-        spdlog::error("road_rdf: Failed to open the '{}' file", input_file_path);
+        spdlog::error("{}: Failed to open the '{}' file", __func__, input_file_path);
 
         return;
     }
@@ -219,15 +219,15 @@ void load_rdf(librdf_world* world, librdf_model* model, const std::string& input
 
     fclose(input_file);
 
-    spdlog::debug("road_rdf: Closed the '{}' file", input_file_path);
+    spdlog::debug("{}: Closed the '{}' file", __func__, input_file_path);
 
     if (parser_error) {
-        spdlog::error("load_rdf: Failed to parse the '{}' input file", input_file_path);
+        spdlog::error("{}: Failed to parse the '{}' input file", __func__, input_file_path);
 
         return;
     }
 
-    spdlog::info("load_rdf: Successfully parsed the '{}' input file", input_file_path);
+    spdlog::info("{}: Successfully parsed the '{}' input file", __func__, input_file_path);
 }
 
 void load_rdf_set(librdf_world* world, librdf_model* model, const input_files& input_file_paths)
