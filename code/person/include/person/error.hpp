@@ -6,7 +6,11 @@
 #include <optional>
 #include <string>
 
-class person_exception : public std::exception {
+namespace person
+{
+
+class person_exception : public std::exception
+{
 public:
     enum class error_code : std::uint8_t {
         uninitialized = 0,
@@ -25,5 +29,7 @@ protected:
 
     void set_what(error_code code, const char* msg);
 };
+
+} // namespace person
 
 #endif // !defined PERSON_ERROR_HPP

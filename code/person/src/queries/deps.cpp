@@ -4,6 +4,9 @@
 
 #include "person/error.hpp"
 
+namespace person
+{
+
 common::resource_set retrieve_person_iris(librdf_world* world, librdf_model* model)
 {
     spdlog::trace("{}: Entry checkpoint", __func__);
@@ -102,3 +105,5 @@ bool ask_resource_referenced(
 
     return response;
 }
+
+} // namespace person

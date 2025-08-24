@@ -2,6 +2,8 @@
 
 #include <sstream>
 
+namespace person
+{
 
 person_exception::person_exception(error_code code, const std::string& msg)
     : std::exception(), _code(code)
@@ -37,3 +39,5 @@ void person_exception::set_what(error_code code, const char* msg) {
     oss << " " << msg;
     _what = oss.str();
 }
+
+} // namespace person

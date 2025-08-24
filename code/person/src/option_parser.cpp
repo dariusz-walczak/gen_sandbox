@@ -3,6 +3,8 @@
 #include "common/command_line_utils.hpp"
 #include "common/spdlog_utils.hpp"
 
+namespace person
+{
 
 cli_context init_cli_context(spdlog::level::level_enum default_log_level)
 {
@@ -86,3 +88,5 @@ cli_context init_cli_context(spdlog::level::level_enum default_log_level)
 
     return result;
 }
+
+} // namespace person

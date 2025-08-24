@@ -8,6 +8,9 @@
 #include "common/resource.hpp"
 #include "person/queries/common.hpp"
 
+namespace person
+{
+
 /**
  *
  * @throw common_exception
@@ -30,5 +33,7 @@ inline bool ask_resource_referenced(
 {
     return ask_resource_referenced(world, model, resource->get_iri().buffer());
 }
+
+} // namespace person
 
 #endif // !defined PERSON_QUERIES_DEPS_HPP

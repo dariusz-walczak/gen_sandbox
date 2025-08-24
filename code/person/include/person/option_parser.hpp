@@ -10,6 +10,9 @@
 #include <spdlog/spdlog.h>
 
 
+namespace person
+{
+
 struct cli_options
 {
     std::vector<std::string> input_paths;
@@ -48,5 +51,7 @@ struct cli_context
 };
 
 cli_context init_cli_context(spdlog::level::level_enum default_log_level);
+
+} // namespace person
 
 #endif // !defined PERSON_OPTION_PARSER_HPP

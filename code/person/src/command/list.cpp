@@ -10,6 +10,8 @@
 #include "person/command/common.hpp"
 #include "person/queries/common.hpp"
 
+namespace person
+{
 
 void run_list_command(const cli_options& options)
 {
@@ -22,3 +24,5 @@ void run_list_command(const cli_options& options)
     nlohmann::json output = person_list_to_json(persons);
         std::cout << output.dump(4) << '\n';
 }
+
+} // namespace person

@@ -2,6 +2,8 @@
 
 #include "common/file_system_utils.hpp"
 
+namespace person
+{
 
 common::input_files determine_input_paths(const cli_options& options)
 {
@@ -34,3 +36,5 @@ common::scoped_redland_ctx load_input_data(const cli_options& options)
 
     return redland_ctx;
 }
+
+} // namespace person

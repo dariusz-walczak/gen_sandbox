@@ -45,7 +45,7 @@ TEST_P(DepsQueries_RetrievePersonIris, NormalSuccessCases)
             triple.subject, triple.predicate, triple.object);
     }
 
-    common::resource_set resources = retrieve_person_iris(ctx->world, ctx->model);
+    common::resource_set resources = person::retrieve_person_iris(ctx->world, ctx->model);
 
     const std::set<boost::urls::url_view> expected_iris{ param.iris.begin(), param.iris.end() };
     std::set<boost::urls::url_view> actual_iris;
@@ -180,7 +180,7 @@ TEST_P(DepsQueries_RetrieveRelatedPersons, NormalSuccessCases)
 
     tools::load_rdf(ctx->world, ctx->model, tools::get_program_path() / param.data_file);
 
-    common::data_table pair_table = retrieve_related_persons(ctx->world, ctx->model);
+    common::data_table pair_table = person::retrieve_related_persons(ctx->world, ctx->model);
 
     std::set<std::pair<std::string, std::string>> actual_pairs;
 

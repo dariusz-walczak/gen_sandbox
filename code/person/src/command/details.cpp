@@ -11,7 +11,8 @@
 #include "person/error.hpp"
 #include "person/queries/common.hpp"
 
-
+namespace person
+{
 
 void run_details_command(const cli_options& options)
 {
@@ -42,3 +43,5 @@ void run_details_command(const cli_options& options)
     nlohmann::json output = person_to_json(person);
     std::cout << output.dump(4) << '\n';
 }
+
+} // namespace person

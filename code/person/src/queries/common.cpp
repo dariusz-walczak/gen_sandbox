@@ -4,6 +4,8 @@
 
 #include "person/error.hpp"
 
+namespace person
+{
 
 retrieve_result retrieve_person_base_data_opt(
     common::Person& person, const std::string& person_iri,
@@ -575,18 +577,19 @@ std::vector<common::Person> retrieve_person_list(librdf_world* world, librdf_mod
     return result;
 }
 
+} // namespace person
 
-auto fmt::formatter<retrieve_result>::format(retrieve_result res, format_context& ctx) const
-    -> format_context::iterator
+auto fmt::formatter<person::retrieve_result>::format(
+    person::retrieve_result res, format_context& ctx) const -> format_context::iterator
 {
     string_view name = "<unknown>";
 
     switch (res)
     {
-    case retrieve_result::NotFound:
+    case person::retrieve_result::NotFound:
         name = "<not found>";
         break;
-    case retrieve_result::Success:
+    case person::retrieve_result::Success:
         name = "<success>";
         break;
     }

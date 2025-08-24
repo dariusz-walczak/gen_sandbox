@@ -8,8 +8,11 @@
 
 #include "common/person.hpp"
 
+namespace person
+{
 
-enum class retrieve_result : std::uint8_t {
+enum class retrieve_result : std::uint8_t
+{
     NotFound = 0,
     Success
 };
@@ -56,10 +59,13 @@ retrieve_result retrieve_person_children(
 
 std::vector<common::Person> retrieve_person_list(librdf_world* world, librdf_model* model);
 
+} // namespace person
+
 /** @brief Formatter for the retrieve_result (spdlog requires it) */
-template <> struct fmt::formatter<retrieve_result>: formatter<string_view>
+template <> struct fmt::formatter<person::retrieve_result>: formatter<string_view>
 {
-    auto format(retrieve_result res, format_context& ctx) const -> format_context::iterator;
+    auto format(person::retrieve_result res, format_context& ctx) const
+        -> format_context::iterator;
 };
 
 #endif // !defined PERSON_QUERIES_COMMON_HPP

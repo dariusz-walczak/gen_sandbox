@@ -22,6 +22,9 @@
 #include "person/command/list.hpp"
 
 
+namespace person
+{
+
 int run_main(int argc, char** argv) {
     const spdlog::level::level_enum default_log_level = spdlog::level::info;
     common::init_spdlog(default_log_level);
@@ -49,13 +52,16 @@ int run_main(int argc, char** argv) {
     return 0;
 }
 
+} // namespace person
+
+
 int main(int argc, char** argv)
 {
     try
     {
-        return run_main(argc, argv);
+        return person::run_main(argc, argv);
     }
-    catch (const person_exception& e)
+    catch (const person::person_exception& e)
     {
         std::cerr << "ERROR: " << e.what() << "\n";
 
