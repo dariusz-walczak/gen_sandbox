@@ -12,15 +12,19 @@ cli_context init_cli_context(spdlog::level::level_enum default_log_level)
     result.parser->name("Person Query Application");
     result.parser->description("<app description>");
 
-    result.parser->add_option(
+    CLI::Option_group* input_grp =
+        result.parser->add_option_group("Input Data", "Input data source paths");
+
+    input_grp->add_option(
         "-i,--input", result.options.input_paths,
         "Path to an individual turtle file to be loaded into the RDF model");
-    result.parser->add_option(
+    input_grp->add_option(
         "-s,--src-root-path", result.options.base_path_raw,
         "The source root PATH to be searched for the turtle files to be loaded into the RDF model")
         ->option_text("PATH")
-        ->required()
         ->check(common::validate_existing_dir_path);
+    input_grp->require_option();
+
     common::add_log_level_cli_option(
         result.parser.get(), result.options.log_level, default_log_level);
 

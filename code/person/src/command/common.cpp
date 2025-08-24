@@ -7,11 +7,17 @@ common::input_files determine_input_paths(const cli_options& options)
 {
     spdlog::trace("{}: Entry checkpoint", __func__);
 
-    auto base_path = std::filesystem::path(options.base_path_raw);
-
-    return common::merge_input_files(
-        common::find_input_files(base_path, "ttl"),
-        common::adapt_string_paths(options.input_paths));
+    if (options.base_path_raw)
+    {
+        auto base_path = std::filesystem::path(options.base_path_raw.value());
+        return common::merge_input_files(
+            common::find_input_files(base_path, "ttl"),
+            common::adapt_string_paths(options.input_paths));
+    }
+    else
+    {
+        return common::adapt_string_paths(options.input_paths);
+    }
 }
 
 

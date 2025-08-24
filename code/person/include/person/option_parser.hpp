@@ -1,6 +1,7 @@
 #if !defined PERSON_OPTION_PARSER_HPP
 #define PERSON_OPTION_PARSER_HPP
 
+#include <optional>
 #include <memory>
 #include <string>
 #include <vector>
@@ -12,7 +13,7 @@
 struct cli_options
 {
     std::vector<std::string> input_paths;
-    std::string base_path_raw;
+    std::optional<std::string> base_path_raw;
     spdlog::level::level_enum log_level;
 
     struct details

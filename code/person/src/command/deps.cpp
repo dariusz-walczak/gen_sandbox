@@ -27,7 +27,9 @@ void collect_dependent_resources(
     const std::filesystem::path& data_file_path,
     file_deps_lut& data_file_deps)
 {
-    spdlog::debug("Collecting list of resources dependent on the '{}' data file", data_file_path);
+    spdlog::debug(
+        "{}: Collecting list of resources dependent on the '{}' data file",
+        __func__, data_file_path);
 
     for (const auto& person : persons)
     {
@@ -35,7 +37,9 @@ void collect_dependent_resources(
         {
             data_file_deps[*person].insert(data_file_path);
 
-            spdlog::debug("{} is referenced in {}", person->get_unique_id(), data_file_path);
+            spdlog::debug(
+                "{}: {} is referenced in {}",
+                __func__, person->get_unique_id(), data_file_path);
         }
     }
 }
@@ -92,7 +96,7 @@ file_deps_lut merge_dependencies(
 }
 
 void print_dependencies(
-    const file_deps_lut& final_file_lut, const std::string& src_path,
+    const file_deps_lut& final_file_lut, const std::optional<std::string>& src_path,
     const std::string& src_var_name, const std::string& int_var_name,
     const std::string& out_var_name)
 {
@@ -109,10 +113,11 @@ void print_dependencies(
 
         for (const auto& file : deps)
         {
-            if (file.string().starts_with(src_path))
+            if (src_path.has_value() && file.string().starts_with(src_path.value()))
             {
                 std::cout << fmt::format(
-                    " \\\n\t\t$({})/{}", src_var_name, file.string().substr(src_path.length()));
+                    " \\\n\t\t$({})/{}",
+                    src_var_name, file.string().substr(src_path.value().length()));
             }
             else
             {
