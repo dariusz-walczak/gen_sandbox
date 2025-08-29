@@ -4,6 +4,7 @@ add_executable(
   gen_person_test
   src/command/deps.cpp
   src/main.cpp
+  src/queries/common.cpp
   src/queries/deps.cpp
 )
 

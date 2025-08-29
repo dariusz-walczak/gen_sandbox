@@ -7,6 +7,7 @@
 #include <spdlog/spdlog.h>
 
 #include "common/person.hpp"
+#include "common/resource.hpp"
 
 namespace person
 {
@@ -56,6 +57,12 @@ retrieve_result retrieve_person_partners(
 retrieve_result retrieve_person_children(
     common::Person& person, const std::string& person_iri,
     librdf_world* world, librdf_model* model);
+
+/**
+ *
+ * @throw common_exception
+ */
+common::resource_set retrieve_person_iris(librdf_world* world, librdf_model* model);
 
 std::vector<common::Person> retrieve_person_list(librdf_world* world, librdf_model* model);
 

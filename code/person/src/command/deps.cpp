@@ -2,7 +2,6 @@
 
 #include <iostream>
 
-#include <nlohmann/json.hpp>
 #include <spdlog/spdlog.h>
 
 #include "common/file_system_utils.hpp"

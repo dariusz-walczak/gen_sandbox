@@ -242,6 +242,45 @@ retrieve_result retrieve_person_birth_name(
 }
 
 
+common::resource_set retrieve_person_iris(librdf_world* world, librdf_model* model)
+{
+    spdlog::trace("{}: Entry checkpoint", __func__);
+
+    const std::string query = R"(
+        PREFIX gx: <http://gedcomx.org/>
+
+        SELECT DISTINCT ?person
+        WHERE {
+            ?person a gx:Person .
+        }
+        ORDER BY ASC(?person))";
+
+    spdlog::debug("{}: The query: {}", __func__, query);
+
+    common::exec_query_result res = common::exec_query(world, model, query);
+
+    if (!res->success) {
+        spdlog::error("{}: The query execution has failed", __func__);
+
+        throw person_exception(
+            person_exception::error_code::query_error,
+            fmt::format("Failed to execute the '{}' query", __func__));
+    }
+
+    const common::extract_data_table_result data_tuple = common::extract_data_table(res->results);
+    const common::data_table& data_table = std::get<1>(data_tuple);
+
+    common::resource_set result;
+
+    for (const common::data_row& row : data_table)
+    {
+        result.insert(common::extract_resource(row, "person")); // throws common_exception
+    }
+
+    return result;
+}
+
+
 retrieve_result retrieve_person_preferred_name(
     common::Person& person, const std::string& person_iri,
     librdf_world* world, librdf_model* model)

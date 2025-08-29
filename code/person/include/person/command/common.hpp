@@ -3,6 +3,7 @@
 
 #include "common/file_system_utils.hpp"
 #include "common/redland_utils.hpp"
+#include "common/resource.hpp"
 
 #include "person/option_parser.hpp"
 
