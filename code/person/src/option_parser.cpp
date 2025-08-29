@@ -46,6 +46,27 @@ cli_context init_cli_context(spdlog::level::level_enum default_log_level)
 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
 
+    CLI::App* targets_cmd = result.parser->add_subcommand(
+        "targets", "Provide a list of output targets as a value of the make variable");
+
+    CLI::Option_group* type_grp = targets_cmd->add_option_group("Target Type");
+
+    type_grp->add_flag(
+        "--json", result.options.targets_cmd.json_flag,
+        "Generate the JSON targets");
+    type_grp->add_flag(
+        "--html", result.options.targets_cmd.html_flag,
+        "Generate the HTML targets");
+    type_grp->require_option(1);
+
+    targets_cmd->add_option(
+        "--tgt-root-symbol", result.options.targets_cmd.tgt_root_symbol,
+        "The SYMBOL that should prefix the resource specific target path")
+        ->option_text("SYMBOL")
+        ->required();
+
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
+
     CLI::App* deps_cmd = result.parser->add_subcommand("deps", "Provide dependencies list");
 
     deps_cmd->add_option(

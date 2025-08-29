@@ -20,6 +20,7 @@
 #include "person/command/deps.hpp"
 #include "person/command/details.hpp"
 #include "person/command/list.hpp"
+#include "person/command/targets.hpp"
 
 
 namespace person
@@ -47,6 +48,10 @@ int run_main(int argc, char** argv) {
     else if (cli_ctx.parser->got_subcommand("deps"))
     {
         person::run_deps_command(cli_ctx.options);
+    }
+    else if (cli_ctx.parser->got_subcommand("targets"))
+    {
+        person::run_targets_command(cli_ctx.options);
     }
 
     return 0;

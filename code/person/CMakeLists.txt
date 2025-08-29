@@ -8,6 +8,7 @@ add_library(
   src/command/deps.cpp
   src/command/details.cpp
   src/command/list.cpp
+  src/command/targets.cpp
   src/error.cpp
   src/option_parser.cpp
   src/queries/common.cpp

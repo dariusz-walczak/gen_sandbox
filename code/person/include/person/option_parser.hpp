@@ -32,6 +32,13 @@ struct cli_options
         std::string int_meta_target;
         std::string out_meta_target;
     } deps_cmd;
+
+    struct targets
+    {
+        bool json_flag;
+        bool html_flag;
+        std::string tgt_root_symbol;
+    } targets_cmd;
 };
 
 struct cli_context
