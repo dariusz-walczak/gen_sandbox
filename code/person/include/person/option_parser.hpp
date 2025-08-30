@@ -1,8 +1,9 @@
 #if !defined PERSON_OPTION_PARSER_HPP
 #define PERSON_OPTION_PARSER_HPP
 
-#include <optional>
+#include <filesystem>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -37,7 +38,7 @@ struct cli_options
     {
         bool json_flag;
         bool html_flag;
-        std::string tgt_root_symbol;
+        std::filesystem::path tgt_root_path;
     } targets_cmd;
 };
 

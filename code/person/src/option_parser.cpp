@@ -60,9 +60,9 @@ cli_context init_cli_context(spdlog::level::level_enum default_log_level)
     type_grp->require_option(1);
 
     targets_cmd->add_option(
-        "--tgt-root-symbol", result.options.targets_cmd.tgt_root_symbol,
-        "The SYMBOL that should prefix the resource specific target path")
-        ->option_text("SYMBOL")
+        "--tgt-root", result.options.targets_cmd.tgt_root_path,
+        "The PATH that should prefix the resource specific target path (it doesn't have to exist)")
+        ->option_text("PATH")
         ->required();
 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //

@@ -14,7 +14,7 @@ namespace detail
 {
 
 void print_targets(
-    const common::resource_set& resources, const std::string_view& target_root_symbol,
+    const common::resource_set& resources, const std::filesystem::path& target_root_path,
     const std::string_view& target_ext)
 {
     for (bool first=true; const auto& res : resources)
@@ -28,8 +28,10 @@ void print_targets(
             first = false;
         }
 
-        std::cout << fmt::format(
-            "$({})/{}.{}", target_root_symbol, res->get_unique_id(), target_ext);
+        std::filesystem::path tgt_path = target_root_path / res->get_unique_id();
+        tgt_path.replace_extension(target_ext);
+
+        std::cout << tgt_path.string();
     }
 
     std::cout << '\n';
@@ -49,7 +51,7 @@ void run_targets_command(const cli_options& options)
 
     detail::print_targets(
         retrieve_person_iris(redland_ctx->world, redland_ctx->model),
-        options.targets_cmd.tgt_root_symbol, (options.targets_cmd.json_flag ? "json" : "html"));
+        options.targets_cmd.tgt_root_path, (options.targets_cmd.json_flag ? "json" : "html"));
 }
 
 } // namespace person
