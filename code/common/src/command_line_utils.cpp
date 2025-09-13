@@ -8,17 +8,6 @@
 namespace common
 {
 
-std::string validate_person_local_name(const std::string& raw) {
-    if (!std::regex_match(raw, std::regex(R"(^P\d{5}$)"))) {
-        std::ostringstream oss;
-        oss << "The '" << raw << "' value doesn't match the 'P00000' person id format";
-        return oss.str();
-    } else {
-        return "";
-    }
-}
-
-
 std::string validate_existing_dir_path(const std::string& raw) {
     auto path = std::filesystem::path(raw);
 

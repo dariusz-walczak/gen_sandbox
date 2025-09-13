@@ -36,11 +36,10 @@ cli_context init_cli_context(spdlog::level::level_enum default_log_level)
         "details", "Provide details of a single person");
 
     details_cmd->add_option(
-        "-p,--person", result.options.details_cmd.person_id,
-        "Person Local Name in the 'P00000' format")
-        ->option_text("PID")
-        ->required()
-        ->check(common::validate_person_local_name);
+        "-p,--person", result.options.details_cmd.person_uri,
+        "The Unique Resource Identifier (URI) of the person.")
+        ->option_text("URI")
+        ->required();
 
     result.parser->add_subcommand("list", "Provide the person list");
 
@@ -67,7 +66,8 @@ cli_context init_cli_context(spdlog::level::level_enum default_log_level)
 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
 
-    CLI::App* deps_cmd = result.parser->add_subcommand("deps", "Provide dependencies list");
+    CLI::App* deps_cmd = result.parser->add_subcommand(
+        "deps", "Provide dependencies of a single person details file in the make file format");
 
     deps_cmd->add_option(
         "--tgt-root", result.options.deps_cmd.tgt_root_path,
@@ -84,9 +84,9 @@ cli_context init_cli_context(spdlog::level::level_enum default_log_level)
         ->option_text("NAME");
 
     deps_cmd->add_option(
-        "--person", result.options.deps_cmd.person_id,
-        "The unique IDentifier of the person whose dependencies to print.")
-        ->option_text("ID")
+        "-p,--person", result.options.deps_cmd.person_uri,
+        "The Unique Resource Identifier (URI) of the person.")
+        ->option_text("URI")
         ->required();
     return result;
 }

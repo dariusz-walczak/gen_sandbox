@@ -152,7 +152,7 @@ void run_deps_command(const cli_options& options)
 
     detail::file_deps_lut final_file_lut = detail::merge_dependencies(person_deps, data_file_lut);
 
-    common::Resource person = { options.deps_cmd.person_id };
+    common::Resource person = { options.deps_cmd.person_uri };
     const auto person_deps_it = final_file_lut.find(person);
 
     if (person_deps_it == final_file_lut.cend())

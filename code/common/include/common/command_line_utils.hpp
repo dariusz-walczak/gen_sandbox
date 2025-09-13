@@ -7,7 +7,6 @@
 namespace common
 {
 
-std::string validate_person_local_name(const std::string& raw);
 std::string validate_existing_dir_path(const std::string& raw);
 
 } // namespace common

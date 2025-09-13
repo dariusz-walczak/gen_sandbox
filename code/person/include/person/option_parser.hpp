@@ -22,14 +22,14 @@ struct cli_options
 
     struct details
     {
-        std::string person_id;
+        std::string person_uri;
     } details_cmd;
 
     struct deps
     {
         std::string tgt_root_path;
         std::string meta_target;
-        std::string person_id;
+        std::string person_uri;
     } deps_cmd;
 
     struct targets

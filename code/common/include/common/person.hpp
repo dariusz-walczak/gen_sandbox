@@ -49,8 +49,6 @@ public:
     std::map<std::string, std::vector<std::shared_ptr<Person>>> children;
 };
 
-person_iri compose_person_iri(const person_id& id);
-
 /* @brief Extract the string representation of the gender from the Redland Node
  *
  * @note This function work as an extraction callback provided to the extract_cb_lut function */
