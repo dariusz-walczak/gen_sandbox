@@ -46,67 +46,48 @@ cli_context init_cli_context(spdlog::level::level_enum default_log_level)
 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
 
-    CLI::App* targets_cmd = result.parser->add_subcommand(
-        "targets", "Provide a list of output targets as a value of the make variable");
+    {
+        CLI::App* targets_cmd = result.parser->add_subcommand(
+            "targets", "Provide a list of output targets as a value of the make variable");
 
-    CLI::Option_group* type_grp = targets_cmd->add_option_group("Target Type");
+        CLI::Option* json_flag = targets_cmd->add_flag(
+            "--json", result.options.targets_cmd.json_flag,
+            "Generate the JSON targets");
+        targets_cmd->add_flag(
+            "--html", result.options.targets_cmd.html_flag,
+            "Generate the HTML targets")
+            ->excludes(json_flag);
 
-    type_grp->add_flag(
-        "--json", result.options.targets_cmd.json_flag,
-        "Generate the JSON targets");
-    type_grp->add_flag(
-        "--html", result.options.targets_cmd.html_flag,
-        "Generate the HTML targets");
-    type_grp->require_option(1);
-
-    targets_cmd->add_option(
-        "--tgt-root", result.options.targets_cmd.tgt_root_path,
-        "The PATH that should prefix the resource specific target path (it doesn't have to exist)")
-        ->option_text("PATH")
-        ->required();
+        targets_cmd->add_option(
+            "--tgt-root", result.options.targets_cmd.tgt_root_path,
+            "The PATH that should prefix the resource specific target path (it doesn't have to exist)")
+            ->option_text("PATH")
+            ->required();
+    }
 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
 
     CLI::App* deps_cmd = result.parser->add_subcommand("deps", "Provide dependencies list");
 
     deps_cmd->add_option(
-        "--src-root-symbol", result.options.deps_cmd.src_root_symbol,
-        "The SYMBOL that should replace the source root path in the generated dependencies")
-        ->option_text("SYMBOL")
+        "--tgt-root", result.options.deps_cmd.tgt_root_path,
+        "The PATH that will prefix the intermediate (json) target paths in the generated"
+        " dependencies")
+        ->option_text("PATH")
         ->required();
 
     deps_cmd->add_option(
-        "--int-root-symbol", result.options.deps_cmd.int_root_symbol,
-        "The SYMBOL that should replace the intermediate root path in the generated dependencies")
-        ->option_text("SYMBOL")
-        ->required();
-
-    deps_cmd->add_option(
-        "--out-root-symbol", result.options.deps_cmd.out_root_symbol,
-        "The SYMBOL that should replace the output root path in the generated dependencies")
-        ->option_text("SYMBOL")
-        ->required();
-
-    const char* int_meta_target_default = "int_person_all";
-
-    deps_cmd->add_option(
-        "--int-meta-target", result.options.deps_cmd.int_meta_target,
+        "--meta-target", result.options.deps_cmd.meta_target,
         fmt::format(
-            "The NAME of the meta target aggregating the generated intermediate file targets."
-            " The default is '{}'.", int_meta_target_default))
-        ->option_text("NAME")
-        ->default_val(int_meta_target_default);
-
-    const char* out_meta_target_default = "out_person_all";
+            "The NAME of the meta target aggregating the generated intermediate file targets."))
+        ->required()
+        ->option_text("NAME");
 
     deps_cmd->add_option(
-        "--out-meta-target", result.options.deps_cmd.out_meta_target,
-        fmt::format(
-            "The NAME of the meta target aggregating the generated output file targets."
-            " The default is '{}'.", out_meta_target_default))
-        ->option_text("NAME")
-        ->default_val(out_meta_target_default);
-
+        "--person", result.options.deps_cmd.person_id,
+        "The unique IDentifier of the person whose dependencies to print.")
+        ->option_text("ID")
+        ->required();
     return result;
 }
 

@@ -27,11 +27,9 @@ struct cli_options
 
     struct deps
     {
-        std::string src_root_symbol;
-        std::string int_root_symbol;
-        std::string out_root_symbol;
-        std::string int_meta_target;
-        std::string out_meta_target;
+        std::string tgt_root_path;
+        std::string meta_target;
+        std::string person_id;
     } deps_cmd;
 
     struct targets

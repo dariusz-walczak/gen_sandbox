@@ -7,6 +7,7 @@
 #include "common/file_system_utils.hpp"
 #include "common/person.hpp"
 #include "common/redland_utils.hpp"
+#include "person/error.hpp"
 #include "person/command/common.hpp"
 #include "person/queries/common.hpp"
 #include "person/queries/deps.hpp"
@@ -94,41 +95,27 @@ file_deps_lut merge_dependencies(
     return merged_deps;
 }
 
-void print_dependencies(
-    const file_deps_lut& final_file_lut, const std::optional<std::string>& src_path,
-    const std::string& src_var_name, const std::string& int_var_name,
-    const std::string& out_var_name)
+void print_person_dependencies(
+    const common::resource_id& person_id,
+    const common::file_set& person_file_deps,
+    const std::filesystem::path& tgt_root_path)
 {
-    for (const auto& [person, deps] : final_file_lut)
+    spdlog::trace("{}: Entry checkpoint ({})", __func__, person_id);
+
+    const std::filesystem::path tgt_path = (tgt_root_path / person_id).replace_extension("json");
+
+    // The line-continuation character ('\') and the new-line character are added by the first
+    //  dependency line printed in the following loop.
+    std::cout << tgt_path.string() << ":";
+
+    for (const auto& file : person_file_deps)
     {
-        const common::resource_id person_id = person.get_unique_id();
-        const std::string out_file_path = fmt::format("$({})/{}.html", out_var_name, person_id);
-        const std::string int_file_path = fmt::format("$({})/{}.json", int_var_name, person_id);
-
-        std::cout << fmt::format("{}: {}\n\n", out_file_path, int_file_path);
-        // The line-continuation character ('\') and the new-line character are added by the first
-        //  dependency line printed in the following loop.
-        std::cout << fmt::format("{}:", int_file_path);
-
-        for (const auto& file : deps)
-        {
-            if (src_path.has_value() && file.string().starts_with(src_path.value()))
-            {
-                std::cout << fmt::format(
-                    " \\\n\t\t$({})/{}",
-                    src_var_name, file.string().substr(src_path.value().length()));
-            }
-            else
-            {
-                std::cout << fmt::format(" \\\n\t\t{}", file);
-            }
-        }
-
-        // The leading new-line characters are needed to close the last of the dependency lines
-        //  printed in the above loop.
-        std::cout << fmt::format("\n\nout_person_all: {}\n", out_file_path);
-        std::cout << fmt::format("int_person_all: {}\n\n", int_file_path);
+        std::cout << fmt::format(" \\\n\t\t{}", file);
     }
+
+    // The leading new-line characters are needed to close the last of the dependency lines
+    //  printed in the above loop.
+    std::cout << fmt::format("\n\nint_person_all: {}\n\n", tgt_path.string());
 }
 
 } // namespace detail
@@ -165,9 +152,20 @@ void run_deps_command(const cli_options& options)
 
     detail::file_deps_lut final_file_lut = detail::merge_dependencies(person_deps, data_file_lut);
 
-    detail::print_dependencies(
-        final_file_lut, options.base_path_raw, options.deps_cmd.src_root_symbol,
-        options.deps_cmd.int_root_symbol, options.deps_cmd.out_root_symbol);
+    common::Resource person = { options.deps_cmd.person_id };
+    const auto person_deps_it = final_file_lut.find(person);
+
+    if (person_deps_it == final_file_lut.cend())
+    {
+        throw person_exception(
+            person_exception::error_code::resource_not_found,
+            fmt::format("Resource not found: {}", person.get_iri().buffer()));
+    }
+
+    detail::print_person_dependencies(
+        person.get_unique_id(),
+        person_deps_it->second,
+        options.deps_cmd.tgt_root_path);
 }
 
 } // namespace person

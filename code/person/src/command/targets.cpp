@@ -28,8 +28,8 @@ void print_targets(
             first = false;
         }
 
-        std::filesystem::path tgt_path = target_root_path / res->get_unique_id();
-        tgt_path.replace_extension(target_ext);
+        const std::filesystem::path tgt_path =
+            (target_root_path / res->get_unique_id()).replace_extension(target_ext);
 
         std::cout << tgt_path.string();
     }
