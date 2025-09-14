@@ -38,13 +38,13 @@ common::data_table retrieve_related_persons(librdf_world* world, librdf_model* m
 }
 
 bool ask_resource_referenced(
-    librdf_world* world, librdf_model* model, const std::string& resource_iri)
+    librdf_world* world, librdf_model* model, const std::string& resource_uri)
 {
     spdlog::trace("{}: Entry checkpoint", __func__);
 
     const std::string query = R"(
         ASK WHERE {
-            <)" + resource_iri + R"(> ?predicate ?object
+            <)" + resource_uri + R"(> ?predicate ?object
         })";
 
     spdlog::debug("{}: The query: {}", __func__, query);

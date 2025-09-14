@@ -19,50 +19,50 @@ enum class retrieve_result : std::uint8_t
 };
 
 retrieve_result retrieve_person_base_data_opt(
-    common::Person& person, const std::string& person_iri,
+    common::Person& person, const std::string& person_uri,
     librdf_world* world, librdf_model* model);
 
 void retrieve_person_base_data_req(
-    common::Person& person, const std::string& person_iri,
+    common::Person& person, const std::string& person_uri,
     librdf_world* world, librdf_model* model);
 
 retrieve_result retrieve_person_name(
-    common::Person& person, const std::string& person_iri,
+    common::Person& person, const std::string& person_uri,
     librdf_world* world, librdf_model* model);
 
 retrieve_result retrieve_person_any_name(
-    common::Person& person, const std::string& person_iri,
+    common::Person& person, const std::string& person_uri,
     librdf_world* world, librdf_model* model);
 
 retrieve_result retrieve_person_birth_name(
-    common::Person& person, const std::string& person_iri,
+    common::Person& person, const std::string& person_uri,
     librdf_world* world, librdf_model* model);
 
 retrieve_result retrieve_person_preferred_name(
-    common::Person& person, const std::string& person_iri,
+    common::Person& person, const std::string& person_uri,
     librdf_world* world, librdf_model* model);
 
 retrieve_result retrieve_person_relatives(
-    common::Person& person, const std::string& person_iri,
+    common::Person& person, const std::string& person_uri,
     librdf_world* world, librdf_model* model);
 
 retrieve_result retrieve_person_parents(
-    common::Person& person, const std::string& person_iri,
+    common::Person& person, const std::string& person_uri,
     librdf_world* world, librdf_model* model);
 
 retrieve_result retrieve_person_partners(
-    common::Person& person, const std::string& person_iri,
+    common::Person& person, const std::string& person_uri,
     librdf_world* world, librdf_model* model);
 
 retrieve_result retrieve_person_children(
-    common::Person& person, const std::string& person_iri,
+    common::Person& person, const std::string& person_uri,
     librdf_world* world, librdf_model* model);
 
 /**
  *
  * @throw common_exception
  */
-common::resource_set retrieve_person_iris(librdf_world* world, librdf_model* model);
+common::resource_set retrieve_person_uris(librdf_world* world, librdf_model* model);
 
 std::vector<common::Person> retrieve_person_list(librdf_world* world, librdf_model* model);
 

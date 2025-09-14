@@ -50,7 +50,7 @@ void run_targets_command(const cli_options& options)
     common::load_rdf_set(redland_ctx->world, redland_ctx->model, input_paths);
 
     detail::print_targets(
-        retrieve_person_iris(redland_ctx->world, redland_ctx->model),
+        retrieve_person_uris(redland_ctx->world, redland_ctx->model),
         options.targets_cmd.tgt_root_path, (options.targets_cmd.json_flag ? "json" : "html"));
 }
 

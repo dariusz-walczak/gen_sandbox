@@ -135,7 +135,7 @@ void run_deps_command(const cli_options& options)
         initialize_redland_ctx(redland_ctx); // throws common_exception on initialization failure
         common::load_rdf_set(redland_ctx->world, redland_ctx->model, input_paths);
 
-        all_persons = retrieve_person_iris(redland_ctx->world, redland_ctx->model);
+        all_persons = retrieve_person_uris(redland_ctx->world, redland_ctx->model);
         person_deps = detail::collect_dependent_persons(redland_ctx->world, redland_ctx->model);
     }
 
@@ -159,7 +159,7 @@ void run_deps_command(const cli_options& options)
     {
         throw person_exception(
             person_exception::error_code::resource_not_found,
-            fmt::format("Resource not found: {}", person.get_iri().buffer()));
+            fmt::format("Resource not found: {}", person.get_uri().buffer()));
     }
 
     detail::print_person_dependencies(

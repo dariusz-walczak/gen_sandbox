@@ -12,7 +12,7 @@
 
 namespace test
 {
-//  The retrieve_person_iris function tests
+//  The retrieve_person_uris function tests
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
 
 namespace {
@@ -46,14 +46,14 @@ TEST_P(CommonQueries_RetrievePersonIris, NormalSuccessCases)
             triple.subject, triple.predicate, triple.object);
     }
 
-    common::resource_set resources = person::retrieve_person_iris(ctx->world, ctx->model);
+    common::resource_set resources = person::retrieve_person_uris(ctx->world, ctx->model);
 
     const std::set<boost::urls::url_view> expected_iris{ param.iris.begin(), param.iris.end() };
     std::set<boost::urls::url_view> actual_iris;
 
     std::transform(
         resources.begin(), resources.end(), std::inserter(actual_iris, actual_iris.end()),
-        [](auto const& r) { return r->get_iri(); });
+        [](auto const& r) { return r->get_uri(); });
 
     EXPECT_EQ(expected_iris, actual_iris);
 }

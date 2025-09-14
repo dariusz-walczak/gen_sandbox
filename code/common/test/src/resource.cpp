@@ -8,8 +8,8 @@
 struct ExtractResourceParams
 {
     common::data_row input_row;
-    std::string iri_bn; // IRI Binding Name
-    std::string expected_iri;
+    std::string uri_bn; // URI Binding Name
+    std::string expected_uri;
 };
 
 class Resource_ExtractResource : public ::testing::TestWithParam<ExtractResourceParams> {};
@@ -17,10 +17,10 @@ class Resource_ExtractResource : public ::testing::TestWithParam<ExtractResource
 TEST_P(Resource_ExtractResource, Success)
 {
     const ExtractResourceParams& params = GetParam();
-    std::shared_ptr<common::Resource> output = common::extract_resource(params.input_row, params.iri_bn);
+    std::shared_ptr<common::Resource> output = common::extract_resource(params.input_row, params.uri_bn);
 
 
-    EXPECT_EQ(output->get_iri(), boost::urls::url_view(params.expected_iri));
+    EXPECT_EQ(output->get_uri(), boost::urls::url_view(params.expected_uri));
 }
 
 const std::vector<ExtractResourceParams> g_success_scenarios_params{
