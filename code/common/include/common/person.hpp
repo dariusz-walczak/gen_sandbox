@@ -11,6 +11,7 @@
 #include <redland.h>
 
 #include "common/redland_utils.hpp"
+#include "common/resource.hpp"
 
 namespace common
 {
@@ -27,15 +28,13 @@ using person_id = std::string;
 using person_iri = std::string;
 
 
-class Person
+class Person : public Resource
 {
 public:
     [[nodiscard]] std::string get_given_names() const;
     [[nodiscard]] std::string get_last_names() const;
     [[nodiscard]] std::string get_full_name() const;
 
-    person_id id;
-    person_iri iri;
     std::optional<Gender> gender;
     std::vector<std::string> given_names;
     std::vector<std::string> last_names;
@@ -46,7 +45,7 @@ public:
     std::shared_ptr<Person> father;
 
     std::vector<std::shared_ptr<Person>> partners;
-    std::map<std::string, std::vector<std::shared_ptr<Person>>> children;
+    std::map<Resource, std::vector<std::shared_ptr<Person>>> children;
 };
 
 /* @brief Extract the string representation of the gender from the Redland Node
@@ -59,20 +58,8 @@ void extract_person_death_date(Person& person, const data_row& row, const std::s
 void extract_person_gender(Person& person, const data_row& row, const std::string& gender_type_bn);
 void extract_person_names(Person& person, const data_table& table);
 
-/* @brief Extract the person identifier from the person IRI binding in the data row and store it
- *        in the `id` field of the provided `Person` object.
- *
- * Throw the common_exception when:
- * * the IRI has unexpected format,
- * * the binding is not found in the row.
- *
- * @param person The output object to store the extracted identifier in.
- * @param row    The input data row.
- * @param person_iri_bn The name of the input data row binding to extract the person iri from. */
-void extract_person_id(Person& person, const data_row& row, const std::string& person_iri_bn);
-
 nlohmann::json person_to_json(const Person& person);
-nlohmann::json person_list_to_json(const std::vector<Person>& person_list);
+nlohmann::json person_list_to_json(const std::vector<std::shared_ptr<Person>>& person_list);
 
 } // namespace common
 

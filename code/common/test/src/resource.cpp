@@ -17,7 +17,7 @@ class Resource_ExtractResource : public ::testing::TestWithParam<ExtractResource
 TEST_P(Resource_ExtractResource, Success)
 {
     const ExtractResourceParams& params = GetParam();
-    std::shared_ptr<common::Resource> output = common::extract_resource(params.input_row, params.uri_bn);
+    std::shared_ptr<common::Resource> output = common::extract_resource<common::Resource>(params.input_row, params.uri_bn);
 
 
     EXPECT_EQ(output->get_uri(), boost::urls::url_view(params.expected_uri));

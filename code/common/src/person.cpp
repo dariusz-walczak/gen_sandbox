@@ -129,9 +129,8 @@ void extract_person_birth_date(Person& person, const data_row& row, const std::s
     else
     {
         spdlog::debug(
-            fmt::format(
-                "extract_person_birth_date: The '{}' binding not found for person '{}'",
-                date_bn, (person.id.empty() ? "<unknown>" : person.id)));
+            "extract_person_birth_date: The '{}' binding not found for person '{}'",
+            date_bn, person.get_unique_id());
     }
 }
 
@@ -147,9 +146,8 @@ void extract_person_death_date(Person& person, const data_row& row, const std::s
     else
     {
         spdlog::debug(
-            fmt::format(
-                "extract_person_death_date: The '{}' binding not found for person '{}'",
-                date_bn, (person.id.empty() ? "<unknown>" : person.id)));
+            "extract_person_death_date: The '{}' binding not found for person '{}'",
+            date_bn, person.get_unique_id());
     }
 }
 
@@ -177,37 +175,6 @@ void extract_person_gender(
     else
     {
         person.gender = Gender::Unknown;
-    }
-}
-
-namespace
-{
-    const std::string g_person_prefix = { "http://example.org/" };
-}
-
-void extract_person_id(Person& person, const data_row& row, const std::string& person_iri_bn)
-{
-    auto iri_it = row.find(person_iri_bn);
-
-    if (iri_it != row.end())
-    {
-        if (iri_it->second.starts_with(g_person_prefix))
-        {
-            person.id = iri_it->second.substr(g_person_prefix.size());
-            person.iri = iri_it->second;
-        }
-        else
-        {
-            throw common_exception(
-                common_exception::error_code::data_format_error,
-                fmt::format("The person iri has unexpected format: '{}'", iri_it->second));
-        }
-    }
-    else
-    {
-        throw common_exception(
-            common_exception::error_code::binding_not_found,
-            fmt::format("The data row is missing the '{}' binding", person_iri_bn));
     }
 }
 
@@ -245,10 +212,7 @@ void extract_person_names(Person& person, const data_table& table) {
 nlohmann::json person_to_json(const Person& person) {
     nlohmann::json result;
 
-    if (!person.id.empty())
-    {
-        result["id"] = person.id;
-    }
+    result["unique_path"] = person.get_unique_id();
 
     if (person.gender == Gender::Male) {
         result["gender"] = g_male;
@@ -295,7 +259,7 @@ nlohmann::json person_to_json(const Person& person) {
 
         for (const auto& partner : person.partners) {
             auto json_partner = person_to_json(*partner);
-            auto children_it = person.children.find(partner->id);
+            auto children_it = person.children.find(*partner);
 
             if (children_it != person.children.end())
             {
@@ -311,7 +275,7 @@ nlohmann::json person_to_json(const Person& person) {
         }
     }
 
-    const auto single_parent_children_it = person.children.find("");
+    const auto single_parent_children_it = person.children.find({});
 
     if (single_parent_children_it != person.children.end())
     {
@@ -326,13 +290,13 @@ nlohmann::json person_to_json(const Person& person) {
     return result;
 }
 
-nlohmann::json person_list_to_json(const std::vector<Person>& person_list)
+nlohmann::json person_list_to_json(const std::vector<std::shared_ptr<Person>>& person_list)
 {
     nlohmann::json result;
 
     for (const auto& person : person_list)
     {
-        result.push_back(person_to_json(person));
+        result.push_back(person_to_json(*person));
     }
 
     return result;

@@ -7,9 +7,8 @@
 namespace person
 {
 
-retrieve_result retrieve_person_base_data_opt(
-    common::Person& person, const std::string& person_uri,
-    librdf_world* world, librdf_model* model)
+std::shared_ptr<common::Person> retrieve_person_base_data_opt(
+    const std::string& person_uri, librdf_world* world, librdf_model* model)
 {
 
     spdlog::trace(fmt::format("retrieve_person: Entry checkpoint ({})", person_uri));
@@ -50,84 +49,86 @@ retrieve_result retrieve_person_base_data_opt(
     const common::data_table& data_table = std::get<1>(data_tuple);
 
     if (data_table.empty()) {
-        spdlog::error("retrieve_person: Person {} was not found", person_uri);
+        spdlog::debug("{}: Person not found: {}", __func__, person_uri);
 
-        return retrieve_result::NotFound;
+        return { nullptr };
     }
 
     assert(data_table.size() == 1);
 
     const common::data_row& data_row = data_table.front();
 
-    extract_person_id(person, data_row, "person");
-    extract_person_gender(person, data_row, "genderType");
-    extract_person_birth_date(person, data_row, "birthDate");
-    extract_person_death_date(person, data_row, "deathDate");
+    auto person = common::extract_resource<common::Person>(data_row, "person");
 
-    return retrieve_result::Success;
+    extract_person_gender(*person, data_row, "genderType");
+    extract_person_birth_date(*person, data_row, "birthDate");
+    extract_person_death_date(*person, data_row, "deathDate");
+
+    return person;
 }
 
-void retrieve_person_base_data_req(
-    common::Person& person, const std::string& person_uri,
-    librdf_world* world, librdf_model* model)
+std::shared_ptr<common::Person> retrieve_person_base_data_req(
+    const std::string& person_uri, librdf_world* world, librdf_model* model)
 {
-    retrieve_result result = retrieve_person_base_data_opt(person, person_uri, world, model);
+    auto person = retrieve_person_base_data_opt(person_uri, world, model);
 
-    if (result == retrieve_result::NotFound)
+    if (!person)
     {
+        spdlog::error("{}: Person not found: {}", __func__, person_uri);
+
         throw person_exception(
             person_exception::error_code::resource_not_found,
             fmt::format("Person not found: '{}'", person_uri));
     }
+
+    return person;
 }
 
 
 retrieve_result retrieve_person_name(
-    common::Person& person, const std::string& person_uri,
-    librdf_world* world, librdf_model* model)
+    common::Person& person, librdf_world* world, librdf_model* model)
 {
 
-    spdlog::debug("retrieve_person_name: Attempting to retrieve the preferred name");
+    spdlog::debug("{}: Attempting to retrieve the preferred name", __func__);
 
     retrieve_result preferred_res =
-        retrieve_person_preferred_name(person, person_uri, world, model);
+        retrieve_person_preferred_name(person, world, model);
 
     spdlog::debug(
-        "retrieve_person_name: The result code of the retrieve_person_preferred_name function is:"
-        " {}", preferred_res);
+        "{}: The result code of the retrieve_person_preferred_name function is: {}",
+        __func__, preferred_res);
 
     if (preferred_res == retrieve_result::Success) {
-        spdlog::debug("retrieve_person_name: Preferred name retrieved");
+        spdlog::debug("{}: Preferred name retrieved", __func__);
 
         return retrieve_result::Success;
     }
 
-    spdlog::debug("retrieve_person_name: Attempting to retrieve the birth name");
+    spdlog::debug("{}: Attempting to retrieve the birth name", __func__);
 
     retrieve_result birth_res =
-        retrieve_person_birth_name(person, person_uri, world, model);
+        retrieve_person_birth_name(person, world, model);
 
     spdlog::debug(
-        "retrieve_person_name: The result code of the retrieve_person_birth_name function is: {}",
-        birth_res);
+        "{}: The result code of the retrieve_person_birth_name function is: {}",
+        __func__, birth_res);
 
     if (birth_res == retrieve_result::Success) {
-        spdlog::debug("retrieve_person_name: Birth name retrieved");
+        spdlog::debug("{}: Birth name retrieved", __func__);
 
         return retrieve_result::Success;
     }
 
-    spdlog::debug("retrieve_person_name: Attempting to retrieve any name");
+    spdlog::debug("{}: Attempting to retrieve any name", __func__);
 
     retrieve_result any_res =
-        retrieve_person_any_name(person, person_uri, world, model);
+        retrieve_person_any_name(person, world, model);
 
     spdlog::debug(
-        "retrieve_person_name: The result code of the retrieve_person_any_name function is: {}",
-        any_res);
+        "{}: The result code of the retrieve_person_any_name function is: {}", __func__, any_res);
 
     if (any_res == retrieve_result::Success) {
-        spdlog::debug("retrieve_person_name: Some name retrieved");
+        spdlog::debug("{}: Some name retrieved", __func__);
 
         return retrieve_result::Success;
     }
@@ -137,8 +138,7 @@ retrieve_result retrieve_person_name(
 
 
 retrieve_result retrieve_person_any_name(
-    common::Person& person, const std::string& person_uri,
-    librdf_world* world, librdf_model* model)
+    common::Person& person, librdf_world* world, librdf_model* model)
 {
     const std::string query = R"(
         PREFIX gx: <http://gedcomx.org/>
@@ -153,7 +153,7 @@ retrieve_result retrieve_person_any_name(
                 {
                     ?person a gx:Person ;
                         gx:name ?name .
-                    FILTER (?person = <)" + person_uri + R"(>)
+                    FILTER (?person = <)" + person.get_uri_str() + R"(>)
                 }
                 LIMIT 1
             }
@@ -182,7 +182,7 @@ retrieve_result retrieve_person_any_name(
     if (data_table.empty()) {
         spdlog::debug(
             "retrieve_person_any_name: Properly formed names of person {} were not found",
-            person_uri);
+            person.get_uri_str());
 
         return retrieve_result::NotFound;
     }
@@ -194,8 +194,7 @@ retrieve_result retrieve_person_any_name(
 
 
 retrieve_result retrieve_person_birth_name(
-    common::Person& person, const std::string& person_uri,
-    librdf_world* world, librdf_model* model)
+    common::Person& person, librdf_world* world, librdf_model* model)
 {
     const std::string query = R"(
         PREFIX gx: <http://gedcomx.org/>
@@ -211,7 +210,7 @@ retrieve_result retrieve_person_birth_name(
             ?form gx:part ?part .
             ?part gx:type ?nameType ;
                 gx:value ?nameValue .
-            FILTER (?person = <)" + person_uri + R"(>)
+            FILTER (?person = <)" + person.get_uri_str() + R"(>)
         })";
 
     spdlog::debug("retrieve_person_birth_name: The query: {}", query);
@@ -232,7 +231,7 @@ retrieve_result retrieve_person_birth_name(
     if (data_table.empty()) {
         spdlog::debug(
             "retrieve_person_birth_name: Properly formed birth names of person {} were not found",
-            person_uri);
+            person.get_uri_str());
         return retrieve_result::NotFound;
     }
 
@@ -274,7 +273,7 @@ common::resource_set retrieve_person_uris(librdf_world* world, librdf_model* mod
 
     for (const common::data_row& row : data_table)
     {
-        result.insert(common::extract_resource(row, "person")); // throws common_exception
+        result.insert(common::extract_resource<common::Resource>(row, "person")); // throws common_exception
     }
 
     return result;
@@ -282,8 +281,7 @@ common::resource_set retrieve_person_uris(librdf_world* world, librdf_model* mod
 
 
 retrieve_result retrieve_person_preferred_name(
-    common::Person& person, const std::string& person_uri,
-    librdf_world* world, librdf_model* model)
+    common::Person& person, librdf_world* world, librdf_model* model)
 {
     const std::string query = R"(
         PREFIX gx: <http://gedcomx.org/>
@@ -300,7 +298,7 @@ retrieve_result retrieve_person_preferred_name(
             ?form gx:part ?part .
             ?part gx:type ?nameType ;
                 gx:value ?nameValue .
-            FILTER (?person = <)" + person_uri + R"(>)
+            FILTER (?person = <)" + person.get_uri_str() + R"(>)
         })";
 
     spdlog::debug("retrieve_person_preferred_name: The query: {}", query);
@@ -321,7 +319,7 @@ retrieve_result retrieve_person_preferred_name(
     if (data_table.empty()) {
         spdlog::debug(
             "retrieve_person_preferred_name: Properly formed preferred names of person {} were not"
-            " found", person_uri);
+            " found", person.get_uri_str());
         return retrieve_result::NotFound;
     }
 
@@ -332,16 +330,14 @@ retrieve_result retrieve_person_preferred_name(
 
 
 retrieve_result retrieve_person_relatives(
-    common::Person& person, const std::string& person_uri,
-    librdf_world* world, librdf_model* model)
+    common::Person& person, librdf_world* world, librdf_model* model)
 {
     return retrieve_result::NotFound;
 }
 
 
 retrieve_result retrieve_person_parents(
-    common::Person& person, const std::string& person_uri,
-    librdf_world* world, librdf_model* model)
+    common::Person& person, librdf_world* world, librdf_model* model)
 {
     const std::string query = R"(
         PREFIX gx: <http://gedcomx.org/>
@@ -355,15 +351,15 @@ retrieve_result retrieve_person_parents(
                 gx:person2 ?proband ;
                 gx:type gx:ParentChild .
             ?relPerson a gx:Person .
-            FILTER (?proband = <)" + person_uri + R"(>)
+            FILTER (?proband = <)" + person.get_uri_str() + R"(>)
         })";
 
-    spdlog::debug("retrieve_person_parents: The query: {}", query);
+    spdlog::debug("{}: The query: {}", __func__, query);
 
     common::exec_query_result res = common::exec_query(world, model, query);
 
     if (!res->success) {
-        spdlog::error("retrieve_person_parents: The query execution has failed");
+        spdlog::error("{}: The query execution has failed", __func__);
 
         throw person_exception(
             person_exception::error_code::query_error,
@@ -375,7 +371,7 @@ retrieve_result retrieve_person_parents(
 
     if (data_table.empty()) {
         spdlog::debug(
-            "retrieve_person_parents: No parents of person {} were found", person_uri);
+            "{}: No parents of person {} were found", __func__, person.get_uri_str());
 
         return retrieve_result::NotFound;
     }
@@ -383,27 +379,29 @@ retrieve_result retrieve_person_parents(
     for (const common::data_row& row : data_table) {
         auto uri_it = common::get_binding_value_req(row, "relPerson");
 
-        std::shared_ptr<common::Person> parent = std::make_shared<common::Person>();
-        retrieve_person_base_data_req(*parent, uri_it->second, world, model);
-        retrieve_person_name(*parent, uri_it->second, world, model);
+        /* Exceptional path (resource not found): Propagate the exception
+         * Normal path (resource found): Continue the execution */
+        auto parent = retrieve_person_base_data_req(uri_it->second, world, model);
+
+        retrieve_person_name(*parent, world, model);
 
         if (parent->gender == common::Gender::Male) {
             if (person.father) {
                 spdlog::error(
-                    "retrieve_person_parents: Found multiple fathers of the person {}. Ignoring"
-                    " the later occurrence", person_uri);
+                    "{}: Found multiple fathers of the person {}. Ignoring the later occurrence",
+                    __func__, person.get_uri_str());
             } else {
-                spdlog::debug("retrieve_person_parents: Father found");
+                spdlog::debug("{}: Father found", __func__);
 
                 person.father = parent;
             }
         } else if (parent->gender == common::Gender::Female) {
             if (person.mother) {
                 spdlog::error(
-                    "retrieve_person_parents: Found multiple mothers of the person {}. Ignoring"
-                    " the later occurrence", person_uri);
+                    "{}: Found multiple mothers of the person {}. Ignoring the later occurrence",
+                    __func__, person.get_uri_str());
             } else {
-                spdlog::debug("retrieve_person_parents: Mother found");
+                spdlog::debug("{}: Mother found", __func__);
 
                 person.mother = parent;
             }
@@ -415,8 +413,7 @@ retrieve_result retrieve_person_parents(
 
 
 retrieve_result retrieve_person_partners(
-    common::Person& person, const std::string& person_uri,
-    librdf_world* world, librdf_model* model)
+    common::Person& person, librdf_world* world, librdf_model* model)
 {
     const std::string query = R"(
         PREFIX gx: <http://gedcomx.org/>
@@ -450,7 +447,7 @@ retrieve_result retrieve_person_partners(
                 ?child a gx:Person .
             }
             FILTER ((?partner != ?proband) &&
-                    (?proband = <)" + person_uri + R"(>))
+                    (?proband = <)" + person.get_uri_str() + R"(>))
         })";
 
     spdlog::debug("retrieve_person_partners: The query: {}", query);
@@ -470,7 +467,7 @@ retrieve_result retrieve_person_partners(
 
     if (data_table.empty()) {
         spdlog::debug(
-            "retrieve_person_partners: No partners of person {} were found", person_uri);
+            "{}: No partners of person {} were found", __func__, person.get_uri_str());
 
         return retrieve_result::NotFound;
     }
@@ -478,10 +475,11 @@ retrieve_result retrieve_person_partners(
     for (const common::data_row& row : data_table) {
         auto uri_it = common::get_binding_value_req(row, "partner");
 
-        std::shared_ptr<common::Person> partner = std::make_shared<common::Person>();
+        /* Exceptional path (resource not found): Propagate the exception
+         * Normal path (resource found): Continue the execution */
+        auto partner = retrieve_person_base_data_req(uri_it->second, world, model);
 
-        retrieve_person_base_data_req(*partner, uri_it->second, world, model);
-        retrieve_person_name(*partner, uri_it->second, world, model);
+        retrieve_person_name(*partner, world, model);
 
         person.partners.push_back(partner);
     }
@@ -491,8 +489,7 @@ retrieve_result retrieve_person_partners(
 
 
 retrieve_result retrieve_person_children(
-    common::Person& person, const std::string& person_uri,
-    librdf_world* world, librdf_model* model)
+    common::Person& person, librdf_world* world, librdf_model* model)
 {
     const std::string query = R"(
         PREFIX gx: <http://gedcomx.org/>
@@ -513,10 +510,10 @@ retrieve_result retrieve_person_children(
                 FILTER(?partner != ?proband)
             }
             ?child a gx:Person .
-            FILTER (?proband = <)" + person_uri + R"(>)
+            FILTER (?proband = <)" + person.get_uri_str() + R"(>)
         })";
 
-    spdlog::debug("retrieve_person_children: The query: {}", query);
+    spdlog::debug("{}: The query: {}", __func__, query);
 
     common::exec_query_result res = common::exec_query(world, model, query);
 
@@ -533,7 +530,7 @@ retrieve_result retrieve_person_children(
 
     if (data_table.empty()) {
         spdlog::debug(
-            "retrieve_person_children: No children of person {} were found", person_uri);
+            "{}: No children of person {} were found", __func__, person.get_uri_str());
 
         return retrieve_result::NotFound;
     }
@@ -541,19 +538,20 @@ retrieve_result retrieve_person_children(
     for (const common::data_row& row : data_table) {
         auto uri_it = common::get_binding_value_req(row, "child");
 
-        std::shared_ptr<common::Person> child = std::make_shared<common::Person>();
-        retrieve_person_base_data_req(*child, uri_it->second, world, model);
-        retrieve_person_name(*child, uri_it->second, world, model);
+        /* Exceptional path (resource not found): Propagate the exception
+         * Normal path (resource found): Continue the execution */
+        auto child = retrieve_person_base_data_req(uri_it->second, world, model);
+
+        retrieve_person_name(*child, world, model);
 
         if (common::has_binding(row, "partner"))
         {
-            common::Person partner;
-            extract_person_id(partner, row, "partner");
-            person.children[partner.id].push_back(child);
+            auto partner = common::extract_resource<common::Resource>(row, "partner");
+            person.children[*partner].push_back(child);
         }
         else
         {
-            person.children[""].push_back(child);
+            person.children[{}].push_back(child);
         }
     }
 
@@ -561,9 +559,10 @@ retrieve_result retrieve_person_children(
 }
 
 
-std::vector<common::Person> retrieve_person_list(librdf_world* world, librdf_model* model)
+std::vector<std::shared_ptr<common::Person>> retrieve_person_list(
+    librdf_world* world, librdf_model* model)
 {
-    spdlog::trace("retrieve_person_list: Entry checkpoint");
+    spdlog::trace("{}: Entry checkpoint", __func__);
 
     const std::string query = R"(
         PREFIX gx: <http://gedcomx.org/>
@@ -584,12 +583,12 @@ std::vector<common::Person> retrieve_person_list(librdf_world* world, librdf_mod
             }
         })";
 
-    spdlog::debug("retrieve_person_list: The query: {}", query);
+    spdlog::debug("{}: The query: {}", __func__, query);
 
     common::exec_query_result res = common::exec_query(world, model, query);
 
     if (!res->success) {
-        spdlog::error("retrieve_person_list: The query execution has failed");
+        spdlog::error("{}: The query execution has failed", __func__);
 
         throw person_exception(
             person_exception::error_code::query_error,
@@ -599,18 +598,19 @@ std::vector<common::Person> retrieve_person_list(librdf_world* world, librdf_mod
     const common::extract_data_table_result data_tuple = common::extract_data_table(res->results);
     const common::data_table& data_table = std::get<1>(data_tuple);
 
-    std::vector<common::Person> result;
+    std::vector<std::shared_ptr<common::Person>> result;
     result.reserve(data_table.size());
 
     for (const common::data_row& row : data_table)
     {
-        result.emplace_back();
+        auto person = common::extract_resource<common::Person>(row, "person");
 
-        extract_person_id(result.back(), row, "person");
-        extract_person_gender(result.back(), row, "genderType");
-        extract_person_birth_date(result.back(), row, "birthDate");
-        extract_person_death_date(result.back(), row, "deathDate");
-        retrieve_person_name(result.back(), result.back().iri, world, model);
+        extract_person_gender(*person, row, "genderType");
+        extract_person_birth_date(*person, row, "birthDate");
+        extract_person_death_date(*person, row, "deathDate");
+        retrieve_person_name(*person, world, model);
+
+        result.emplace_back(person);
     }
 
     return result;

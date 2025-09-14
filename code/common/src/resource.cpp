@@ -3,7 +3,6 @@
 #include <stdexcept>
 #include <spdlog/spdlog.h>
 
-#include "common/common_exception.hpp"
 
 namespace common
 {
@@ -83,26 +82,6 @@ std::filesystem::path Resource::get_unique_path() const
 {
     // Implicit conversion from std::string to std::filesystem::path:
     return get_unique_id();
-}
-
-
-std::shared_ptr<Resource> extract_resource(const data_row& row, const std::string& resource_uri_bn)
-{
-    auto uri_it = row.find(resource_uri_bn);
-
-    if (uri_it == row.end())
-    {
-        spdlog::debug(
-            "The following, expected resource URI binding wasn't found in the processed data row:"
-            " {}", resource_uri_bn);
-
-        throw common_exception(
-            common_exception::error_code::binding_not_found,
-            fmt::format("The data row is missing the '{}' binding", resource_uri_bn));
-    }
-
-    // The Resource::Resource counstructor may throw common_exception:
-    return std::make_shared<Resource>(uri_it->second);
 }
 
 } // namespace common
