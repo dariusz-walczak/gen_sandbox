@@ -15,7 +15,15 @@ public:
     enum class error_code : std::uint8_t {
         uninitialized = 0,
         query_error,
-        resource_not_found
+        resource_not_found,
+        /** @brief Input contract violated: argument(s) fail the function’s preconditions
+         *
+         *  Throw when any function argument violates documented preconditions (type, domain,
+         *   range, invariants, or cross-param relations)
+         *
+         *  @par Expected message format
+         *     `Precondition failure: <param>=<value> must satisfy <condition>` */
+        input_contract_error
     };
 
     person_exception(error_code code, const std::string& msg);

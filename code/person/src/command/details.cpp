@@ -10,6 +10,7 @@
 #include "person/command/common.hpp"
 #include "person/error.hpp"
 #include "person/queries/common.hpp"
+#include "person/queries/details.hpp"
 
 namespace person
 {
@@ -29,7 +30,10 @@ void run_details_command(const cli_options& options)
     // Normal path (resource found): Continue the execution
     retrieve_person_name(*person, redland_ctx->world, redland_ctx->model);
     retrieve_person_parents(*person, redland_ctx->world, redland_ctx->model);
-    retrieve_person_partners(*person, redland_ctx->world, redland_ctx->model);
+
+    person->partners = retrieve_person_partners(
+        person.get(), redland_ctx->world, redland_ctx->model);
+
     retrieve_person_children(*person, redland_ctx->world, redland_ctx->model);
 
     nlohmann::json output = person_to_json(*person);

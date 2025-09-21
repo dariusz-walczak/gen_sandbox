@@ -13,6 +13,7 @@ add_library(
   src/option_parser.cpp
   src/queries/common.cpp
   src/queries/deps.cpp
+  src/queries/details.cpp
 )
 
 target_include_directories(
