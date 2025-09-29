@@ -31,6 +31,8 @@ using person_iri = std::string;
 class Person : public Resource
 {
 public:
+    Person(const std::string& uri) : Resource(uri) {}
+
     [[nodiscard]] std::string get_given_names() const;
     [[nodiscard]] std::string get_last_names() const;
     [[nodiscard]] std::string get_full_name() const;
