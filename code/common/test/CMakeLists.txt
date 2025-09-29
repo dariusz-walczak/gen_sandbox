@@ -30,6 +30,7 @@ target_include_directories(
 )
 
 target_link_libraries(gen_test_lib PUBLIC gtest_main)
+target_link_libraries(gen_test_lib PUBLIC GTest::gmock)
 target_link_libraries(gen_test_lib PUBLIC spdlog::spdlog)
 target_link_libraries(gen_test_lib PUBLIC CLI11::CLI11)
 target_link_libraries(gen_test_lib PUBLIC gen_common)
