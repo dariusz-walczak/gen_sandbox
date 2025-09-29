@@ -6,6 +6,7 @@ add_executable(
   src/main.cpp
   src/queries/common.cpp
   src/queries/deps.cpp
+  src/queries/details.cpp
 )
 
 target_include_directories(

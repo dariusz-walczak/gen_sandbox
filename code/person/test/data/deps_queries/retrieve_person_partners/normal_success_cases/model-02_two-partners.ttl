@@ -1,0 +1,34 @@
+@prefix gx: <http://gedcomx.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix ex: <http://example.org/> .
+
+
+ex:P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:P2 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:P3 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:P4 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+# Male to female relationship (male is person1):
+ex:R1 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:P1 ;
+    gx:person2 ex:P2 .
+
+# Female to male relationship (male is person2):
+ex:R2 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:P3 ;
+    gx:person2 ex:P1 .
+
+# Female to male relationship (male is person2):
+ex:R3 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:P3 ;
+    gx:person2 ex:P4 .
