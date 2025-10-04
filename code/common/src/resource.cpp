@@ -84,4 +84,17 @@ std::filesystem::path Resource::get_unique_path() const
     return get_unique_id();
 }
 
+void Resource::print_state(std::ostream& os) const
+{
+    os << "uri: " << m_uri.c_str();
+}
+
+std::ostream& Resource::operator<<(std::ostream& os)
+{
+    os << "Resource{";
+    print_state(os);
+    os << "}";
+    return os;
+}
+
 } // namespace common

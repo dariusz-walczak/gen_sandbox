@@ -2,8 +2,10 @@
 #define COMMON_RESOURCE_HPP
 
 #include <memory>
+#include <ostream>
 #include <set>
 #include <string>
+
 #include <boost/url.hpp>
 
 #include "common/common_exception.hpp"
@@ -22,16 +24,21 @@ struct Resource
 public:
     Resource() = default;
     Resource(const std::string& uri) { set_uri(uri); }
+    virtual ~Resource() = default;
 
     void set_uri(const std::string& uri);
 
-    [[nodiscard]] const boost::urls::url_view get_uri() const { return m_uri; }
-    [[nodiscard]] const std::string get_uri_str() const { return m_uri.c_str(); }
+    [[nodiscard]] boost::urls::url_view get_uri() const { return m_uri; }
+    [[nodiscard]] std::string get_uri_str() const { return m_uri.c_str(); }
     [[nodiscard]] resource_id get_unique_id() const;
     [[nodiscard]] std::filesystem::path get_unique_path() const;
 
     bool operator<(const Resource& other) const { return m_uri < other.m_uri; }
     bool operator==(const Resource& other) const { return m_uri == other.m_uri; }
+    std::ostream& operator<<(std::ostream& os);
+
+protected:
+    virtual void print_state(std::ostream& os) const;
 
 private:
     /** This field stores the resource URI

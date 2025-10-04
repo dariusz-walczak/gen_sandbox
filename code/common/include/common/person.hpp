@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <ostream>
 #include <string>
 
 #include <nlohmann/json.hpp>
@@ -23,10 +24,18 @@ enum class Gender : std::uint8_t {
     Unknown
 };
 
+[[nodiscard]] std::string_view to_string(Gender g) noexcept;
+
+inline std::ostream& operator<<(std::ostream& os, Gender g)
+{
+    os << to_string(g);
+    return os;
+}
 
 using person_id = std::string;
 using person_iri = std::string;
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
 
 class Person : public Resource
 {
@@ -48,7 +57,14 @@ public:
 
     std::vector<std::shared_ptr<Person>> partners;
     std::map<Resource, std::vector<std::shared_ptr<Person>>> children;
+
+    std::ostream& operator<<(std::ostream& os);
+
+protected:
+    void print_state(std::ostream& os) const override;
 };
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
 
 /* @brief Extract the string representation of the gender from the Redland Node
  *

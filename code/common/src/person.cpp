@@ -17,6 +17,20 @@ namespace {
     const char* g_female = "female";
 }
 
+std::string_view to_string(Gender g) noexcept
+{
+    using enum Gender;
+
+    switch (g)
+    {
+    case Uninitialized: return "uninitialized";
+    case Male: return g_male;
+    case Female: return g_female;
+    case Unknown: return "unknown";
+    };
+    return "invalid";
+}
+
 std::string Person::get_given_names() const {
     std::ostringstream oss;
 
@@ -70,6 +84,23 @@ std::string Person::get_full_name() const {
     }
 
     return "";
+}
+
+std::ostream& Person::operator<<(std::ostream& os)
+{
+    os << "Person{";
+    print_state(os);
+    os << "}";
+    return os;
+}
+
+void Person::print_state(std::ostream& os) const
+{
+    Resource::print_state(os);
+    if (gender.has_value())
+    {
+        os << ", gender: " << gender.value();
+    }
 }
 
 
