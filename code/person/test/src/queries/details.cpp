@@ -78,7 +78,8 @@ const std::vector<Param> g_params {
     },
     {
         "TwoPartnersP1",
-        "data/deps_queries/retrieve_person_partners/normal_success_cases/model-02_two-partners.ttl",
+        "data/deps_queries/retrieve_person_partners/normal_success_cases/"
+        "model-02_two-partners.ttl",
         "http://example.org/P1",
         {
             common::Person("http://example.org/P2"),
@@ -87,7 +88,8 @@ const std::vector<Param> g_params {
     },
     {
         "TwoPartnersP2",
-        "data/deps_queries/retrieve_person_partners/normal_success_cases/model-02_two-partners.ttl",
+        "data/deps_queries/retrieve_person_partners/normal_success_cases/"
+        "model-02_two-partners.ttl",
         "http://example.org/P2",
         {
             common::Person("http://example.org/P1")
@@ -95,11 +97,38 @@ const std::vector<Param> g_params {
     },
     {
         "TwoPartnersP3",
-        "data/deps_queries/retrieve_person_partners/normal_success_cases/model-02_two-partners.ttl",
+        "data/deps_queries/retrieve_person_partners/normal_success_cases/"
+        "model-02_two-partners.ttl",
         "http://example.org/P3",
         {
             common::Person("http://example.org/P1"),
             common::Person("http://example.org/P4")
+        }
+    },
+    {
+        "ThreeGensG1P1",
+        "data/deps_queries/retrieve_person_partners/normal_success_cases/"
+        "model-03_three-generations.ttl",
+        "http://example.org/G1P1",
+        {
+            common::Person("http://example.org/G1P2"),
+        }
+    },
+    {
+        "ThreeGensG2P1",
+        "data/deps_queries/retrieve_person_partners/normal_success_cases/"
+        "model-03_three-generations.ttl",
+        "http://example.org/G2P1",
+        {
+            common::Person("http://example.org/G2P2"),
+        }
+    },
+    {
+        "ThreeGensG3P1",
+        "data/deps_queries/retrieve_person_partners/normal_success_cases/"
+        "model-03_three-generations.ttl",
+        "http://example.org/G3P1",
+        {
         }
     }
 };

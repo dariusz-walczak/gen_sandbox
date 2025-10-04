@@ -1,0 +1,95 @@
+@prefix gx: <http://gedcomx.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix ex: <http://example.org/> .
+
+#                            +-ex:G1P1
+#                            |     (m)
+# ex:G3P1 -+   +-ex:G2P1----[P]
+#     (m)  |   |     (m)     |     (f)
+#          |   |             +-ex:G1P2
+#          +--[P]
+#          |   |             +-ex:G1P3
+#          |   |     (f)     |     (m)
+# ex:G3P2  +   +-ex:G2P2----[P]
+#     (f)                    |     (f)
+#                            +-ex:G1P4
+
+
+ex:G1P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:G1P2 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:R1 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:G1P1 ;
+    gx:person2 ex:G1P2 .
+
+ex:G1P3 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:G1P4 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:R2 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:G1P3 ;
+    gx:person2 ex:G1P4 .
+
+ex:G2P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:R3 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:G1P1 ;
+    gx:person2 ex:G2P1 .
+
+ex:R4 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:G1P2 ;
+    gx:person2 ex:G2P1 .
+
+ex:G2P2 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:R5 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:G1P3 ;
+    gx:person2 ex:G2P2 .
+
+ex:R6 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:G1P4 ;
+    gx:person2 ex:G2P2 .
+
+ex:R7 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:G2P1 ;
+    gx:person2 ex:G2P2 .
+
+ex:G3P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:R8 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:G2P1 ;
+    gx:person2 ex:G3P1 .
+
+ex:R8 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:G2P2 ;
+    gx:person2 ex:G3P1 .
+
+ex:G3P2 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:R8 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:G2P1 ;
+    gx:person2 ex:G3P2 .
+
+ex:R8 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:G2P2 ;
+    gx:person2 ex:G3P2 .
