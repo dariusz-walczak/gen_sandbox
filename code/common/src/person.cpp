@@ -288,9 +288,10 @@ nlohmann::json person_to_json(const Person& person) {
     if (!person.partners.empty()) {
         result["partners"] = nlohmann::json::array();
 
-        for (const auto& partner : person.partners) {
-            auto json_partner = person_to_json(*partner);
-            auto children_it = person.children.find(*partner);
+        for (const Person::PartnerRelation& relation : person.partners) {
+            const auto& partner = *relation.partner;
+            auto json_partner = person_to_json(partner);
+            auto children_it = person.children.find(partner);
 
             if (children_it != person.children.end())
             {
@@ -301,6 +302,8 @@ nlohmann::json person_to_json(const Person& person) {
                     json_partner["children"].push_back(person_to_json(*child_it));
                 }
             }
+
+            json_partner["inferred"] = relation.is_inferred;
 
             result["partners"].push_back(json_partner);
         }

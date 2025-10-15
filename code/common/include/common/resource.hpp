@@ -37,7 +37,6 @@ public:
     bool operator==(const Resource& other) const { return m_uri == other.m_uri; }
     std::ostream& operator<<(std::ostream& os);
 
-protected:
     virtual void print_state(std::ostream& os) const;
 
 private:

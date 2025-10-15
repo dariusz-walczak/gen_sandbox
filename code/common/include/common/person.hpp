@@ -40,6 +40,12 @@ using person_iri = std::string;
 class Person : public Resource
 {
 public:
+    struct PartnerRelation
+    {
+        std::shared_ptr<Person> partner;
+        bool is_inferred;
+    };
+
     Person(const std::string& uri) : Resource(uri) {}
 
     [[nodiscard]] std::string get_given_names() const;
@@ -55,12 +61,11 @@ public:
     std::shared_ptr<Person> mother;
     std::shared_ptr<Person> father;
 
-    std::vector<std::shared_ptr<Person>> partners;
+    std::vector<PartnerRelation> partners;
     std::map<Resource, std::vector<std::shared_ptr<Person>>> children;
 
     std::ostream& operator<<(std::ostream& os);
 
-protected:
     void print_state(std::ostream& os) const override;
 };
 
