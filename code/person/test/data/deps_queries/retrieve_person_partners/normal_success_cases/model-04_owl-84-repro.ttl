@@ -1,0 +1,168 @@
+@prefix gx: <http://gedcomx.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix ex: <http://example.org/> .
+
+
+# ex:P00011
+#     (FJW)
+#       (m)
+
+# ex:P00010
+#      (AS)
+#       (f)
+
+# ex:P00000
+#      (DW)
+#       (m)
+
+# ex:P00001
+#     (MHW)
+#       (f)
+#
+# ex:P00002
+#     (ZEW)
+#       (m)
+
+
+#                               +-ex:P00002
+#                               |   (ZEW/m)
+#                               |
+#               +-ex:P00000----[P]
+#               |    (DW/m)     |
+#               |               |
+# ex:P00011----[P]              +-ex:P00001
+#     (FJW)     |                   (MHW/f)
+#       (m)     |
+#               +-ex:P00010
+#                    (AS/f)
+
+ex:P00000 a gx:Person ;
+    gx:name [
+        gx:type gx:BirthName ;
+        gx:preferred "true"^^xsd:boolean ;
+        gx:nameForm [
+            gx:lang "pl" ;
+            gx:part [
+                gx:type gx:Given ;
+            gx:value "Dariusz" ] ;
+            gx:part [
+                gx:type gx:Surname ;
+                gx:value "Walczak" ] ] ] ;
+    gx:birthDate "1977-12-10"^^xsd:date .
+
+ex:P00000R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:P00001 ;
+    gx:person2 ex:P00000 .
+
+
+ex:P00000R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:P00002 ;
+    gx:person2 ex:P00000 .
+
+ex:P00000R3 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:P00000 ;
+    gx:person2 ex:P00010 .
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+
+ex:P00011 a gx:Person ;
+    gx:name [
+        gx:type gx:BirthName ;
+        gx:preferred "true"^^xsd:boolean ;
+        gx:nameForm [
+            gx:lang "pl" ;
+        gx:part [
+                gx:type gx:Given ;
+                gx:value "Franciszek Jakub" ] ;
+        gx:part [
+                gx:type gx:Surname ;
+                gx:value "Walczak" ] ] ] ;
+    gx:birthDate "2007-11-28"^^xsd:date .
+
+ex:P00011R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:P00010 ;
+    gx:person2 ex:P00011 .
+
+ex:P00011R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:P00000 ;
+    gx:person2 ex:P00011 .
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+
+ex:P00010 a gx:Person ;
+    gx:name [
+        gx:type gx:BirthName ;
+        gx:preferred "true"^^xsd:boolean ;
+        gx:nameForm [
+            gx:lang "pl" ;
+        gx:part [
+                gx:type gx:Given ;
+                gx:value "Agnieszka" ] ;
+            gx:part [
+                gx:type gx:Surname ;
+                gx:value "Serdeczna" ] ] ] ;
+    gx:birthDate "1981-11-25"^^xsd:date .
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+
+ex:P00001 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] ;
+    gx:name [
+        gx:type gx:BirthName ;
+        gx:preferred "false"^^xsd:boolean ;
+        gx:nameForm [
+            gx:lang "pl" ;
+            gx:part [
+                gx:type gx:Given ;
+                gx:value "Maria" ] ;
+            gx:part [
+                gx:type gx:Given ;
+                gx:value "Helena" ] ;
+            gx:part [
+                gx:type gx:Surname ;
+                gx:value "Wysocka" ] ] ] ;
+    gx:name [
+        gx:type gx:MarriedName ;
+        gx:nameForm [
+            gx:lang "pl" ;
+            gx:part [
+                gx:type gx:Given ;
+                gx:value "Maria" ] ;
+            gx:part [
+                gx:type gx:Given ;
+                gx:value "Helena" ] ;
+            gx:part [
+                gx:type gx:Surname ;
+                gx:value "Walczak" ] ] ] ;
+    gx:birthDate "1952-02-02"^^xsd:date .
+
+ex:P00001R1 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:P00001 ;
+    gx:person2 ex:P00002 .
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+
+ex:P00002 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] ;
+    gx:name [
+        gx:type gx:BirthName ;
+        gx:preferred "true"^^xsd:boolean ;
+        gx:nameForm [
+            gx:lang "pl" ;
+            gx:part [
+                gx:type gx:Given ;
+                gx:value "Zdzisław" ] ;
+            gx:part [
+                gx:type gx:Given ;
+                gx:value "Edmund" ] ;
+            gx:part [
+                gx:type gx:Surname ;
+                gx:value "Walczak" ] ] ] ;
+    gx:birthDate "1951-11-06"^^xsd:date ;
+    gx:deathDate "2019-05-03"^^xsd:date .

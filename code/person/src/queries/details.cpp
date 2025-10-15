@@ -9,7 +9,7 @@
 namespace person
 {
 
-std::vector<std::shared_ptr<common::Person>> retrieve_person_partners(
+std::vector<common::Person::PartnerRelation> retrieve_person_partners(
     const common::Person* person, librdf_world* world, librdf_model* model)
 {
     if (!person)
@@ -23,37 +23,56 @@ std::vector<std::shared_ptr<common::Person>> retrieve_person_partners(
     const std::string query = R"(
         PREFIX gx: <http://gedcomx.org/>
 
-        SELECT DISTINCT ?partner
+        SELECT DISTINCT ?partner, (MIN(?inferred_int) AS ?inferred)
         WHERE
         {
             {
-                ?rel a gx:Relationship ;
-                    gx:person1 ?partner ;
-                    gx:person2 ?proband ;
-                    gx:type gx:Couple .
+                {
+                    SELECT DISTINCT ?partner
+                    WHERE
+                    {
+                        ?rel1 a gx:Relationship ;
+                            gx:person1 ?proband ;
+                            gx:person2 ?child ;
+                            gx:type gx:ParentChild .
+                        ?rel2 a gx:Relationship ;
+                            gx:person1 ?partner ;
+                            gx:person2 ?child ;
+                            gx:type gx:ParentChild .
+                         ?child a gx:Person .
+                    FILTER ((?partner != ?proband) &&
+                            (?proband = <)" + person->get_uri_str() + R"(>))
+                    }
+                }
+                BIND(true AS ?inferred_int)
             }
             UNION
             {
-                ?rel a gx:Relationship ;
-                    gx:person1 ?proband ;
-                    gx:person2 ?partner ;
-                    gx:type gx:Couple .
+                {
+                    SELECT DISTINCT ?partner
+                    WHERE
+                    {
+                        {
+                            ?rel a gx:Relationship ;
+                                gx:person1 ?partner ;
+                                gx:person2 ?proband ;
+                                gx:type gx:Couple .
+                        }
+                        UNION
+                        {
+                            ?rel a gx:Relationship ;
+                                gx:person1 ?proband ;
+                                gx:person2 ?partner ;
+                                gx:type gx:Couple .
+                        }
+                        FILTER ((?partner != ?proband) &&
+                                (?proband = <)" + person->get_uri_str() + R"(>))
+                    }
+                }
+                BIND(false AS ?inferred_int)
             }
-            UNION
-            {
-                ?rel1 a gx:Relationship ;
-                    gx:person1 ?proband ;
-                    gx:person2 ?child ;
-                    gx:type gx:ParentChild .
-                ?rel2 a gx:Relationship ;
-                    gx:person1 ?partner ;
-                    gx:person2 ?child ;
-                    gx:type gx:ParentChild .
-                ?child a gx:Person .
-            }
-            FILTER ((?partner != ?proband) &&
-                    (?proband = <)" + person->get_uri_str() + R"(>))
-        })";
+        }
+        GROUP BY ?partner)";
 
     spdlog::debug("{}: The query: {}", __func__, query);
 
@@ -77,10 +96,18 @@ std::vector<std::shared_ptr<common::Person>> retrieve_person_partners(
         return {};
     }
 
-    std::vector<std::shared_ptr<common::Person>> partners;
+    std::vector<common::Person::PartnerRelation> partners;
 
     for (const common::data_row& row : data_table) {
+        if (row.empty())
+        {
+            continue;
+        }
+
         auto uri_it = common::get_binding_value_req(row, "partner");
+        auto inferred_it = common::get_binding_value_req(row, "inferred");
+
+        bool inferred = (inferred_it->second == "true");
 
         /* Exceptional path (resource not found): Propagate the exception
          * Normal path (resource found): Continue the execution */
@@ -88,7 +115,7 @@ std::vector<std::shared_ptr<common::Person>> retrieve_person_partners(
 
         retrieve_person_name(*partner, world, model);
 
-        partners.push_back(partner);
+        partners.push_back({partner, inferred});
     }
 
     return partners;

@@ -1,11 +1,13 @@
 
 
+#include <algorithm>
 #include <memory>
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
 #include "test/tools/application.hpp"
 #include "test/tools/matchers.hpp"
+#include "test/tools/printers.hpp"
 #include "test/tools/redland.hpp"
 
 #include "common/comparators.hpp"
@@ -14,10 +16,61 @@
 namespace test
 {
 
+namespace
+{
+
+struct ComparablePartnerRelation
+{
+    common::Person partner;
+    bool is_inferred;
+
+    friend void PrintTo(const ComparablePartnerRelation& rel, std::ostream* os) {
+        *os << "ExpectedPartnerRelation{partner: ";
+        PrintTo(rel.partner, os);
+        *os << ", is_inferred=" << std::boolalpha << rel.is_inferred << "}";
+    };
+};
+
+struct ExpectedPartnerRelation
+{
+    common::Person partner;
+    bool is_inferred;
+
+    friend void PrintTo(const ExpectedPartnerRelation& rel, std::ostream* os) {
+        *os << "ExpectedPartnerRelation{partner: ";
+        PrintTo(rel.partner, os);
+        *os << ", is_inferred=" << std::boolalpha << rel.is_inferred << "}";
+    };
+};
+
+bool operator==(const ComparablePartnerRelation& actual, const ExpectedPartnerRelation& expected)
+{
+    return ((actual.partner == expected.partner) && (actual.is_inferred == expected.is_inferred));
+}
+
+bool operator==(const ExpectedPartnerRelation& expected, const ComparablePartnerRelation& actual)
+{
+    return ((actual.partner == expected.partner) && (actual.is_inferred == expected.is_inferred));
+}
+
+std::vector<ComparablePartnerRelation> adapt(
+    const std::vector<common::Person::PartnerRelation>& partners)
+{
+    std::vector<ComparablePartnerRelation> output;
+    output.reserve(partners.size());
+    std::transform(
+        partners.cbegin(), partners.cend(), std::back_inserter(output),
+        [](const auto& rel) { return ComparablePartnerRelation{*rel.partner, rel.is_inferred}; });
+    return output;
+}
+
+} // anonymous namespace
+
 //  The retrieve_related_persons function tests
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
 
-namespace {
+namespace
+{
 
 struct Param
 {
@@ -25,7 +78,7 @@ struct Param
     const char* data_file;
     const char* proband_uri;
 
-    std::vector<common::Person> expected_partners;
+    std::vector<ExpectedPartnerRelation> expected_partners;
 };
 
 class DetailsQueries_RetrievePersonPartners : public ::testing::TestWithParam<Param> {};
@@ -37,18 +90,18 @@ TEST_P(DetailsQueries_RetrievePersonPartners, NormalSuccessCases)
 
     tools::load_rdf(ctx->world, ctx->model, tools::get_program_path() / param.data_file);
 
-    
-    const std::vector<common::Person>& expected_partners = param.expected_partners;
+
+    const std::vector<ExpectedPartnerRelation>& expected_partners = param.expected_partners;
     const auto proband = std::make_shared<common::Person>(param.proband_uri);
 
-    std::vector<std::shared_ptr<common::Person>> actual_partners =
+    const auto& actual_partners = adapt(
         person::retrieve_person_partners(
-            proband.get(), ctx->world, ctx->model);
+            proband.get(), ctx->world, ctx->model));
 
     EXPECT_THAT(
         actual_partners,
         ::testing::UnorderedPointwise(
-            test::tools::PointeeLeft(::testing::Eq()),
+            ::testing::Eq(),
             expected_partners));
 };
 
@@ -65,7 +118,7 @@ const std::vector<Param> g_params {
         "data/deps_queries/retrieve_person_partners/normal_success_cases/model-01_one-partner.ttl",
         "http://example.org/P1",
         {
-            common::Person("http://example.org/P2")
+            {common::Person("http://example.org/P2"), false}
         }
     },
     {
@@ -73,7 +126,7 @@ const std::vector<Param> g_params {
         "data/deps_queries/retrieve_person_partners/normal_success_cases/model-01_one-partner.ttl",
         "http://example.org/P2",
         {
-            common::Person("http://example.org/P1")
+            {common::Person("http://example.org/P1"), false}
         }
     },
     {
@@ -82,8 +135,8 @@ const std::vector<Param> g_params {
         "model-02_two-partners.ttl",
         "http://example.org/P1",
         {
-            common::Person("http://example.org/P2"),
-            common::Person("http://example.org/P3"),
+            {common::Person("http://example.org/P2"), false},
+            {common::Person("http://example.org/P3"), false}
         }
     },
     {
@@ -92,7 +145,7 @@ const std::vector<Param> g_params {
         "model-02_two-partners.ttl",
         "http://example.org/P2",
         {
-            common::Person("http://example.org/P1")
+            {common::Person("http://example.org/P1"), false}
         }
     },
     {
@@ -101,8 +154,8 @@ const std::vector<Param> g_params {
         "model-02_two-partners.ttl",
         "http://example.org/P3",
         {
-            common::Person("http://example.org/P1"),
-            common::Person("http://example.org/P4")
+            {common::Person("http://example.org/P1"), false},
+            {common::Person("http://example.org/P4"), false}
         }
     },
     {
@@ -111,7 +164,7 @@ const std::vector<Param> g_params {
         "model-03_three-generations.ttl",
         "http://example.org/G1P1",
         {
-            common::Person("http://example.org/G1P2"),
+            {common::Person("http://example.org/G1P2"), false}
         }
     },
     {
@@ -120,7 +173,7 @@ const std::vector<Param> g_params {
         "model-03_three-generations.ttl",
         "http://example.org/G2P1",
         {
-            common::Person("http://example.org/G2P2"),
+            {common::Person("http://example.org/G2P2"), false}
         }
     },
     {
@@ -130,7 +183,17 @@ const std::vector<Param> g_params {
         "http://example.org/G3P1",
         {
         }
+    },
+    {
+        "OWL84_P00010",
+        "data/deps_queries/retrieve_person_partners/normal_success_cases/"
+        "model-04_owl-84-repro.ttl",
+        "http://example.org/P00010",
+        {
+            {common::Person("http://example.org/P00000"), false}
+        }
     }
+
 };
 
 std::string ParamNameGen(const ::testing::TestParamInfo<Param>& info)

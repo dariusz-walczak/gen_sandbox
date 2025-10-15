@@ -8,7 +8,7 @@
 namespace person
 {
 
-std::vector<std::shared_ptr<common::Person>> retrieve_person_partners(
+std::vector<common::Person::PartnerRelation> retrieve_person_partners(
     const common::Person* person, librdf_world* world, librdf_model* model);
 
 } // namespace person
