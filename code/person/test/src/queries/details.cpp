@@ -87,9 +87,7 @@ TEST_P(DetailsQueries_RetrievePersonPartners, NormalSuccessCases)
 {
     const Param& param = GetParam();
     tools::scoped_redland_ctx ctx = tools::initialize_redland_ctx();
-
     tools::load_rdf(ctx->world, ctx->model, tools::get_program_path() / param.data_file);
-
 
     const std::vector<ExpectedPartnerRelation>& expected_partners = param.expected_partners;
     const auto proband = std::make_shared<common::Person>(param.proband_uri);
@@ -193,7 +191,6 @@ const std::vector<Param> g_params {
             {common::Person("http://example.org/P00000"), false}
         }
     }
-
 };
 
 std::string ParamNameGen(const ::testing::TestParamInfo<Param>& info)
@@ -209,5 +206,92 @@ INSTANTIATE_TEST_SUITE_P(
     ParamNameGen);
 
 } // anonymous namespace
+
+//  The retrieve_person_father and retrieve_person_mother functions tests
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
+
+namespace suite2
+{
+
+struct Param
+{
+    const char* case_name;
+    const char* data_file;
+    const char* proband_uri;
+
+    std::optional<common::Person> expected_father;
+    std::optional<common::Person> expected_mother;
+};
+
+class DetailsQueries_RetrievePersonParents : public ::testing::TestWithParam<Param> {};
+
+TEST_P(DetailsQueries_RetrievePersonParents, NormalSuccessCases)
+{
+    const Param& param = GetParam();
+    tools::scoped_redland_ctx ctx = tools::initialize_redland_ctx();
+    tools::load_rdf(ctx->world, ctx->model, tools::get_program_path() / param.data_file);
+
+    const auto proband = std::make_shared<common::Person>(param.proband_uri);
+
+    const auto& actual_father =
+        person::retrieve_person_father_opt(proband.get(), ctx->world, ctx->model);
+    const auto& actual_mother =
+        person::retrieve_person_mother_opt(proband.get(), ctx->world, ctx->model);
+
+    if (param.expected_father.has_value())
+    {
+        EXPECT_EQ(param.expected_father, *actual_father);
+    }
+
+    if (param.expected_mother.has_value())
+    {
+        EXPECT_EQ(param.expected_mother, *actual_mother);
+    }
+};
+
+const std::vector<Param> g_params {
+    {
+        "NoParents",
+        "data/deps_queries/retrieve_person_parents/normal_success_cases/model-00_no-parents.ttl",
+        "http://example.org/P1",
+        {},
+        {}
+    },
+    {
+        "FatherOnly",
+        "data/deps_queries/retrieve_person_parents/normal_success_cases/model-01_father-only.ttl",
+        "http://example.org/P1",
+        {common::Person("http://example.org/P2")},
+        {}
+    },
+    {
+        "MotherOnly",
+        "data/deps_queries/retrieve_person_parents/normal_success_cases/model-02_mother-only.ttl",
+        "http://example.org/P1",
+        {},
+        {common::Person("http://example.org/P3")}
+    },
+    {
+        "BothParents",
+        "data/deps_queries/retrieve_person_parents/normal_success_cases/model-03_both-parents.ttl",
+        "http://example.org/P1",
+        {common::Person("http://example.org/P2")},
+        {common::Person("http://example.org/P3")}
+    }
+};
+
+std::string ParamNameGen(const ::testing::TestParamInfo<Param>& info)
+{
+    return { info.param.case_name };
+}
+
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    DetailsQueries_RetrievePersonParents,
+    ::testing::ValuesIn(g_params),
+    ParamNameGen);
+
+} // namespace suite2
 
 } // namespace test

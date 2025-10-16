@@ -1,0 +1,13 @@
+@prefix gx: <http://gedcomx.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix ex: <http://example.org/> .
+
+
+ex:P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:P2 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:P3 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .

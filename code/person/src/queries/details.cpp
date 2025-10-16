@@ -9,6 +9,146 @@
 namespace person
 {
 
+std::shared_ptr<common::Person> retrieve_person_father_opt(
+    const common::Person* person, librdf_world* world, librdf_model* model)
+{
+    if (!person)
+    {
+        throw person_exception(
+            person_exception::error_code::input_contract_error,
+            fmt::format(
+                "Precondition failure: person={} must satisfy !nullptr", fmt::ptr(person)));
+    }
+
+    const std::string query = R"(
+        PREFIX gx: <http://gedcomx.org/>
+
+        SELECT
+            ?father
+        WHERE
+        {
+            ?rel a gx:Relationship ;
+                gx:person1 ?father ;
+                gx:person2 ?proband ;
+                gx:type gx:ParentChild .
+            ?father a gx:Person ;
+                gx:gender ?gender .
+            ?gender a gx:Gender ;
+                gx:type gx:Male .
+            FILTER (?proband = <)" + person->get_uri_str() + R"(>)
+        })";
+
+    const char* query_id = "retrieve person father";
+
+    spdlog::debug("{}: The '{}' query: {}", __func__, query_id, query);
+
+    common::exec_query_result res = common::exec_query(world, model, query);
+
+    if (!res->success)
+    {
+        spdlog::error("{}: The '{}' query execution has failed", __func__, query_id);
+
+        throw person_exception(
+            person_exception::error_code::query_error,
+            fmt::format("Failed to execute the '{}' query", query_id));
+    }
+
+    const common::extract_data_table_result data_tuple = common::extract_data_table(res->results);
+    const common::data_table& data_table = std::get<1>(data_tuple);
+
+    if (data_table.empty())
+    {
+        spdlog::debug(
+            "{}: Father of person {} wasn't found", __func__, person->get_uri_str());
+
+        return {};
+    }
+    else if (data_table.size() > 1)
+    {
+        throw person_exception(
+            person_exception::error_code::multiple_resources_found,
+            fmt::format("Too Many Resources: found {} fathers of the proband: {}",
+                        data_table.size(), person->get_uri_str()));
+    }
+
+    const auto& row = data_table.front();
+    const auto& uri_it = common::get_binding_value_req(row, "father");
+    auto parent = retrieve_person_base_data_req(uri_it->second, world, model);
+    retrieve_person_name(*parent, world, model);
+
+    return parent;
+}
+
+std::shared_ptr<common::Person> retrieve_person_mother_opt(
+    const common::Person* person, librdf_world* world, librdf_model* model)
+{
+    if (!person)
+    {
+        throw person_exception(
+            person_exception::error_code::input_contract_error,
+            fmt::format(
+                "Precondition failure: person={} must satisfy !nullptr", fmt::ptr(person)));
+    }
+
+    const std::string query = R"(
+        PREFIX gx: <http://gedcomx.org/>
+
+        SELECT
+            ?mother
+        WHERE
+        {
+            ?rel a gx:Relationship ;
+                gx:person1 ?mother ;
+                gx:person2 ?proband ;
+                gx:type gx:ParentChild .
+            ?mother a gx:Person ;
+                gx:gender ?gender .
+            ?gender a gx:Gender ;
+                gx:type gx:Female .
+            FILTER (?proband = <)" + person->get_uri_str() + R"(>)
+        })";
+
+    const char* query_id = "retrieve person mother";
+
+    spdlog::debug("{}: The '{}' query: {}", __func__, query_id, query);
+
+    common::exec_query_result res = common::exec_query(world, model, query);
+
+    if (!res->success)
+    {
+        spdlog::error("{}: The '{}' query execution has failed", __func__, query_id);
+
+        throw person_exception(
+            person_exception::error_code::query_error,
+            fmt::format("Failed to execute the '{}' query", query_id));
+    }
+
+    const common::extract_data_table_result data_tuple = common::extract_data_table(res->results);
+    const common::data_table& data_table = std::get<1>(data_tuple);
+
+    if (data_table.empty())
+    {
+        spdlog::debug(
+            "{}: Mother of person {} wasn't found", __func__, person->get_uri_str());
+
+        return {};
+    }
+    else if (data_table.size() > 1)
+    {
+        throw person_exception(
+            person_exception::error_code::multiple_resources_found,
+            fmt::format("Too Many Resources: found {} mothers of the proband: {}",
+                        data_table.size(), person->get_uri_str()));
+    }
+
+    const auto& row = data_table.front();
+    const auto& uri_it = common::get_binding_value_req(row, "mother");
+    auto parent = retrieve_person_base_data_req(uri_it->second, world, model);
+    retrieve_person_name(*parent, world, model);
+
+    return parent;
+}
+
 std::vector<common::Person::PartnerRelation> retrieve_person_partners(
     const common::Person* person, librdf_world* world, librdf_model* model)
 {
