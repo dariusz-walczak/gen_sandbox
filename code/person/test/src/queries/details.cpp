@@ -1,16 +1,16 @@
-
-
 #include <algorithm>
 #include <memory>
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
 #include "test/tools/application.hpp"
+#include "test/tools/assertions.hpp"
 #include "test/tools/matchers.hpp"
 #include "test/tools/printers.hpp"
 #include "test/tools/redland.hpp"
 
 #include "common/comparators.hpp"
+#include "person/error.hpp"
 #include "person/queries/details.hpp"
 
 namespace test
@@ -204,6 +204,26 @@ INSTANTIATE_TEST_SUITE_P(
     DetailsQueries_RetrievePersonPartners,
     ::testing::ValuesIn(g_params),
     ParamNameGen);
+
+// Check if the retrieve_person_partners function throws the person_exception when any of its
+//  arguments is null
+TEST_F(DetailsQueries_RetrievePersonPartners, InputContractViolations)
+{
+    tools::scoped_redland_ctx ctx = tools::initialize_redland_ctx();
+    const auto person = std::make_shared<common::Person>("http://example.org/someone");
+
+    EXPECT_THROW_WITH_CODE(
+        person::retrieve_person_partners(nullptr, ctx->world, ctx->model),
+        person::person_exception, person::person_exception::error_code::input_contract_error);
+
+    EXPECT_THROW_WITH_CODE(
+        person::retrieve_person_partners(person.get(), nullptr, ctx->model),
+        person::person_exception, person::person_exception::error_code::input_contract_error);
+
+    EXPECT_THROW_WITH_CODE(
+        person::retrieve_person_partners(person.get(), ctx->world, nullptr),
+        person::person_exception, person::person_exception::error_code::input_contract_error);
+}
 
 } // anonymous namespace
 
@@ -467,6 +487,38 @@ INSTANTIATE_TEST_SUITE_P(
     DetailsQueries_RetrievePersonParents,
     ::testing::ValuesIn(g_params),
     ParamNameGen);
+
+// Check if the retrieve_person_father_opt and the retrieve_person_mother_opt functions throw the
+//  person_exception when any of their arguments are null.
+TEST_F(DetailsQueries_RetrievePersonParents, InputContractViolations)
+{
+    tools::scoped_redland_ctx ctx = tools::initialize_redland_ctx();
+    const auto person = std::make_shared<common::Person>("http://example.org/someone");
+
+    EXPECT_THROW_WITH_CODE(
+        person::retrieve_person_father_opt(nullptr, ctx->world, ctx->model),
+        person::person_exception, person::person_exception::error_code::input_contract_error);
+
+    EXPECT_THROW_WITH_CODE(
+        person::retrieve_person_father_opt(person.get(), nullptr, ctx->model),
+        person::person_exception, person::person_exception::error_code::input_contract_error);
+
+    EXPECT_THROW_WITH_CODE(
+        person::retrieve_person_father_opt(person.get(), ctx->world, nullptr),
+        person::person_exception, person::person_exception::error_code::input_contract_error);
+
+    EXPECT_THROW_WITH_CODE(
+        person::retrieve_person_mother_opt(nullptr, ctx->world, ctx->model),
+        person::person_exception, person::person_exception::error_code::input_contract_error);
+
+    EXPECT_THROW_WITH_CODE(
+        person::retrieve_person_mother_opt(person.get(), nullptr, ctx->model),
+        person::person_exception, person::person_exception::error_code::input_contract_error);
+
+    EXPECT_THROW_WITH_CODE(
+        person::retrieve_person_mother_opt(person.get(), ctx->world, nullptr),
+        person::person_exception, person::person_exception::error_code::input_contract_error);
+}
 
 } // namespace suite2
 

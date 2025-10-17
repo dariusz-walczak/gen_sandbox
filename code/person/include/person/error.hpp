@@ -38,6 +38,7 @@ public:
     person_exception(error_code code, const std::string& msg);
     person_exception(error_code code, const char* msg);
 
+    [[nodiscard]] error_code get_code() const noexcept { return _code; }
     [[nodiscard]] const char* what() const noexcept override { return _what.c_str(); }
 
 protected:

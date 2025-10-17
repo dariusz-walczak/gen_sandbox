@@ -20,6 +20,22 @@ std::shared_ptr<common::Person> retrieve_person_father_opt(
                 "Precondition failure: person={} must satisfy !nullptr", fmt::ptr(person)));
     }
 
+    if (!world)
+    {
+        throw person_exception(
+            person_exception::error_code::input_contract_error,
+            fmt::format(
+                "Precondition failure: world={} must satisfy !nullptr", fmt::ptr(world)));
+    }
+
+    if (!model)
+    {
+        throw person_exception(
+            person_exception::error_code::input_contract_error,
+            fmt::format(
+                "Precondition failure: model={} must satisfy !nullptr", fmt::ptr(model)));
+    }
+
     const std::string query = R"(
         PREFIX gx: <http://gedcomx.org/>
 
@@ -90,6 +106,22 @@ std::shared_ptr<common::Person> retrieve_person_mother_opt(
                 "Precondition failure: person={} must satisfy !nullptr", fmt::ptr(person)));
     }
 
+    if (!world)
+    {
+        throw person_exception(
+            person_exception::error_code::input_contract_error,
+            fmt::format(
+                "Precondition failure: world={} must satisfy !nullptr", fmt::ptr(world)));
+    }
+
+    if (!model)
+    {
+        throw person_exception(
+            person_exception::error_code::input_contract_error,
+            fmt::format(
+                "Precondition failure: model={} must satisfy !nullptr", fmt::ptr(model)));
+    }
+
     const std::string query = R"(
         PREFIX gx: <http://gedcomx.org/>
 
@@ -158,6 +190,22 @@ std::vector<common::Person::PartnerRelation> retrieve_person_partners(
             person_exception::error_code::input_contract_error,
             fmt::format(
                 "Precondition failure: person={} must satisfy !nullptr", fmt::ptr(person)));
+    }
+
+    if (!world)
+    {
+        throw person_exception(
+            person_exception::error_code::input_contract_error,
+            fmt::format(
+                "Precondition failure: world={} must satisfy !nullptr", fmt::ptr(world)));
+    }
+
+    if (!model)
+    {
+        throw person_exception(
+            person_exception::error_code::input_contract_error,
+            fmt::format(
+                "Precondition failure: model={} must satisfy !nullptr", fmt::ptr(model)));
     }
 
     const std::string query = R"(
