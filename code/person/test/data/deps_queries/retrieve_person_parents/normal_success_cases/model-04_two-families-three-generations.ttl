@@ -1,0 +1,270 @@
+@prefix gx: <http://gedcomx.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix ex: <http://example.org/> .
+
+# Family #1:
+#                                 +-ex:F1G1P1
+#                                 |       (m)
+# ex:F1G3P1 -+   +-ex:F1G2P1 ----[P]
+#       (m)  |   |       (m)      |       (f)
+#            |   |                +-ex:F1G1P2
+# ex:F1G3P2 -+--[P]
+#       (f)  |   |                +-ex:F1G1P3
+#            |   |       (f)      |       (m)
+# ex:F1G3P3 -+   +-ex:F1G2P2 ----[P]
+#       (f)                       |       (f)
+#                                 +-ex:F1G1P4
+
+
+ex:F1G1P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:F1G1P2 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:R1 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:F1G1P1 ;
+    gx:person2 ex:F1G1P2 .
+
+ex:F1G1P3 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:F1G1P4 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:R2 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:F1G1P3 ;
+    gx:person2 ex:F1G1P4 .
+
+ex:F1G2P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:R3 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:F1G1P1 ;
+    gx:person2 ex:F1G2P1 .
+
+ex:R4 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:F1G1P2 ;
+    gx:person2 ex:F1G2P1 .
+
+ex:F1G2P2 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:R5 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:F1G1P3 ;
+    gx:person2 ex:F1G2P2 .
+
+ex:R6 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:F1G1P4 ;
+    gx:person2 ex:F1G2P2 .
+
+ex:R7 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:F1G2P1 ;
+    gx:person2 ex:F1G2P2 .
+
+ex:F1G3P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:R8 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:F1G2P1 ;
+    gx:person2 ex:F1G3P1 .
+
+ex:R9 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:F1G2P2 ;
+    gx:person2 ex:F1G3P1 .
+
+ex:F1G3P2 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:R10 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:F1G2P1 ;
+    gx:person2 ex:F1G3P2 .
+
+ex:R11 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:F1G2P2 ;
+    gx:person2 ex:F1G3P2 .
+
+ex:F1G3P3 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:R12 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:F1G2P1 ;
+    gx:person2 ex:F1G3P3 .
+
+ex:R13 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:F1G2P2 ;
+    gx:person2 ex:F1G3P3 .
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+
+# Family #2:
+#                                +-ex:F2G1P1
+#                                |       (m)
+# ex:F2G3P1 -+   +-ex:F2G2P1 ----[P]
+#       (m)  |   |       (m)     |       (f)
+#            |   |               +-ex:F2G1P2
+#            +--[P]
+#            |   |
+#            |   |       (f)
+# ex:F2G3P2 -+   +-ex:F2G2P2 -+
+#       (f)                   |   +-ex:F2G1P3
+#                             |   |       (m)
+#                             +--[P]
+#                             |   |       (f)
+#                             |   +-ex:F2G1P4
+#                +-ex:F2G2P3 -+
+#                |       (m)
+#                |
+# ex:F2G3P3 ----[P]
+#       (m)      |                +-ex:F2G1P5
+#                |       (f)      |       (m)
+#                +-ex:F2G2P4 -+--[P]
+#                                 |       (f)
+#                                 +-ex:F2G1P6
+
+ex:F2G1P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:F2G1P2 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:R14 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:F2G1P1 ;
+    gx:person2 ex:F2G1P2 .
+
+ex:F2G1P3 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:F2G1P4 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:R15 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:F2G1P3 ;
+    gx:person2 ex:F2G1P4 .
+
+ex:F2G1P5 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:F2G1P6 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:R16 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:F2G1P5 ;
+    gx:person2 ex:F2G1P6 .
+
+ex:F2G2P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:R17 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:F2G1P1 ;
+    gx:person2 ex:F2G2P1 .
+
+ex:R18 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:F2G1P2 ;
+    gx:person2 ex:F2G2P1 .
+
+ex:F2G2P2 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:R19 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:F2G1P3 ;
+    gx:person2 ex:F2G2P2 .
+
+ex:R20 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:F2G1P4 ;
+    gx:person2 ex:F2G2P2 .
+
+ex:R21 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:F2G2P1 ;
+    gx:person2 ex:F2G2P2 .
+
+ex:F2G2P3 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:R22 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:F2G1P3 ;
+    gx:person2 ex:F2G2P3 .
+
+ex:R23 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:F2G1P4 ;
+    gx:person2 ex:F2G2P3 .
+
+ex:R24 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:F2G2P4 ;
+    gx:person2 ex:F2G2P3 .
+
+ex:F2G2P4 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:R25 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:F2G1P5 ;
+    gx:person2 ex:F2G2P4 .
+
+ex:R26 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:F2G1P6 ;
+    gx:person2 ex:F2G2P4 .
+
+ex:F2G3P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:R27 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:F2G2P1 ;
+    gx:person2 ex:F2G3P1 .
+
+ex:R28 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:F2G2P2 ;
+    gx:person2 ex:F2G3P1 .
+
+ex:F2G3P2 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:R29 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:F2G2P1 ;
+    gx:person2 ex:F2G3P2 .
+
+ex:R30 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:F2G2P2 ;
+    gx:person2 ex:F2G3P2 .
+
+ex:F2G3P3 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:R31 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:F2G2P3 ;
+    gx:person2 ex:F2G3P3 .
+
+ex:R32 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:F2G2P4 ;
+    gx:person2 ex:F2G3P3 .
