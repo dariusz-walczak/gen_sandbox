@@ -4,10 +4,10 @@
 
 #                            +-ex:G1P1
 #                            |     (m)
-# ex:G3P1 -+   +-ex:G2P1----[P]
+# ex:G3P1 -+   +-ex:G2P1----[I]
 #     (m)  |   |     (m)     |     (f)
 #          |   |             +-ex:G1P2
-#          +--[P]
+#          +--[I]
 #          |   |             +-ex:G1P3
 #          |   |     (f)     |     (m)
 # ex:G3P2  +   +-ex:G2P2----[P]
@@ -20,11 +20,6 @@ ex:G1P1 a gx:Person ;
 
 ex:G1P2 a gx:Person ;
     gx:gender [ a gx:Gender ; gx:type gx:Female ] .
-
-ex:R1 a gx:Relationship ;
-    gx:type gx:Couple ;
-    gx:person1 ex:G1P1 ;
-    gx:person2 ex:G1P2 .
 
 ex:G1P3 a gx:Person ;
     gx:gender [ a gx:Gender ; gx:type gx:Male ] .
@@ -63,11 +58,6 @@ ex:R6 a gx:Relationship ;
     gx:person1 ex:G1P4 ;
     gx:person2 ex:G2P2 .
 
-ex:R7 a gx:Relationship ;
-    gx:type gx:Couple ;
-    gx:person1 ex:G2P1 ;
-    gx:person2 ex:G2P2 .
-
 ex:G3P1 a gx:Person ;
     gx:gender [ a gx:Gender ; gx:type gx:Male ] .
 
@@ -76,7 +66,7 @@ ex:R8 a gx:Relationship ;
     gx:person1 ex:G2P1 ;
     gx:person2 ex:G3P1 .
 
-ex:R9 a gx:Relationship ;
+ex:R8 a gx:Relationship ;
     gx:type gx:ParentChild ;
     gx:person1 ex:G2P2 ;
     gx:person2 ex:G3P1 .
@@ -84,12 +74,12 @@ ex:R9 a gx:Relationship ;
 ex:G3P2 a gx:Person ;
     gx:gender [ a gx:Gender ; gx:type gx:Female ] .
 
-ex:R10 a gx:Relationship ;
+ex:R8 a gx:Relationship ;
     gx:type gx:ParentChild ;
     gx:person1 ex:G2P1 ;
     gx:person2 ex:G3P2 .
 
-ex:R11 a gx:Relationship ;
+ex:R8 a gx:Relationship ;
     gx:type gx:ParentChild ;
     gx:person1 ex:G2P2 ;
     gx:person2 ex:G3P2 .

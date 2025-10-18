@@ -266,7 +266,8 @@ std::vector<common::Person::PartnerRelation> retrieve_person_partners(
 
     common::exec_query_result res = common::exec_query(world, model, query);
 
-    if (!res->success) {
+    if (!res->success)
+    {
         spdlog::error("{}: The query execution has failed", __func__);
 
         throw person_exception(
@@ -277,7 +278,8 @@ std::vector<common::Person::PartnerRelation> retrieve_person_partners(
     const common::extract_data_table_result data_tuple = common::extract_data_table(res->results);
     const common::data_table& data_table = std::get<1>(data_tuple);
 
-    if (data_table.empty()) {
+    if (data_table.empty())
+    {
         spdlog::debug(
             "{}: No partners of proband {} were found", __func__, proband->get_uri_str());
 
@@ -286,7 +288,8 @@ std::vector<common::Person::PartnerRelation> retrieve_person_partners(
 
     std::vector<common::Person::PartnerRelation> partners;
 
-    for (const common::data_row& row : data_table) {
+    for (const common::data_row& row : data_table)
+    {
         if (row.empty())
         {
             continue;

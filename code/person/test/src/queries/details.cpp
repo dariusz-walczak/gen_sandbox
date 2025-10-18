@@ -190,6 +190,59 @@ const std::vector<Param> g_params {
         {
             {common::Person("http://example.org/P00000"), false}
         }
+    },
+    {
+        "ThreeGensInferredG1P1",
+        "data/deps_queries/retrieve_person_partners/normal_success_cases/"
+        "model-05_three-generations-some-inferred.ttl",
+        "http://example.org/G1P1",
+        {
+            {common::Person("http://example.org/G1P2"), true}
+        }
+    },
+    {
+        "ThreeGensInferredG1P2",
+        "data/deps_queries/retrieve_person_partners/normal_success_cases/"
+        "model-05_three-generations-some-inferred.ttl",
+        "http://example.org/G1P2",
+        {
+            {common::Person("http://example.org/G1P1"), true}
+        }
+    },
+    {
+        "ThreeGensInferredG1P3",
+        "data/deps_queries/retrieve_person_partners/normal_success_cases/"
+        "model-05_three-generations-some-inferred.ttl",
+        "http://example.org/G1P3",
+        {
+            {common::Person("http://example.org/G1P4"), false}
+        }
+    },
+    {
+        "ThreeGensInferredG2P1",
+        "data/deps_queries/retrieve_person_partners/normal_success_cases/"
+        "model-05_three-generations-some-inferred.ttl",
+        "http://example.org/G2P1",
+        {
+            {common::Person("http://example.org/G2P2"), true}
+        }
+    },
+    {
+        "ThreeGensInferredG2P2",
+        "data/deps_queries/retrieve_person_partners/normal_success_cases/"
+        "model-05_three-generations-some-inferred.ttl",
+        "http://example.org/G2P2",
+        {
+            {common::Person("http://example.org/G2P1"), true}
+        }
+    },
+    {
+        "ThreeGensInferredG3P1",
+        "data/deps_queries/retrieve_person_partners/normal_success_cases/"
+        "model-05_three-generations-some-inferred.ttl",
+        "http://example.org/G3P1",
+        {
+        }
     }
 };
 
