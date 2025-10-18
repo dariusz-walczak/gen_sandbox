@@ -253,7 +253,8 @@ void load_rdf_set(librdf_world* world, librdf_model* model, const input_files& i
 }
 
 
-void release_exec_query_ctx(exec_query_ctx* ctx) {
+void release_exec_query_ctx(exec_query_ctx* ctx)
+{
     librdf_free_query_results(ctx->results);
     spdlog::debug("Released the redland query results");
 
@@ -263,8 +264,9 @@ void release_exec_query_ctx(exec_query_ctx* ctx) {
     delete ctx;
 }
 
-exec_query_result exec_query(librdf_world* world, librdf_model* model, const std::string& query) {
-
+exec_query_result exec_query(
+    librdf_world* world, librdf_model* model, const std::string& query, std::string_view query_id)
+{
     spdlog::trace("{}: Entrypoint", __func__);
 
     exec_query_result res = { new exec_query_ctx(), release_exec_query_ctx };
@@ -274,9 +276,13 @@ exec_query_result exec_query(librdf_world* world, librdf_model* model, const std
 
     if (!res->query)
     {
-        spdlog::error("{}: Failed to create a redland query", __func__);
+        const std::string error_msg = (
+            query_id.empty() ? "Failed to create a redland query" :
+            fmt::format("Failed to create the '{}' query", query_id));
 
-        return res;
+        spdlog::error("{}: {}", __func__, error_msg);
+
+        throw common_exception(common_exception::error_code::redland_query_error, error_msg);
     }
 
     spdlog::debug("{}: Created a redland query", __func__);
@@ -285,14 +291,17 @@ exec_query_result exec_query(librdf_world* world, librdf_model* model, const std
 
     if (!res->results)
     {
-        spdlog::error("{}: Redland query execution failed", __func__);
+        const std::string error_msg = (
+            query_id.empty() ? "Failed to execute a redland query" :
+            fmt::format("Failed to execute the '{}' query", query_id));
 
-        return res;
+        spdlog::error("{}: {}", __func__, error_msg);
+
+        throw common_exception(common_exception::error_code::redland_query_error, error_msg);
     }
 
     spdlog::debug("{}: Redland query execution succeeded", __func__);
 
-    res->success = true;
     return res;
 }
 

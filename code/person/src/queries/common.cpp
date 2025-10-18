@@ -35,16 +35,7 @@ std::shared_ptr<common::Person> retrieve_person_base_data_opt(
 
     spdlog::debug("retrieve_person: The query: {}", query);
 
-    common::exec_query_result res = common::exec_query(world, model, query);
-
-    if (!res->success) {
-        spdlog::error("retrieve_person: The query execution has failed");
-
-        throw person_exception(
-            person_exception::error_code::query_error,
-            "Failed to execute the 'retrieve person' query");
-    }
-
+    common::exec_query_result res = common::exec_query(world, model, query, __func__);
     const common::extract_data_table_result data_tuple = common::extract_data_table(res->results);
     const common::data_table& data_table = std::get<1>(data_tuple);
 
@@ -165,17 +156,7 @@ retrieve_result retrieve_person_any_name(
 
     spdlog::debug("retrieve_person_any_name: The query: {}", query);
 
-    common::exec_query_result res = common::exec_query(world, model, query);
-
-    if (!res->success) {
-        spdlog::error(
-            "retrieve_person_any_name: The query execution has failed");
-
-        throw person_exception(
-            person_exception::error_code::query_error,
-            "Failed to execute the 'retrieve any name of a person' query");
-    }
-
+    common::exec_query_result res = common::exec_query(world, model, query, __func__);
     const common::extract_data_table_result data_tuple = common::extract_data_table(res->results);
     const common::data_table& data_table = std::get<1>(data_tuple);
 
@@ -215,16 +196,7 @@ retrieve_result retrieve_person_birth_name(
 
     spdlog::debug("retrieve_person_birth_name: The query: {}", query);
 
-    common::exec_query_result res = common::exec_query(world, model, query);
-
-    if (!res->success) {
-        spdlog::error("retrieve_person_birth_name: The query execution has failed");
-
-        throw person_exception(
-            person_exception::error_code::query_error,
-            "Failed to execute the 'retrieve person birth name' query");
-    }
-
+    common::exec_query_result res = common::exec_query(world, model, query, __func__);
     const common::extract_data_table_result data_tuple = common::extract_data_table(res->results);
     const common::data_table& data_table = std::get<1>(data_tuple);
 
@@ -256,16 +228,7 @@ common::resource_set retrieve_person_uris(librdf_world* world, librdf_model* mod
 
     spdlog::debug("{}: The query: {}", __func__, query);
 
-    common::exec_query_result res = common::exec_query(world, model, query);
-
-    if (!res->success) {
-        spdlog::error("{}: The query execution has failed", __func__);
-
-        throw person_exception(
-            person_exception::error_code::query_error,
-            fmt::format("Failed to execute the '{}' query", __func__));
-    }
-
+    common::exec_query_result res = common::exec_query(world, model, query, __func__);
     const common::extract_data_table_result data_tuple = common::extract_data_table(res->results);
     const common::data_table& data_table = std::get<1>(data_tuple);
 
@@ -303,16 +266,7 @@ retrieve_result retrieve_person_preferred_name(
 
     spdlog::debug("retrieve_person_preferred_name: The query: {}", query);
 
-    common::exec_query_result res = common::exec_query(world, model, query);
-
-    if (!res->success) {
-        spdlog::error("retrieve_person_preferred_name: The query execution has failed");
-
-        throw person_exception(
-            person_exception::error_code::query_error,
-            "Failed to execute the 'retrieve person preferred name' query");
-    }
-
+    common::exec_query_result res = common::exec_query(world, model, query, __func__);
     const common::extract_data_table_result data_tuple = common::extract_data_table(res->results);
     const common::data_table& data_table = std::get<1>(data_tuple);
 
@@ -363,16 +317,7 @@ retrieve_result retrieve_person_children(
 
     spdlog::debug("{}: The query: {}", __func__, query);
 
-    common::exec_query_result res = common::exec_query(world, model, query);
-
-    if (!res->success) {
-        spdlog::error("retrieve_person_children: The query execution has failed");
-
-        throw person_exception(
-            person_exception::error_code::query_error,
-            "Failed to execute the 'retrieve person children' query");
-    }
-
+    common::exec_query_result res = common::exec_query(world, model, query, __func__);
     const common::extract_data_table_result data_tuple = common::extract_data_table(res->results);
     const common::data_table& data_table = std::get<1>(data_tuple);
 
@@ -433,16 +378,7 @@ std::vector<std::shared_ptr<common::Person>> retrieve_person_list(
 
     spdlog::debug("{}: The query: {}", __func__, query);
 
-    common::exec_query_result res = common::exec_query(world, model, query);
-
-    if (!res->success) {
-        spdlog::error("{}: The query execution has failed", __func__);
-
-        throw person_exception(
-            person_exception::error_code::query_error,
-            "Failed to execute the 'retrieve person_list' query");
-    }
-
+    common::exec_query_result res = common::exec_query(world, model, query, __func__);
     const common::extract_data_table_result data_tuple = common::extract_data_table(res->results);
     const common::data_table& data_table = std::get<1>(data_tuple);
 

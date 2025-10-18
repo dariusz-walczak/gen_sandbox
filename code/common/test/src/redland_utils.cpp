@@ -9,6 +9,33 @@
 #include "test/tools/assertions.hpp"
 #include "test/tools/redland.hpp"
 
+//  The exec_query function tests
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
+
+namespace suite1
+{
+
+struct Param
+{
+    const char* case_name;
+};
+
+class RedlandUtils_ExecQuery : public ::testing::TestWithParam<Param> {};
+
+TEST_F(RedlandUtils_ExecQuery, RedlandQueryError)
+{
+    test::tools::scoped_redland_ctx ctx = test::tools::initialize_redland_ctx();
+
+    const std::string query = R"(
+        SELECT ?something
+        WHERE)";
+
+    EXPECT_THROW_WITH_CODE(
+        common::exec_query(ctx->world, ctx->model, query, "xyz"),
+        common::common_exception, common::common_exception::error_code::redland_query_error);
+}
+
+} // namespace suite1
 
 //  The extract_boolean_result function tests
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //

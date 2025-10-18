@@ -36,14 +36,19 @@ void load_rdf_set(librdf_world* world, librdf_model* model, const input_files& i
 struct exec_query_ctx {
     librdf_query* query = nullptr;
     librdf_query_results* results = nullptr;
-    bool success = false;
 };
 
 void release_exec_query_ctx(exec_query_ctx* ctx);
 
 using exec_query_result = std::unique_ptr<exec_query_ctx, decltype(&release_exec_query_ctx)>;
 
-exec_query_result exec_query(librdf_world* world, librdf_model* model, const std::string& query);
+/** @brief Execute a SPARQL query
+ *
+ *  @throws common_exception (redland_query_error) on query creation or execution failure
+ */
+exec_query_result exec_query(
+    librdf_world* world, librdf_model* model, const std::string& query,
+    std::string_view query_id={});
 
 using binding_name = std::string;
 using binding_value = std::string;

@@ -23,15 +23,7 @@ common::data_table retrieve_related_persons(librdf_world* world, librdf_model* m
 
     spdlog::debug("{}: The query: {}", __func__, query);
 
-    common::exec_query_result res = common::exec_query(world, model, query);
-
-    if (!res->success) {
-        spdlog::error("{}: The query execution has failed", __func__);
-
-        throw person_exception(
-            person_exception::error_code::query_error,
-            fmt::format("Failed to execute the '{}' query", __func__));
-    }
+    common::exec_query_result res = common::exec_query(world, model, query, __func__);
 
     const common::extract_data_table_result data_tuple = common::extract_data_table(res->results);
     return std::get<1>(data_tuple);
@@ -49,18 +41,7 @@ bool ask_resource_referenced(
 
     spdlog::debug("{}: The query: {}", __func__, query);
 
-    common::exec_query_result result = common::exec_query(world, model, query);
-
-    if (!result->success)
-    {
-        spdlog::error("{}: The query execution has failed", __func__);
-
-        throw person_exception(
-            person_exception::error_code::query_error,
-            fmt::format(
-                "Failed to execute the '{}' query", __func__));
-    }
-
+    common::exec_query_result result = common::exec_query(world, model, query, __func__);
     bool response = common::extract_boolean_result(result->results);
 
     spdlog::debug("{}: The ask query result is '{}'", __func__, response ? "true" : "false");

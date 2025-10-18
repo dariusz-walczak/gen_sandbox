@@ -58,17 +58,7 @@ std::shared_ptr<common::Person> retrieve_person_father_opt(
 
     spdlog::debug("{}: The '{}' query: {}", __func__, query_id, query);
 
-    common::exec_query_result res = common::exec_query(world, model, query);
-
-    if (!res->success)
-    {
-        spdlog::error("{}: The '{}' query execution has failed", __func__, query_id);
-
-        throw person_exception(
-            person_exception::error_code::query_error,
-            fmt::format("Failed to execute the '{}' query", query_id));
-    }
-
+    common::exec_query_result res = common::exec_query(world, model, query, __func__);
     const common::extract_data_table_result data_tuple = common::extract_data_table(res->results);
     const common::data_table& data_table = std::get<1>(data_tuple);
 
@@ -144,17 +134,7 @@ std::shared_ptr<common::Person> retrieve_person_mother_opt(
 
     spdlog::debug("{}: The '{}' query: {}", __func__, query_id, query);
 
-    common::exec_query_result res = common::exec_query(world, model, query);
-
-    if (!res->success)
-    {
-        spdlog::error("{}: The '{}' query execution has failed", __func__, query_id);
-
-        throw person_exception(
-            person_exception::error_code::query_error,
-            fmt::format("Failed to execute the '{}' query", query_id));
-    }
-
+    common::exec_query_result res = common::exec_query(world, model, query, __func__);
     const common::extract_data_table_result data_tuple = common::extract_data_table(res->results);
     const common::data_table& data_table = std::get<1>(data_tuple);
 
@@ -264,17 +244,7 @@ std::vector<common::Person::PartnerRelation> retrieve_person_partners(
 
     spdlog::debug("{}: The query: {}", __func__, query);
 
-    common::exec_query_result res = common::exec_query(world, model, query);
-
-    if (!res->success)
-    {
-        spdlog::error("{}: The query execution has failed", __func__);
-
-        throw person_exception(
-            person_exception::error_code::query_error,
-            "Failed to execute the 'retrieve proband partners' query");
-    }
-
+    common::exec_query_result res = common::exec_query(world, model, query, __func__);
     const common::extract_data_table_result data_tuple = common::extract_data_table(res->results);
     const common::data_table& data_table = std::get<1>(data_tuple);
 
