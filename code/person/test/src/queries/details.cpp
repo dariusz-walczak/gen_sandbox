@@ -530,7 +530,6 @@ TEST_F(DetailsQueries_RetrievePersonParents, InputContractViolations)
 
 TEST_F(DetailsQueries_RetrievePersonParents, MultipleResourcesFoundError)
 {
-    const Param& param = GetParam();
     tools::scoped_redland_ctx ctx = tools::initialize_redland_ctx();
     const char* data_path = "data/deps_queries/retrieve_person_parents/normal_success_cases/"
         "model-05_multiple-resources-found-error.ttl";
