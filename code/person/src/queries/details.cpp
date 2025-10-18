@@ -10,14 +10,14 @@ namespace person
 {
 
 std::shared_ptr<common::Person> retrieve_person_father_opt(
-    const common::Person* person, librdf_world* world, librdf_model* model)
+    const common::Person* proband, librdf_world* world, librdf_model* model)
 {
-    if (!person)
+    if (!proband)
     {
         throw person_exception(
             person_exception::error_code::input_contract_error,
             fmt::format(
-                "Precondition failure: person={} must satisfy !nullptr", fmt::ptr(person)));
+                "Precondition failure: proband={} must satisfy !nullptr", fmt::ptr(proband)));
     }
 
     if (!world)
@@ -51,10 +51,10 @@ std::shared_ptr<common::Person> retrieve_person_father_opt(
                 gx:gender ?gender .
             ?gender a gx:Gender ;
                 gx:type gx:Male .
-            FILTER (?proband = <)" + person->get_uri_str() + R"(>)
+            FILTER (?proband = <)" + proband->get_uri_str() + R"(>)
         })";
 
-    const char* query_id = "retrieve person father";
+    const char* query_id = "retrieve proband father";
 
     spdlog::debug("{}: The '{}' query: {}", __func__, query_id, query);
 
@@ -75,7 +75,7 @@ std::shared_ptr<common::Person> retrieve_person_father_opt(
     if (data_table.empty())
     {
         spdlog::debug(
-            "{}: Father of person {} wasn't found", __func__, person->get_uri_str());
+            "{}: Father of proband {} wasn't found", __func__, proband->get_uri_str());
 
         return {};
     }
@@ -84,7 +84,7 @@ std::shared_ptr<common::Person> retrieve_person_father_opt(
         throw person_exception(
             person_exception::error_code::multiple_resources_found,
             fmt::format("Too Many Resources: found {} fathers of the proband: {}",
-                        data_table.size(), person->get_uri_str()));
+                        data_table.size(), proband->get_uri_str()));
     }
 
     const auto& row = data_table.front();
@@ -96,14 +96,14 @@ std::shared_ptr<common::Person> retrieve_person_father_opt(
 }
 
 std::shared_ptr<common::Person> retrieve_person_mother_opt(
-    const common::Person* person, librdf_world* world, librdf_model* model)
+    const common::Person* proband, librdf_world* world, librdf_model* model)
 {
-    if (!person)
+    if (!proband)
     {
         throw person_exception(
             person_exception::error_code::input_contract_error,
             fmt::format(
-                "Precondition failure: person={} must satisfy !nullptr", fmt::ptr(person)));
+                "Precondition failure: proband={} must satisfy !nullptr", fmt::ptr(proband)));
     }
 
     if (!world)
@@ -137,10 +137,10 @@ std::shared_ptr<common::Person> retrieve_person_mother_opt(
                 gx:gender ?gender .
             ?gender a gx:Gender ;
                 gx:type gx:Female .
-            FILTER (?proband = <)" + person->get_uri_str() + R"(>)
+            FILTER (?proband = <)" + proband->get_uri_str() + R"(>)
         })";
 
-    const char* query_id = "retrieve person mother";
+    const char* query_id = "retrieve proband mother";
 
     spdlog::debug("{}: The '{}' query: {}", __func__, query_id, query);
 
@@ -161,7 +161,7 @@ std::shared_ptr<common::Person> retrieve_person_mother_opt(
     if (data_table.empty())
     {
         spdlog::debug(
-            "{}: Mother of person {} wasn't found", __func__, person->get_uri_str());
+            "{}: Mother of proband {} wasn't found", __func__, proband->get_uri_str());
 
         return {};
     }
@@ -170,7 +170,7 @@ std::shared_ptr<common::Person> retrieve_person_mother_opt(
         throw person_exception(
             person_exception::error_code::multiple_resources_found,
             fmt::format("Too Many Resources: found {} mothers of the proband: {}",
-                        data_table.size(), person->get_uri_str()));
+                        data_table.size(), proband->get_uri_str()));
     }
 
     const auto& row = data_table.front();
@@ -182,14 +182,14 @@ std::shared_ptr<common::Person> retrieve_person_mother_opt(
 }
 
 std::vector<common::Person::PartnerRelation> retrieve_person_partners(
-    const common::Person* person, librdf_world* world, librdf_model* model)
+    const common::Person* proband, librdf_world* world, librdf_model* model)
 {
-    if (!person)
+    if (!proband)
     {
         throw person_exception(
             person_exception::error_code::input_contract_error,
             fmt::format(
-                "Precondition failure: person={} must satisfy !nullptr", fmt::ptr(person)));
+                "Precondition failure: proband={} must satisfy !nullptr", fmt::ptr(proband)));
     }
 
     if (!world)
@@ -229,7 +229,7 @@ std::vector<common::Person::PartnerRelation> retrieve_person_partners(
                             gx:type gx:ParentChild .
                          ?child a gx:Person .
                     FILTER ((?partner != ?proband) &&
-                            (?proband = <)" + person->get_uri_str() + R"(>))
+                            (?proband = <)" + proband->get_uri_str() + R"(>))
                     }
                 }
                 BIND(true AS ?inferred_int)
@@ -254,7 +254,7 @@ std::vector<common::Person::PartnerRelation> retrieve_person_partners(
                                 gx:type gx:Couple .
                         }
                         FILTER ((?partner != ?proband) &&
-                                (?proband = <)" + person->get_uri_str() + R"(>))
+                                (?proband = <)" + proband->get_uri_str() + R"(>))
                     }
                 }
                 BIND(false AS ?inferred_int)
@@ -271,7 +271,7 @@ std::vector<common::Person::PartnerRelation> retrieve_person_partners(
 
         throw person_exception(
             person_exception::error_code::query_error,
-            "Failed to execute the 'retrieve person partners' query");
+            "Failed to execute the 'retrieve proband partners' query");
     }
 
     const common::extract_data_table_result data_tuple = common::extract_data_table(res->results);
@@ -279,7 +279,7 @@ std::vector<common::Person::PartnerRelation> retrieve_person_partners(
 
     if (data_table.empty()) {
         spdlog::debug(
-            "{}: No partners of person {} were found", __func__, person->get_uri_str());
+            "{}: No partners of proband {} were found", __func__, proband->get_uri_str());
 
         return {};
     }
