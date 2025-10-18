@@ -260,12 +260,20 @@ TEST_P(DetailsQueries_RetrievePersonParents, NormalSuccessCases)
 
     if (param.expected_father.has_value())
     {
-        EXPECT_EQ(param.expected_father, *actual_father);
+        EXPECT_EQ(param.expected_father.value(), *actual_father);
+    }
+    else
+    {
+        EXPECT_EQ(nullptr, actual_father.get());
     }
 
     if (param.expected_mother.has_value())
     {
-        EXPECT_EQ(param.expected_mother, *actual_mother);
+        EXPECT_EQ(param.expected_mother.value(), *actual_mother);
+    }
+    else
+    {
+        EXPECT_EQ(nullptr, actual_mother.get());
     }
 };
 
