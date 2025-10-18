@@ -54,9 +54,6 @@ retrieve_result retrieve_person_preferred_name(
 retrieve_result retrieve_person_relatives(
     common::Person& person, librdf_world* world, librdf_model* model);
 
-retrieve_result retrieve_person_parents(
-    common::Person& person, librdf_world* world, librdf_model* model);
-
 retrieve_result retrieve_person_children(
     common::Person& person, librdf_world* world, librdf_model* model);
 

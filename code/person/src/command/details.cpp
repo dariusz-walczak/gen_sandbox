@@ -29,8 +29,10 @@ void run_details_command(const cli_options& options)
 
     // Normal path (resource found): Continue the execution
     retrieve_person_name(*person, redland_ctx->world, redland_ctx->model);
-    retrieve_person_parents(*person, redland_ctx->world, redland_ctx->model);
-
+    person->father = retrieve_person_father_opt(
+        person.get(), redland_ctx->world, redland_ctx->model);
+    person->mother = retrieve_person_mother_opt(
+        person.get(), redland_ctx->world, redland_ctx->model);
     person->partners = retrieve_person_partners(
         person.get(), redland_ctx->world, redland_ctx->model);
 
