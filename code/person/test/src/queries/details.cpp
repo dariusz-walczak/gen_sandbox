@@ -528,6 +528,25 @@ TEST_F(DetailsQueries_RetrievePersonParents, InputContractViolations)
         person::person_exception, person::person_exception::error_code::input_contract_error);
 }
 
+TEST_F(DetailsQueries_RetrievePersonParents, MultipleResourcesFoundError)
+{
+    const Param& param = GetParam();
+    tools::scoped_redland_ctx ctx = tools::initialize_redland_ctx();
+    const char* data_path = "data/deps_queries/retrieve_person_parents/normal_success_cases/"
+        "model-05_multiple-resources-found-error.ttl";
+    tools::load_rdf(ctx->world, ctx->model, tools::get_program_path() / data_path);
+
+    const auto proband = std::make_shared<common::Person>("http://example.org/P1");
+
+    EXPECT_THROW_WITH_CODE(
+        person::retrieve_person_father_opt(proband.get(), ctx->world, ctx->model),
+        person::person_exception, person::person_exception::error_code::multiple_resources_found);
+
+    EXPECT_THROW_WITH_CODE(
+        person::retrieve_person_mother_opt(proband.get(), ctx->world, ctx->model),
+        person::person_exception, person::person_exception::error_code::multiple_resources_found);
+}
+
 } // namespace suite2
 
 } // namespace test

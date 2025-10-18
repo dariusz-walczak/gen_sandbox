@@ -21,3 +21,19 @@ ex:R2 a gx:Relationship ;
     gx:type gx:ParentChild ;
     gx:person1 ex:P3 ;
     gx:person2 ex:P1 .
+
+ex:P4 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:P5 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:R3 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:P4 ;
+    gx:person2 ex:P1 .
+
+ex:R4 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:P5 ;
+    gx:person2 ex:P1 .
