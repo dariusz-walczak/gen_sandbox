@@ -240,55 +240,68 @@ void extract_person_names(Person& person, const data_table& table) {
 }
 
 
-nlohmann::json person_to_json(const Person& person) {
+nlohmann::json person_to_json(const Person& person)
+{
     nlohmann::json result;
 
     result["unique_path"] = person.get_unique_id();
 
-    if (person.gender == Gender::Male) {
+    if (person.gender == Gender::Male)
+    {
         result["gender"] = g_male;
-    } else if (person.gender == Gender::Female) {
+    }
+    else if (person.gender == Gender::Female)
+    {
         result["gender"] = g_female;
     }
 
     std::string full_name = person.get_full_name();
 
-    if (!full_name.empty()) {
+    if (!full_name.empty())
+    {
         result["name"]["full"] = full_name;
 
         std::string given_names = person.get_given_names();
 
-        if (!given_names.empty()) {
+        if (!given_names.empty())
+        {
             result["name"]["given"] = given_names;
         }
 
         std::string last_names = person.get_last_names();
 
-        if (!last_names.empty()) {
+        if (!last_names.empty())
+        {
             result["name"]["last"] = last_names;
         }
     }
 
-    if (person.birth_date) {
+    if (person.birth_date)
+    {
         result["birth_date"] = std::format("{:%Y-%m-%d}", person.birth_date.value());
     }
 
-    if (person.death_date) {
+    if (person.death_date)
+    {
         result["death_date"] = std::format("{:%Y-%m-%d}", person.death_date.value());
     }
 
-    if (person.father) {
+    if (person.father)
+    {
         result["father"] = person_to_json(*person.father);
     }
 
-    if (person.mother) {
+    if (person.mother)
+    {
         result["mother"] = person_to_json(*person.mother);
     }
 
-    if (!person.partners.empty()) {
+    if (!person.partners.empty())
+    {
         result["partners"] = nlohmann::json::array();
 
-        for (const Person::PartnerRelation& relation : person.partners) {
+        for (const Person::PartnerRelation& relation : person.partners)
+        {
             const auto& partner = *relation.partner;
             auto json_partner = person_to_json(partner);
             auto children_it = person.children.find(partner);
