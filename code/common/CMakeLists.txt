@@ -17,6 +17,7 @@ add_library(
   src/command_line_utils.cpp
   src/common_exception.cpp
   src/file_system_utils.cpp
+  src/note.cpp
   src/person.cpp
   src/redland_utils.cpp
   src/resource.cpp

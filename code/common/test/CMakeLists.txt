@@ -19,6 +19,7 @@ add_library(
   src/tools/application.cpp
   src/tools/assertions.cpp
   src/tools/error.cpp
+  src/tools/person.cpp
   src/tools/redland.cpp
 )
 
@@ -47,6 +48,7 @@ target_compile_definitions(gen_test_lib PRIVATE BOOST_DLL_USE_STD_FS=1)
 add_executable(
   gen_common_test
   src/main.cpp
+  src/note.cpp
   src/person.cpp
   src/redland_utils.cpp
   src/resource.cpp

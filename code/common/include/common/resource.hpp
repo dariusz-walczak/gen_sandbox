@@ -32,6 +32,7 @@ public:
     [[nodiscard]] std::string get_uri_str() const { return m_uri.c_str(); }
     [[nodiscard]] resource_id get_unique_id() const;
     [[nodiscard]] std::filesystem::path get_unique_path() const;
+    [[nodiscard]] virtual std::string get_caption() const { return ""; }
 
     bool operator<(const Resource& other) const { return m_uri < other.m_uri; }
     bool operator==(const Resource& other) const { return m_uri == other.m_uri; }

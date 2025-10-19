@@ -17,7 +17,8 @@
 namespace common
 {
 
-enum class Gender : std::uint8_t {
+enum class Gender : std::uint8_t
+{
     Uninitialized = 0,
     Male,
     Female,
@@ -51,6 +52,7 @@ public:
     [[nodiscard]] std::string get_given_names() const;
     [[nodiscard]] std::string get_last_names() const;
     [[nodiscard]] std::string get_full_name() const;
+    [[nodiscard]] std::string get_caption() const override { return get_full_name(); }
 
     std::optional<Gender> gender;
     std::vector<std::string> given_names;
