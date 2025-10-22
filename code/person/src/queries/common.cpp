@@ -283,13 +283,6 @@ retrieve_result retrieve_person_preferred_name(
 }
 
 
-retrieve_result retrieve_person_relatives(
-    common::Person& person, librdf_world* world, librdf_model* model)
-{
-    return retrieve_result::NotFound;
-}
-
-
 retrieve_result retrieve_person_children(
     common::Person& person, librdf_world* world, librdf_model* model)
 {
