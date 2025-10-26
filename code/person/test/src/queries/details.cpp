@@ -1,13 +1,18 @@
 #include <algorithm>
 #include <memory>
+#include <variant>
+
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
 #include "test/tools/application.hpp"
 #include "test/tools/assertions.hpp"
+#include "test/tools/error.hpp"
 #include "test/tools/matchers.hpp"
+#include "test/tools/note.hpp"
 #include "test/tools/printers.hpp"
 #include "test/tools/redland.hpp"
+#include "test/tools/resource.hpp"
 
 #include "common/comparators.hpp"
 #include "person/error.hpp"
@@ -24,34 +29,16 @@ struct ComparablePartnerRelation
     common::Person partner;
     bool is_inferred;
 
+    bool operator==(const ComparablePartnerRelation& other) const {
+        return ((partner == other.partner) && (is_inferred == other.is_inferred));
+    }
+
     friend void PrintTo(const ComparablePartnerRelation& rel, std::ostream* os) {
-        *os << "ExpectedPartnerRelation{partner: ";
+        *os << "ComparablePartnerRelation{partner: ";
         PrintTo(rel.partner, os);
         *os << ", is_inferred=" << std::boolalpha << rel.is_inferred << "}";
     };
 };
-
-struct ExpectedPartnerRelation
-{
-    common::Person partner;
-    bool is_inferred;
-
-    friend void PrintTo(const ExpectedPartnerRelation& rel, std::ostream* os) {
-        *os << "ExpectedPartnerRelation{partner: ";
-        PrintTo(rel.partner, os);
-        *os << ", is_inferred=" << std::boolalpha << rel.is_inferred << "}";
-    };
-};
-
-bool operator==(const ComparablePartnerRelation& actual, const ExpectedPartnerRelation& expected)
-{
-    return ((actual.partner == expected.partner) && (actual.is_inferred == expected.is_inferred));
-}
-
-bool operator==(const ExpectedPartnerRelation& expected, const ComparablePartnerRelation& actual)
-{
-    return ((actual.partner == expected.partner) && (actual.is_inferred == expected.is_inferred));
-}
 
 std::vector<ComparablePartnerRelation> adapt(
     const std::vector<common::Person::PartnerRelation>& partners)
@@ -78,7 +65,8 @@ struct Param
     const char* data_file;
     const char* proband_uri;
 
-    std::vector<ExpectedPartnerRelation> expected_partners;
+    std::vector<ComparablePartnerRelation> expected_partners;
+    std::vector<tools::ComparableNote> expected_notes;
 };
 
 class DetailsQueries_RetrievePersonPartners : public ::testing::TestWithParam<Param> {};
@@ -89,18 +77,15 @@ TEST_P(DetailsQueries_RetrievePersonPartners, NormalSuccessCases)
     tools::scoped_redland_ctx ctx = tools::initialize_redland_ctx();
     tools::load_rdf(ctx->world, ctx->model, tools::get_program_path() / param.data_file);
 
-    const std::vector<ExpectedPartnerRelation>& expected_partners = param.expected_partners;
     const auto proband = std::make_shared<common::Person>(param.proband_uri);
+    std::vector<common::Note> actual_notes;
 
     const auto& actual_partners = adapt(
         person::retrieve_person_partners(
-            proband.get(), ctx->world, ctx->model));
+            proband.get(), ctx->world, ctx->model, actual_notes));
 
-    EXPECT_THAT(
-        actual_partners,
-        ::testing::UnorderedPointwise(
-            ::testing::Eq(),
-            expected_partners));
+    EXPECT_THAT(param.expected_partners, actual_partners);
+    EXPECT_EQ(param.expected_notes, tools::to_comparable(actual_notes));
 };
 
 const std::vector<Param> g_params {
@@ -108,6 +93,8 @@ const std::vector<Param> g_params {
         "NoPartner",
         "data/deps_queries/retrieve_person_partners/normal_success_cases/model-00_no-partner.ttl",
         "http://example.org/P1",
+        {
+        },
         {
         }
     },
@@ -117,6 +104,8 @@ const std::vector<Param> g_params {
         "http://example.org/P1",
         {
             {common::Person("http://example.org/P2"), false}
+        },
+        {
         }
     },
     {
@@ -125,6 +114,8 @@ const std::vector<Param> g_params {
         "http://example.org/P2",
         {
             {common::Person("http://example.org/P1"), false}
+        },
+        {
         }
     },
     {
@@ -135,6 +126,8 @@ const std::vector<Param> g_params {
         {
             {common::Person("http://example.org/P2"), false},
             {common::Person("http://example.org/P3"), false}
+        },
+        {
         }
     },
     {
@@ -144,6 +137,8 @@ const std::vector<Param> g_params {
         "http://example.org/P2",
         {
             {common::Person("http://example.org/P1"), false}
+        },
+        {
         }
     },
     {
@@ -154,6 +149,8 @@ const std::vector<Param> g_params {
         {
             {common::Person("http://example.org/P1"), false},
             {common::Person("http://example.org/P4"), false}
+        },
+        {
         }
     },
     {
@@ -163,6 +160,8 @@ const std::vector<Param> g_params {
         "http://example.org/G1P1",
         {
             {common::Person("http://example.org/G1P2"), false}
+        },
+        {
         }
     },
     {
@@ -172,6 +171,8 @@ const std::vector<Param> g_params {
         "http://example.org/G2P1",
         {
             {common::Person("http://example.org/G2P2"), false}
+        },
+        {
         }
     },
     {
@@ -179,6 +180,8 @@ const std::vector<Param> g_params {
         "data/deps_queries/retrieve_person_partners/normal_success_cases/"
         "model-03_three-generations.ttl",
         "http://example.org/G3P1",
+        {
+        },
         {
         }
     },
@@ -189,6 +192,8 @@ const std::vector<Param> g_params {
         "http://example.org/P00010",
         {
             {common::Person("http://example.org/P00000"), false}
+        },
+        {
         }
     },
     {
@@ -198,6 +203,14 @@ const std::vector<Param> g_params {
         "http://example.org/G1P1",
         {
             {common::Person("http://example.org/G1P2"), true}
+        },
+        {
+            {
+                common::Note::Type::Info,
+                std::string(person::k_inferred_partner_note_id),
+                {{"partner", {tools::ComparableResource{"http://example.org/G1P2", ""}}}},
+                "Partner inferred: http://example.org/G1P2"
+            }
         }
     },
     {
@@ -207,6 +220,14 @@ const std::vector<Param> g_params {
         "http://example.org/G1P2",
         {
             {common::Person("http://example.org/G1P1"), true}
+        },
+        {
+            {
+                common::Note::Type::Info,
+                std::string(person::k_inferred_partner_note_id),
+                {{"partner", {tools::ComparableResource{"http://example.org/G1P1", ""}}}},
+                "Partner inferred: http://example.org/G1P1"
+            }
         }
     },
     {
@@ -216,6 +237,8 @@ const std::vector<Param> g_params {
         "http://example.org/G1P3",
         {
             {common::Person("http://example.org/G1P4"), false}
+        },
+        {
         }
     },
     {
@@ -225,6 +248,14 @@ const std::vector<Param> g_params {
         "http://example.org/G2P1",
         {
             {common::Person("http://example.org/G2P2"), true}
+        },
+        {
+            {
+                common::Note::Type::Info,
+                std::string(person::k_inferred_partner_note_id),
+                {{"partner", {tools::ComparableResource{"http://example.org/G2P2", ""}}}},
+                "Partner inferred: http://example.org/G2P2"
+            }
         }
     },
     {
@@ -234,6 +265,14 @@ const std::vector<Param> g_params {
         "http://example.org/G2P2",
         {
             {common::Person("http://example.org/G2P1"), true}
+        },
+        {
+            {
+                common::Note::Type::Info,
+                std::string(person::k_inferred_partner_note_id),
+                {{"partner", {tools::ComparableResource{"http://example.org/G2P1", ""}}}},
+                "Partner inferred: http://example.org/G2P1"
+            }
         }
     },
     {
@@ -241,6 +280,8 @@ const std::vector<Param> g_params {
         "data/deps_queries/retrieve_person_partners/normal_success_cases/"
         "model-05_three-generations-some-inferred.ttl",
         "http://example.org/G3P1",
+        {
+        },
         {
         }
     }
@@ -264,17 +305,18 @@ TEST_F(DetailsQueries_RetrievePersonPartners, InputContractViolations)
 {
     tools::scoped_redland_ctx ctx = tools::initialize_redland_ctx();
     const auto person = std::make_shared<common::Person>("http://example.org/someone");
+    std::vector<common::Note> notes;
 
     EXPECT_THROW_WITH_CODE(
-        person::retrieve_person_partners(nullptr, ctx->world, ctx->model),
+        person::retrieve_person_partners(nullptr, ctx->world, ctx->model, notes),
         person::person_exception, person::person_exception::error_code::input_contract_error);
 
     EXPECT_THROW_WITH_CODE(
-        person::retrieve_person_partners(person.get(), nullptr, ctx->model),
+        person::retrieve_person_partners(person.get(), nullptr, ctx->model, notes),
         person::person_exception, person::person_exception::error_code::input_contract_error);
 
     EXPECT_THROW_WITH_CODE(
-        person::retrieve_person_partners(person.get(), ctx->world, nullptr),
+        person::retrieve_person_partners(person.get(), ctx->world, nullptr, notes),
         person::person_exception, person::person_exception::error_code::input_contract_error);
 }
 

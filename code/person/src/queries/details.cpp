@@ -9,6 +9,18 @@
 namespace person
 {
 
+namespace
+{
+
+common::Note create_inferred_partner_note(const std::shared_ptr<common::Person>& partner)
+{
+    return common::Note(
+        common::Note::Type::Info, std::string(k_inferred_partner_note_id), {{"partner", partner}},
+        fmt::format("Partner inferred: {}", partner->get_uri_str()));
+}
+
+} // anonymous namespace
+
 std::shared_ptr<common::Person> retrieve_person_father_opt(
     const common::Person* proband, librdf_world* world, librdf_model* model)
 {
@@ -162,7 +174,8 @@ std::shared_ptr<common::Person> retrieve_person_mother_opt(
 }
 
 std::vector<common::Person::PartnerRelation> retrieve_person_partners(
-    const common::Person* proband, librdf_world* world, librdf_model* model)
+    const common::Person* proband, librdf_world* world, librdf_model* model,
+    std::vector<common::Note>& notes)
 {
     if (!proband)
     {
@@ -265,16 +278,20 @@ std::vector<common::Person::PartnerRelation> retrieve_person_partners(
             continue;
         }
 
-        auto uri_it = common::get_binding_value_req(row, "partner");
-        auto inferred_it = common::get_binding_value_req(row, "inferred");
-
-        bool inferred = (inferred_it->second == "true");
+        const auto& uri_it = common::get_binding_value_req(row, "partner");
+        const auto& inferred_it = common::get_binding_value_req(row, "inferred");
+        const bool inferred = (inferred_it->second == "true");
 
         /* Exceptional path (resource not found): Propagate the exception
          * Normal path (resource found): Continue the execution */
         auto partner = retrieve_person_base_data_req(uri_it->second, world, model);
 
         retrieve_person_name(*partner, world, model);
+
+        if (inferred)
+        {
+            notes.emplace_back(create_inferred_partner_note(partner));
+        }
 
         partners.push_back({partner, inferred});
     }

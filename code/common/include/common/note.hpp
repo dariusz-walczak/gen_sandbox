@@ -8,11 +8,11 @@
 
 #include <nlohmann/json.hpp>
 
-#include "common/resource.hpp"
-
 
 namespace common
 {
+
+struct Resource;
 
 class Note
 {
@@ -32,29 +32,36 @@ public:
     using VarName = std::string;
     /// @brief Variable value
     using VarValue = std::variant<std::string, int, std::shared_ptr<common::Resource>>;
+    /// @brief Variables container
+    using Vars = std::map<VarName, VarValue>;
 
-    Type type;
+    Type m_type { Type::Uninitialized };
     /**
      * @brief Note identifier
      *
      * The identifier is used to uniqely identify the note meaning and variable set. Can be used to
      *  identify a static note text or a dynamic note template.
      */
-    Id id;
+    Id m_id;
     /**
      * @brief Note variable lookup table
      *
      * When populated the table defines the variables that will be replaced when the dynamic note
      *  template is instantiated.
      */
-    std::map<VarName, VarValue> vars;
+    Vars m_vars;
     /**
      * @brief Diagnostic note template instantiation.
      *
      * The note text instantiated for diagnostic purposes only. It may be used for presentation
      *  purposes but may be difficult to localize or include resource links.
      */
-    std::string diagnostic_text;
+    std::string m_diagnostic_text;
+
+    Note(
+        Type type, Id id, std::map<VarName, VarValue> vars, std::string diagnostic_text)
+        : m_type(type), m_id(std::move(id)), m_vars(std::move(vars)),
+          m_diagnostic_text(std::move(diagnostic_text)) {}
 
 }; // class Note
 

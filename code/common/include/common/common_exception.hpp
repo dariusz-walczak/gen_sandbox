@@ -31,7 +31,23 @@ public:
         /** The input data size is invalid (too small, or more likely too large). */
         data_size_error,
         /** The input data failed to fulfill a contract condition */
-        input_contract_error
+        input_contract_error,
+        /** @brief Internal contract violated: runtime assumption failed
+         *
+         *  @par Use Cases
+         *      Throw when code-level assumptions about internal state, data shape, type set, or
+         *      or interaction sequencing prove false at runtime.
+         *
+         *  @par Example
+         *      An aliased std::variant holds unexpected alternative.
+         *
+         *  @par Typical Causes
+         *      This error code typically indicates an implementation issue, an outdated
+         *      assumption, or a breaking interface change.
+         *
+         *  @par Expected Message Format
+         *     `Assumption failure: expected <condition>; observed <actual>` */
+        internal_contract_error
     };
 
     common_exception(error_code code, const std::string& msg);

@@ -9,11 +9,13 @@
 #include <boost/url.hpp>
 
 #include "common/common_exception.hpp"
+#include "common/note.hpp"
 #include "common/redland_utils.hpp"
 
 namespace common
 {
 
+//struct Note;
 struct Resource;
 
 using resource_set = std::set<std::shared_ptr<Resource>>;
@@ -38,6 +40,10 @@ public:
     bool operator==(const Resource& other) const { return m_uri == other.m_uri; }
     std::ostream& operator<<(std::ostream& os);
 
+    void add_note(Note note) { m_notes.emplace_back(std::move(note)); }
+    [[nodiscard]] const auto& notes() const { return m_notes; }
+    [[nodiscard]] auto& notes() { return m_notes; }
+
     virtual void print_state(std::ostream& os) const;
 
 private:
@@ -48,6 +54,7 @@ private:
      *     or by providing an alternative IRI parser. This effort is just not important right now.
      */
     boost::urls::url m_uri;
+    std::vector<Note> m_notes;
 };
 
 /** Extract resource URI from the specified data row field

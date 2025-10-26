@@ -9,7 +9,10 @@
 namespace test::tools
 {
 
-std::shared_ptr<common::Person> construct_named_person(
+common::Person construct_named_person_val(
+    const std::string& uri, const std::string& first_name, const std::string& last_name);
+
+std::shared_ptr<common::Person> construct_named_person_ptr(
     const std::string& uri, const std::string& first_name, const std::string& last_name);
 
 } // namespace test::tools

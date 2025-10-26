@@ -19,8 +19,11 @@ add_library(
   src/tools/application.cpp
   src/tools/assertions.cpp
   src/tools/error.cpp
+  src/tools/note.cpp
   src/tools/person.cpp
   src/tools/redland.cpp
+  src/tools/resource.cpp
+  src/tools/string.cpp
 )
 
 target_include_directories(

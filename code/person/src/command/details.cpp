@@ -34,7 +34,7 @@ void run_details_command(const cli_options& options)
     person->mother = retrieve_person_mother_opt(
         person.get(), redland_ctx->world, redland_ctx->model);
     person->partners = retrieve_person_partners(
-        person.get(), redland_ctx->world, redland_ctx->model);
+        person.get(), redland_ctx->world, redland_ctx->model, person->notes());
 
     retrieve_person_children(*person, redland_ctx->world, redland_ctx->model);
 

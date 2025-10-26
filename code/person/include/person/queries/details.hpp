@@ -1,12 +1,17 @@
 #if !defined PERSON_QUERIES_DETAILS_HPP
 #define PERSON_QUERIES_DETAILS_HPP
 
+#include <string_view>
+
 #include "common/person.hpp"
+#include "common/note.hpp"
 #include "person/queries/common.hpp"
 
 
 namespace person
 {
+
+inline constexpr std::string_view k_inferred_partner_note_id = "INFERRED_PARTNER";
 
 /** @brief Find the father of the given person
  *
@@ -47,7 +52,8 @@ std::shared_ptr<common::Person> retrieve_person_mother_opt(
     const common::Person* proband, librdf_world* world, librdf_model* model);
 
 std::vector<common::Person::PartnerRelation> retrieve_person_partners(
-    const common::Person* proband, librdf_world* world, librdf_model* model);
+    const common::Person* proband, librdf_world* world, librdf_model* model,
+    std::vector<common::Note>& notes);
 
 } // namespace person
 

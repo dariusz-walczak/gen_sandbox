@@ -1,6 +1,9 @@
 #include "common/note.hpp"
 
+#include <fmt/format.h>
+
 #include "common/common_exception.hpp"
+#include "common/resource.hpp"
 
 namespace common
 {
@@ -31,23 +34,23 @@ std::string_view to_string(Note::Type type) noexcept
 
 nlohmann::json note_to_json(const Note& note)
 {
-    if (!note_type_valid(note.type))
+    if (!note_type_valid(note.m_type))
     {
         throw common_exception(
             common_exception::error_code::input_contract_error,
             fmt::format(
                 "Precondition failure: note.type={} must satisfy note_type_valid",
-                to_string(note.type)));
+                to_string(note.m_type)));
     }
 
     nlohmann::json result;
 
-    result["type"] = to_string(note.type);
-    result["diag"] = note.diagnostic_text;
-    result["id"] = note.id;
+    result["type"] = to_string(note.m_type);
+    result["diag"] = note.m_diagnostic_text;
+    result["id"] = note.m_id;
     result["vars"] = nlohmann::json::object();
     
-    for (const auto& [name, value] : note.vars)
+    for (const auto& [name, value] : note.m_vars)
     {
         if (std::holds_alternative<std::string>(value))
         {
@@ -64,6 +67,12 @@ nlohmann::json note_to_json(const Note& note)
                 {"unique_path", res->get_unique_id()},
                 {"caption", res->get_caption()}
             };
+        }
+        else
+        {
+            throw common::common_exception(
+                common::common_exception::error_code::internal_contract_error,
+                "Unexpected common::Note::VarValue alternative type");
         }
     }
 

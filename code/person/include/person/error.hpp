@@ -18,19 +18,23 @@ public:
         resource_not_found,
         /** @brief Multiple resources were found when at most one was expected
          *
-         *  Throw when a SPARQL query expected to return a single resource for a given context
-         *   instead returns multiple matching resources. This error code typically indicates
-         *   an error in the input data.
+         *  @par Use Cases
+         *      Throw when a SPARQL query expected to return a single resource for a given context
+         *      instead returns multiple matching resources.
          *
-         *  @par Expected message format
+         *  @par Typical Causes
+         *      This error code typically indicates an error in the input data.
+         *
+         *  @par Expected Message Format
          *     `Too Many Resources: found <count> resources when <condition>` */
         multiple_resources_found,
         /** @brief Input contract violated: argument(s) fail the function’s preconditions
          *
-         *  Throw when any function argument violates documented preconditions (type, domain,
-         *   range, invariants, or cross-param relations)
+         *  @par Use Cases
+         *      Throw when any function argument violates documented preconditions (type, domain,
+         *      range, invariants, or cross-param relations)
          *
-         *  @par Expected message format
+         *  @par Expected Message Format
          *     `Precondition failure: <param>=<value> must satisfy <condition>` */
         input_contract_error
     };
