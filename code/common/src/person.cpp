@@ -334,6 +334,16 @@ nlohmann::json person_to_json(const Person& person)
         }
     }
 
+    if (!person.notes().empty())
+    {
+        result["notes"] = nlohmann::json::array();
+
+        for (const auto& note : person.notes())
+        {
+            result["notes"].push_back(common::note_to_json(note));
+        }
+    }
+
     return result;
 }
 
