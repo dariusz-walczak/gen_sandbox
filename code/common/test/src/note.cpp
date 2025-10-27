@@ -137,7 +137,7 @@ const std::vector<Param> g_params {
         "DynamicPer",
         common::Note{
             common::Note::Type::Info, "NOTE8",
-            {{"var1", test::tools::construct_named_person(
+            {{"var1", test::tools::construct_named_person_ptr(
                         "http://example.com/P1", "Ignacy", "Daszyński")}},
             "Dynamic Note #8: Single Person"},
         {
