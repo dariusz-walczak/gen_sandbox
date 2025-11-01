@@ -54,18 +54,29 @@ nlohmann::json note_to_json(const Note& note)
     {
         if (std::holds_alternative<std::string>(value))
         {
-            result["vars"][name] = std::get<std::string>(value);
+            result["vars"][name] = {
+                {"type", "string"},
+                {"value", std::get<std::string>(value)}
+            };
         }
         else if (std::holds_alternative<int>(value))
         {
-            result["vars"][name] = std::get<int>(value);
+            result["vars"][name] = {
+                {"type", "integer"},
+                {"value", std::get<int>(value)}
+            };
         }
         else if (std::holds_alternative<std::shared_ptr<common::Resource>>(value))
         {
             const auto& res = std::get<std::shared_ptr<common::Resource>>(value);
             result["vars"][name] = {
-                {"unique_path", res->get_unique_id()},
-                {"caption", res->get_caption()}
+                {"type", "resource"},
+                {
+                    "value", {
+                        {"unique_path", res->get_unique_id()},
+                        {"caption", res->get_caption()}
+                    }
+                }
             };
         }
         else
