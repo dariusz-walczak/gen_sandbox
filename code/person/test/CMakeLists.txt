@@ -2,6 +2,7 @@ set(CMAKE_CXX_CLANG_TIDY clang-tidy;)
 
 add_executable(
   gen_person_test
+  src/error.cpp
   src/command/deps.cpp
   src/main.cpp
   src/queries/common.cpp

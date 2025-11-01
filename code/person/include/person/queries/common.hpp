@@ -25,7 +25,7 @@ enum class retrieve_result : std::uint8_t
  *  @return the resource if found
  *  @return nullptr if the resource is not found
  *
- *  @throws person_exception (query_error) on an unexpected query execution error */
+ *  @throws common::common_exception (redland_query_error) on an unexpected query execution error */
 std::shared_ptr<common::Person> retrieve_person_base_data_opt(
     const std::string& person_uri, librdf_world* world, librdf_model* model);
 
@@ -34,7 +34,7 @@ std::shared_ptr<common::Person> retrieve_person_base_data_opt(
  *  Construct the @ref common::Person resource. The resource is expected to exist.
  *
  *  @return the resource
- *  @throws person_exception (query_error) on an unexpected query execution error
+ *  @throws common::common_exception (redland_query_error) on an unexpected query execution error
  *  @throws person_exception (resource_not_found) on the resource not found */
 std::shared_ptr<common::Person> retrieve_person_base_data_req(
     const std::string& person_uri, librdf_world* world, librdf_model* model);
