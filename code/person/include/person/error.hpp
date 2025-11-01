@@ -14,7 +14,6 @@ class person_exception : public std::exception
 public:
     enum class error_code : std::uint8_t {
         uninitialized = 0,
-        query_error,
         resource_not_found,
         /** @brief Multiple resources were found when at most one was expected
          *
@@ -39,6 +38,7 @@ public:
         input_contract_error
     };
 
+    person_exception();
     person_exception(error_code code, const std::string& msg);
     person_exception(error_code code, const char* msg);
 
