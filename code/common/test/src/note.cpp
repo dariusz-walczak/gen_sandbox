@@ -75,7 +75,7 @@ const std::vector<Param> g_params {
             {"type", "info"},
             {"diag", "Dynamic Note #4: Single Int"},
             {"id", "NOTE4"},
-            {"vars", {{"var1", 100}}}
+            {"vars", {{"var1", {{"type", "integer"}, {"value", 100}}}}}
         }
     },
     {
@@ -87,7 +87,7 @@ const std::vector<Param> g_params {
             {"type", "info"},
             {"diag", "Dynamic Note #5: Single String"},
             {"id", "NOTE5"},
-            {"vars", {{"var1", "value"}}}
+            {"vars", {{"var1", {{"type", "string"}, {"value", "value"}}}}}
         }
     },
     {
@@ -100,7 +100,13 @@ const std::vector<Param> g_params {
             {"type", "info"},
             {"diag", "Dynamic Note #6: Single Resource"},
             {"id", "NOTE6"},
-            {"vars", {{"var1", {{"unique_path", "example.com/R1"}, {"caption", ""}}}}}
+            {"vars", {{"var1", {
+                            {"type", "resource"},
+                            {"value", {{"unique_path", "example.com/R1"}, {"caption", ""}}}
+                        }
+                    }
+                }
+            }
         }
     },
     {
@@ -123,12 +129,12 @@ const std::vector<Param> g_params {
             {
                 "vars",
                 {
-                    {"var1", {{"unique_path", "example.com/R1"}, {"caption", ""}}},
-                    {"var2", 123},
-                    {"var3", 1337},
-                    {"var4", "some text"},
-                    {"var5", {{"unique_path", "example.com/R2"}, {"caption", ""}}},
-                    {"var6", "another text"}
+                    {"var1", {{"type", "resource"}, {"value", {{"unique_path", "example.com/R1"}, {"caption", ""}}}}},
+                    {"var2", {{"type", "integer"}, {"value", 123}}},
+                    {"var3", {{"type", "integer"}, {"value", 1337}}},
+                    {"var4", {{"type", "string"}, {"value", "some text"}}},
+                    {"var5", {{"type", "resource"}, {"value", {{"unique_path", "example.com/R2"}, {"caption", ""}}}}},
+                    {"var6", {{"type", "string"}, {"value", "another text"}}}
                 }
             }
         }
@@ -144,8 +150,17 @@ const std::vector<Param> g_params {
             {"type", "info"},
             {"diag", "Dynamic Note #8: Single Person"},
             {"id", "NOTE8"},
-            {"vars", {{"var1", {{"unique_path", "example.com/P1"},
-                                {"caption", "Daszyński, Ignacy"}}}}}
+            {"vars", {{"var1", {
+                            {"type", "resource"},
+                            {"value", {
+                                    {"unique_path", "example.com/P1"},
+                                     {"caption", "Daszyński, Ignacy"}
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 };
