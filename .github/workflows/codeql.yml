@@ -55,5 +55,8 @@ jobs:
     - name: Build
       run: cmake --build build --config Release
 
+    - name: Work around missing trap cache directory
+      run: mkdir -p "$RUNNER_TEMP/trapCaches/cpp/tarballs"
+
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
