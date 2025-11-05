@@ -70,6 +70,16 @@ const std::vector<Param> g_params {
         {
             { "http://example.org/P1", "http://example.org/P2" }
         }
+    },
+    {
+        "SingleFamilyInferred",
+        "data/deps_queries/retrieve_related_persons/normal_success_cases/"
+        "case3_single-family-inferred.ttl",
+        {
+            { "http://example.org/P1", "http://example.org/P2" },
+            { "http://example.org/P1", "http://example.org/P3" },
+            { "http://example.org/P2", "http://example.org/P3" }
+        }
     }
 };
 

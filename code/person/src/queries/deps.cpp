@@ -7,6 +7,20 @@
 namespace person
 {
 
+/**
+ * Retrieve all distinct pairs of gx:Person resources that are related.
+ *
+ * A pair (x,y) is returned if and only if:
+ *  - x and y appear together in the same gx:Relationship resource (any subtype), or
+ *  - x and y are inferred partners (they share at least one common child).
+ *
+ * Uniqueness and ordering:
+ *  - Pairs are *unordered*: (x,y) and (y,x) are considered the same relation.
+ *  - Each unordered pair is returned exactly once.
+ *  - Self-pairs are excluded (x ≠ y).
+ *
+ * @return Sequence of unique, canonicalized person pairs (a,b).
+ */
 common::data_table retrieve_related_persons(librdf_world* world, librdf_model* model)
 {
     spdlog::trace("{}: Entry checkpoint", __func__);
@@ -15,10 +29,32 @@ common::data_table retrieve_related_persons(librdf_world* world, librdf_model* m
         PREFIX gx: <http://gedcomx.org/>
 
         SELECT DISTINCT ?person1 ?person2
-        WHERE {
-            ?relationship a gx:Relationship ;
-                gx:person1 ?person1 ;
-                gx:person2 ?person2 .
+        WHERE
+        {
+            {
+                ?relationship a gx:Relationship ;
+                    gx:person1 ?candidate1 ;
+                    gx:person2 ?candidate2 .
+                ?candidate1 a gx:Person .
+                ?candidate2 a gx:Person .
+            }
+            UNION
+            {
+                ?rel1 a gx:Relationship ;
+                    gx:person1 ?candidate1 ;
+                    gx:person2 ?child ;
+                    gx:type gx:ParentChild .
+                ?rel2 a gx:Relationship ;
+                    gx:person1 ?candidate2 ;
+                    gx:person2 ?child ;
+                    gx:type gx:ParentChild .
+                ?candidate1 a gx:Person .
+                ?candidate2 a gx:Person .
+                ?child a gx:Person .
+            }
+            FILTER (!sameTerm(?candidate1, ?candidate2))
+            BIND(IF(STR(?candidate1) < STR(?candidate2), ?candidate1, ?candidate2) AS ?person1)
+            BIND(IF(STR(?candidate1) < STR(?candidate2), ?candidate2, ?candidate1) AS ?person2)
         })";
 
     spdlog::debug("{}: The query: {}", __func__, query);
