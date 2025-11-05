@@ -220,9 +220,10 @@ std::vector<common::Person::PartnerRelation> retrieve_person_partners(
                             gx:person1 ?partner ;
                             gx:person2 ?child ;
                             gx:type gx:ParentChild .
-                         ?child a gx:Person .
-                    FILTER ((?partner != ?proband) &&
-                            (?proband = <)" + proband->get_uri_str() + R"(>))
+                        ?child a gx:Person .
+
+                        FILTER ((?partner != ?proband) &&
+                                (?proband = <)" + proband->get_uri_str() + R"(>))
                     }
                 }
                 BIND(true AS ?inferred_int)
