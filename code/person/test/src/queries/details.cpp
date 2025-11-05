@@ -53,7 +53,7 @@ std::vector<ComparablePartnerRelation> adapt(
 
 } // anonymous namespace
 
-//  The retrieve_related_persons function tests
+//  The retrieve_person_partners function tests
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
 
 namespace
