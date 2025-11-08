@@ -13,6 +13,17 @@ set(
 
 enable_testing()
 
+option(ENABLE_CODE_COVERAGE "Enable instrumentation for code coverage" OFF)
+
+if(ENABLE_CODE_COVERAGE)
+  if (CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    add_compile_options(-O0 -g --coverage)
+    add_link_options(--coverage)
+  else()
+    message(FATAL_ERROR "Code coverage is only supported when using GCC or Clang")
+  endif()
+endif()
+
 # ===[ Dependencies ]=========================================================================== #
 
 # ---[ Raptor RDF Syntax Library ]-------------------------------------------------------------- #

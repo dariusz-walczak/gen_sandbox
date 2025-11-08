@@ -1,0 +1,49 @@
+name: Coverage
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    env:
+      BUILD_DIR: ${{ github.workspace }}/build/coverage
+      COVERAGE_DIR: ${{ github.workspace }}/coverage
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install GCC 14
+        run: |
+          sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+          sudo apt-get update
+          sudo apt-get install -y g++-14 gcc-14
+
+      - name: Set g++ and gcc to version 14
+        run: |
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 100 --slave /usr/bin/g++ g++ /usr/bin/g++-14
+          gcc --version
+          g++ --version
+
+      - name: Install project dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y librdf0-dev libraptor2-dev librasqal3-dev libspdlog-dev libboost-url1.83-dev libboost-system1.83-dev python3-pip
+          python3 -m pip install --upgrade pip
+          python3 -m pip install gcovr
+
+      - name: Generate coverage report
+        run: |
+          scripts/run_coverage.sh
+
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: |
+            ${{ env.COVERAGE_DIR }}/
