@@ -24,6 +24,7 @@ add_library(
   src/tools/redland.cpp
   src/tools/resource.cpp
   src/tools/string.cpp
+  src/tools/variable.cpp
 )
 
 target_include_directories(

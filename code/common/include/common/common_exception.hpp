@@ -30,7 +30,10 @@ public:
         data_format_error,
         /** The input data size is invalid (too small, or more likely too large). */
         data_size_error,
-        /** The input data failed to fulfill a contract condition */
+        /** The input data failed to fulfill a contract condition
+         *
+         *  @par Expected Message Format
+         *     `Precondition failure: expected <condition>; observed <actual>` */
         input_contract_error,
         /** @brief Internal contract violated: runtime assumption failed
          *

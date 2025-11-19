@@ -22,6 +22,7 @@ add_library(
   src/redland_utils.cpp
   src/resource.cpp
   src/spdlog_utils.cpp
+  src/variable.cpp
 )
 
 target_include_directories(

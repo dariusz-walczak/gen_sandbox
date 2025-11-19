@@ -10,39 +10,16 @@
 #include "common/note.hpp"
 
 #include "test/tools/resource.hpp"
+#include "test/tools/variable.hpp"
 
 namespace test::tools
 {
-
-using ComparableVarValue = std::variant<std::string, int, ComparableResource>;
-
-[[nodiscard]] ComparableVarValue to_comparable(const common::Note::VarValue& value);
-
-[[nodiscard]] std::string to_string(
-    const ComparableVarValue& val, std::uint8_t depth_head=0, std::uint8_t depth_tail=1);
-
-inline void PrintTo(const ComparableVarValue& val, std::ostream* os)
-{
-    *os << to_string(val);
-}
-
-using ComparableVars = std::map<common::Note::VarName, tools::ComparableVarValue>;
-
-[[nodiscard]] ComparableVars to_comparable(const common::Note::Vars& vars);
-
-[[nodiscard]] std::string to_string(
-    const ComparableVars& vars, std::uint8_t depth_head=0, std::uint8_t depth_tail=1);
-
-inline void PrintTo(const ComparableVars& vars, std::ostream* os)
-{
-    *os << to_string(vars);
-}
 
 struct ComparableNote
 {
     common::Note::Type type;
     common::Note::Id id;
-    test::tools::ComparableVars vars;
+    std::set<ComparableVariable> vars;
     std::string diagnostic_text;
 
     bool operator==(const ComparableNote& other) const {

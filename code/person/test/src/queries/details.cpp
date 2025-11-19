@@ -90,199 +90,211 @@ TEST_P(DetailsQueries_RetrievePersonPartners, NormalSuccessCases)
 
 const std::vector<Param> g_params {
     {
-        "NoPartner",
-        "data/deps_queries/retrieve_person_partners/normal_success_cases/model-00_no-partner.ttl",
-        "http://example.org/P1",
-        {
+        .case_name="NoPartner",
+        .data_file="data/deps_queries/retrieve_person_partners/normal_success_cases/model-00_no-partner.ttl",
+        .proband_uri="http://example.org/P1",
+        .expected_partners={
         },
-        {
+        .expected_notes={
         }
     },
     {
-        "SinglePartner",
-        "data/deps_queries/retrieve_person_partners/normal_success_cases/model-01_one-partner.ttl",
-        "http://example.org/P1",
-        {
+        .case_name="SinglePartner",
+        .data_file="data/deps_queries/retrieve_person_partners/normal_success_cases/model-01_one-partner.ttl",
+        .proband_uri="http://example.org/P1",
+        .expected_partners={
             {common::Person("http://example.org/P2"), false}
         },
-        {
+        .expected_notes={
         }
     },
     {
-        "SinglePartnerInverted",
-        "data/deps_queries/retrieve_person_partners/normal_success_cases/model-01_one-partner.ttl",
-        "http://example.org/P2",
-        {
+        .case_name="SinglePartnerInverted",
+        .data_file="data/deps_queries/retrieve_person_partners/normal_success_cases/model-01_one-partner.ttl",
+        .proband_uri="http://example.org/P2",
+        .expected_partners={
             {common::Person("http://example.org/P1"), false}
         },
-        {
+        .expected_notes={
         }
     },
     {
-        "TwoPartnersP1",
-        "data/deps_queries/retrieve_person_partners/normal_success_cases/"
-        "model-02_two-partners.ttl",
-        "http://example.org/P1",
-        {
+        .case_name="TwoPartnersP1",
+        .data_file=("data/deps_queries/retrieve_person_partners/normal_success_cases/"
+                    "model-02_two-partners.ttl"),
+        .proband_uri="http://example.org/P1",
+        .expected_partners={
             {common::Person("http://example.org/P2"), false},
             {common::Person("http://example.org/P3"), false}
         },
-        {
+        .expected_notes={
         }
     },
     {
-        "TwoPartnersP2",
-        "data/deps_queries/retrieve_person_partners/normal_success_cases/"
-        "model-02_two-partners.ttl",
-        "http://example.org/P2",
-        {
+        .case_name="TwoPartnersP2",
+        .data_file=("data/deps_queries/retrieve_person_partners/normal_success_cases/"
+                    "model-02_two-partners.ttl"),
+        .proband_uri="http://example.org/P2",
+        .expected_partners={
             {common::Person("http://example.org/P1"), false}
         },
-        {
+        .expected_notes={
         }
     },
     {
-        "TwoPartnersP3",
-        "data/deps_queries/retrieve_person_partners/normal_success_cases/"
-        "model-02_two-partners.ttl",
-        "http://example.org/P3",
-        {
+        .case_name="TwoPartnersP3",
+        .data_file=("data/deps_queries/retrieve_person_partners/normal_success_cases/"
+                    "model-02_two-partners.ttl"),
+        .proband_uri="http://example.org/P3",
+        .expected_partners={
             {common::Person("http://example.org/P1"), false},
             {common::Person("http://example.org/P4"), false}
         },
-        {
+        .expected_notes={
         }
     },
     {
-        "ThreeGensG1P1",
-        "data/deps_queries/retrieve_person_partners/normal_success_cases/"
-        "model-03_three-generations.ttl",
-        "http://example.org/G1P1",
-        {
+        .case_name="ThreeGensG1P1",
+        .data_file=("data/deps_queries/retrieve_person_partners/normal_success_cases/"
+                    "model-03_three-generations.ttl"),
+        .proband_uri="http://example.org/G1P1",
+        .expected_partners={
             {common::Person("http://example.org/G1P2"), false}
         },
-        {
+        .expected_notes={
         }
     },
     {
-        "ThreeGensG2P1",
-        "data/deps_queries/retrieve_person_partners/normal_success_cases/"
-        "model-03_three-generations.ttl",
-        "http://example.org/G2P1",
-        {
+        .case_name="ThreeGensG2P1",
+        .data_file=("data/deps_queries/retrieve_person_partners/normal_success_cases/"
+                    "model-03_three-generations.ttl"),
+        .proband_uri="http://example.org/G2P1",
+        .expected_partners={
             {common::Person("http://example.org/G2P2"), false}
         },
-        {
+        .expected_notes={
         }
     },
     {
-        "ThreeGensG3P1",
-        "data/deps_queries/retrieve_person_partners/normal_success_cases/"
-        "model-03_three-generations.ttl",
-        "http://example.org/G3P1",
-        {
+        .case_name="ThreeGensG3P1",
+        .data_file=("data/deps_queries/retrieve_person_partners/normal_success_cases/"
+                    "model-03_three-generations.ttl"),
+        .proband_uri="http://example.org/G3P1",
+        .expected_partners={
         },
-        {
+        .expected_notes={
         }
     },
     {
-        "OWL84_P00010",
-        "data/deps_queries/retrieve_person_partners/normal_success_cases/"
-        "model-04_owl-84-repro.ttl",
-        "http://example.org/P00010",
-        {
+        .case_name="OWL84_P00010",
+        .data_file=("data/deps_queries/retrieve_person_partners/normal_success_cases/"
+                    "model-04_owl-84-repro.ttl"),
+        .proband_uri="http://example.org/P00010",
+        .expected_partners={
             {common::Person("http://example.org/P00000"), false}
         },
-        {
+        .expected_notes={
         }
     },
     {
-        "ThreeGensInferredG1P1",
-        "data/deps_queries/retrieve_person_partners/normal_success_cases/"
-        "model-05_three-generations-some-inferred.ttl",
-        "http://example.org/G1P1",
-        {
+        .case_name="ThreeGensInferredG1P1",
+        .data_file=("data/deps_queries/retrieve_person_partners/normal_success_cases/"
+                    "model-05_three-generations-some-inferred.ttl"),
+        .proband_uri="http://example.org/G1P1",
+        .expected_partners={
             {common::Person("http://example.org/G1P2"), true}
         },
-        {
+        .expected_notes={
             {
-                common::Note::Type::Info,
-                std::string(person::k_inferred_partner_note_id),
-                {{"partner", {tools::ComparableResource{"http://example.org/G1P2", ""}}}},
-                "Partner inferred: http://example.org/G1P2"
+                .type=common::Note::Type::Info,
+                .id=std::string(person::k_inferred_partner_note_id),
+                .vars={
+                    tools::ComparableVariable{
+                        .name="partner",
+                        .value={tools::ComparableResource{"http://example.org/G1P2", ""}}}},
+                .diagnostic_text="Partner inferred: http://example.org/G1P2"
             }
         }
     },
     {
-        "ThreeGensInferredG1P2",
-        "data/deps_queries/retrieve_person_partners/normal_success_cases/"
-        "model-05_three-generations-some-inferred.ttl",
-        "http://example.org/G1P2",
-        {
+        .case_name="ThreeGensInferredG1P2",
+        .data_file=("data/deps_queries/retrieve_person_partners/normal_success_cases/"
+                    "model-05_three-generations-some-inferred.ttl"),
+        .proband_uri="http://example.org/G1P2",
+        .expected_partners={
             {common::Person("http://example.org/G1P1"), true}
         },
-        {
+        .expected_notes={
             {
-                common::Note::Type::Info,
-                std::string(person::k_inferred_partner_note_id),
-                {{"partner", {tools::ComparableResource{"http://example.org/G1P1", ""}}}},
-                "Partner inferred: http://example.org/G1P1"
+                .type=common::Note::Type::Info,
+                .id=std::string(person::k_inferred_partner_note_id),
+                .vars={
+                    tools::ComparableVariable{
+                        .name="partner",
+                        .value={tools::ComparableResource{"http://example.org/G1P1", ""}}}},
+                .diagnostic_text="Partner inferred: http://example.org/G1P1"
             }
         }
     },
     {
-        "ThreeGensInferredG1P3",
-        "data/deps_queries/retrieve_person_partners/normal_success_cases/"
-        "model-05_three-generations-some-inferred.ttl",
-        "http://example.org/G1P3",
-        {
+        .case_name="ThreeGensInferredG1P3",
+        .data_file=("data/deps_queries/retrieve_person_partners/normal_success_cases/"
+                    "model-05_three-generations-some-inferred.ttl"),
+        .proband_uri="http://example.org/G1P3",
+        .expected_partners={
             {common::Person("http://example.org/G1P4"), false}
         },
-        {
+        .expected_notes={
         }
     },
     {
-        "ThreeGensInferredG2P1",
-        "data/deps_queries/retrieve_person_partners/normal_success_cases/"
-        "model-05_three-generations-some-inferred.ttl",
-        "http://example.org/G2P1",
-        {
+        .case_name="ThreeGensInferredG2P1",
+        .data_file=("data/deps_queries/retrieve_person_partners/normal_success_cases/"
+                    "model-05_three-generations-some-inferred.ttl"),
+        .proband_uri="http://example.org/G2P1",
+        .expected_partners={
             {common::Person("http://example.org/G2P2"), true}
         },
-        {
+        .expected_notes={
             {
-                common::Note::Type::Info,
-                std::string(person::k_inferred_partner_note_id),
-                {{"partner", {tools::ComparableResource{"http://example.org/G2P2", ""}}}},
-                "Partner inferred: http://example.org/G2P2"
+                .type=common::Note::Type::Info,
+                .id=std::string(person::k_inferred_partner_note_id),
+                .vars={
+                    tools::ComparableVariable{
+                        .name="partner",
+                        .value={tools::ComparableResource{"http://example.org/G2P2", ""}}}},
+                .diagnostic_text="Partner inferred: http://example.org/G2P2"
             }
         }
     },
     {
-        "ThreeGensInferredG2P2",
-        "data/deps_queries/retrieve_person_partners/normal_success_cases/"
-        "model-05_three-generations-some-inferred.ttl",
-        "http://example.org/G2P2",
-        {
+        .case_name="ThreeGensInferredG2P2",
+        .data_file=("data/deps_queries/retrieve_person_partners/normal_success_cases/"
+                    "model-05_three-generations-some-inferred.ttl"),
+        .proband_uri="http://example.org/G2P2",
+        .expected_partners={
             {common::Person("http://example.org/G2P1"), true}
         },
-        {
+        .expected_notes={
             {
-                common::Note::Type::Info,
-                std::string(person::k_inferred_partner_note_id),
-                {{"partner", {tools::ComparableResource{"http://example.org/G2P1", ""}}}},
-                "Partner inferred: http://example.org/G2P1"
+                .type=common::Note::Type::Info,
+                .id=std::string(person::k_inferred_partner_note_id),
+                .vars={
+                    tools::ComparableVariable{
+                        .name="partner",
+                        .value={tools::ComparableResource{"http://example.org/G2P1", ""}}}},
+                .diagnostic_text="Partner inferred: http://example.org/G2P1"
             }
         }
     },
     {
-        "ThreeGensInferredG3P1",
-        "data/deps_queries/retrieve_person_partners/normal_success_cases/"
-        "model-05_three-generations-some-inferred.ttl",
-        "http://example.org/G3P1",
-        {
+        .case_name="ThreeGensInferredG3P1",
+        .data_file=("data/deps_queries/retrieve_person_partners/normal_success_cases/"
+                    "model-05_three-generations-some-inferred.ttl"),
+        .proband_uri="http://example.org/G3P1",
+        .expected_partners={
         },
-        {
+        .expected_notes={
         }
     }
 };

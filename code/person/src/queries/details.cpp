@@ -15,7 +15,8 @@ namespace
 common::Note create_inferred_partner_note(const std::shared_ptr<common::Person>& partner)
 {
     return common::Note(
-        common::Note::Type::Info, std::string(k_inferred_partner_note_id), {{"partner", partner}},
+        common::Note::Type::Info, std::string(k_inferred_partner_note_id),
+        {common::Variable{"partner", partner}},
         fmt::format("Partner inferred: {}", partner->get_uri_str()));
 }
 

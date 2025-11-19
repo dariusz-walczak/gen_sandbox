@@ -50,41 +50,9 @@ nlohmann::json note_to_json(const Note& note)
     result["id"] = note.m_id;
     result["vars"] = nlohmann::json::object();
     
-    for (const auto& [name, value] : note.m_vars)
+    for (const auto& var : note.m_vars)
     {
-        if (std::holds_alternative<std::string>(value))
-        {
-            result["vars"][name] = {
-                {"type", "string"},
-                {"value", std::get<std::string>(value)}
-            };
-        }
-        else if (std::holds_alternative<int>(value))
-        {
-            result["vars"][name] = {
-                {"type", "integer"},
-                {"value", std::get<int>(value)}
-            };
-        }
-        else if (std::holds_alternative<std::shared_ptr<common::Resource>>(value))
-        {
-            const auto& res = std::get<std::shared_ptr<common::Resource>>(value);
-            result["vars"][name] = {
-                {"type", "resource"},
-                {
-                    "value", {
-                        {"unique_path", res->get_unique_id()},
-                        {"caption", res->get_caption()}
-                    }
-                }
-            };
-        }
-        else
-        {
-            throw common::common_exception(
-                common::common_exception::error_code::internal_contract_error,
-                "Unexpected common::Note::VarValue alternative type");
-        }
+        result["vars"][var.name] = variable_to_json(var);
     }
 
     return result;
