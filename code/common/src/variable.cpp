@@ -51,11 +51,15 @@ nlohmann::json variable_to_json_int(const Variable& var, int current_depth)
     }
     else if (std::holds_alternative<std::vector<Variable>>(var.value))
     {
-        nlohmann::json result = nlohmann::json::array();
+        nlohmann::json result = {
+            {"name", var.name},
+            {"type", "sequence"},
+            {"value", nlohmann::json::array()}
+        };
 
         for (const auto& inner_var : std::get<std::vector<Variable>>(var.value))
         {
-            result.push_back(variable_to_json_int(inner_var, current_depth-1));
+            result["value"].push_back(variable_to_json_int(inner_var, current_depth-1));
         }
 
         return result;
