@@ -367,8 +367,7 @@ TEST_F(Note_NoteToJson, MaxTreeDepthBorderCase)
         curr = &(curr_vars.front());
     }
 
-    common::Note note = {
-        common::Note::Type::Info, "NOTE", {root}, "note"};
+    common::Note note = {common::Note::Type::Info, "NOTE", {root}, "note"};
 
     const char* expected_json_str = R"({
      "type": "info",
@@ -458,8 +457,7 @@ TEST_F(Note_NoteToJson, TreeDepthInputContractViolation)
         curr = &(curr_vars.front());
     }
 
-    common::Note note = {
-        common::Note::Type::Info, "NOTE", {root}, "note"};
+    common::Note note = {common::Note::Type::Info, "NOTE", {root}, "note"};
 
     EXPECT_THROW_WITH_CODE(
         common::note_to_json(note),
