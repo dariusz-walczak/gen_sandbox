@@ -1,8 +1,12 @@
-#include <gtest/gtest.h>
-
 #include "test/tools/person.hpp"
 
+#include <gtest/gtest.h>
+
+#include "common/common_exception.hpp"
 #include "common/note.hpp"
+
+#include "test/tools/assertions.hpp"
+
 
 TEST(Note_TypeToString, Success)
 {
@@ -12,7 +16,7 @@ TEST(Note_TypeToString, Success)
     EXPECT_EQ("error", common::to_string(common::Note::Type::Error));
 }
 
-//  The retrieve_person_father and retrieve_person_mother functions tests
+//  The note_to_json function tests
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
 
 namespace suite1
@@ -348,5 +352,118 @@ INSTANTIATE_TEST_SUITE_P(
     Note_NoteToJson,
     ::testing::ValuesIn(g_params),
     ParamNameGen);
+
+/** Check if the note_to_json function works correctly for a note with the maximum valid variable
+ *   depth. */
+TEST_F(Note_NoteToJson, MaxTreeDepthBorderCase)
+{
+    common::Variable root = {"level01", std::vector<common::Variable>{}};
+    common::Variable* curr = &root;
+
+    for (int level = 2; level < common::k_variable_max_depth + 1; ++level)
+    {
+        auto& curr_vars = std::get<std::vector<common::Variable>>(curr->value);
+        curr_vars.push_back({fmt::format("level{:02d}", level), std::vector<common::Variable>{}});
+        curr = &(curr_vars.front());
+    }
+
+    common::Note note = {
+        common::Note::Type::Info, "NOTE", {root}, "note"};
+
+    const char* expected_json_str = R"({
+     "type": "info",
+     "diag": "note",
+     "id": "NOTE",
+     "vars": {
+      "level01": {
+       "name": "level01", "type": "sequence", "value": [{
+        "name": "level02", "type": "sequence", "value": [{
+         "name": "level03", "type": "sequence", "value": [{
+          "name": "level04", "type": "sequence", "value": [{
+           "name": "level05", "type": "sequence", "value": [{
+            "name": "level06", "type": "sequence", "value": [{
+             "name": "level07", "type": "sequence", "value": [{
+              "name": "level08", "type": "sequence", "value": [{
+               "name": "level09", "type": "sequence", "value": [{
+                "name": "level10", "type": "sequence", "value": [{
+                 "name": "level11", "type": "sequence", "value": [{
+                  "name": "level12", "type": "sequence", "value": [{
+                   "name": "level13", "type": "sequence", "value": [{
+                    "name": "level14", "type": "sequence", "value": [{
+                     "name": "level15", "type": "sequence", "value": [{
+                      "name": "level16", "type": "sequence", "value": [{
+                       "name": "level17", "type": "sequence", "value": [{
+                        "name": "level18", "type": "sequence", "value": [{
+                         "name": "level19", "type": "sequence", "value": [{
+                          "name": "level20", "type": "sequence", "value": [{
+                           "name": "level21", "type": "sequence", "value": [{
+                            "name": "level22", "type": "sequence", "value": [{
+                             "name": "level23", "type": "sequence", "value": [{
+                              "name": "level24", "type": "sequence", "value": [{
+                               "name": "level25", "type": "sequence", "value": [{
+                                "name": "level26", "type": "sequence", "value": [{
+                                 "name": "level27", "type": "sequence", "value": [{
+                                  "name": "level28", "type": "sequence", "value": [{
+                                   "name": "level29", "type": "sequence", "value": [{
+                                    "name": "level30", "type": "sequence", "value": []
+                                   }]
+                                  }]
+                                 }]
+                                }]
+                               }]
+                              }]
+                             }]
+                            }]
+                           }]
+                          }]
+                         }]
+                        }]
+                       }]
+                      }]
+                     }]
+                    }]
+                   }]
+                  }]
+                 }]
+                }]
+               }]
+              }]
+             }]
+            }]
+           }]
+          }]
+         }]
+        }]
+       }]
+      }
+     }
+    })";
+    const auto& expected_json = nlohmann::json::parse(expected_json_str);
+
+    const nlohmann::json actual_json = note_to_json(note);
+    EXPECT_EQ(expected_json, actual_json);
+}
+
+/** Check if the note_to_json function raises an input contract error exception when the maximum
+ *   valid variable depth is exceeded by one level. */
+TEST_F(Note_NoteToJson, TreeDepthInputContractViolation)
+{
+    common::Variable root = {"root", std::vector<common::Variable>{}};
+    common::Variable* curr = &root;
+
+    for (int level = 2; level < common::k_variable_max_depth + 3; ++level)
+    {
+        auto& curr_vars = std::get<std::vector<common::Variable>>(curr->value);
+        curr_vars.push_back({fmt::format("level{:02d}", level), std::vector<common::Variable>{}});
+        curr = &(curr_vars.front());
+    }
+
+    common::Note note = {
+        common::Note::Type::Info, "NOTE", {root}, "note"};
+
+    EXPECT_THROW_WITH_CODE(
+        common::note_to_json(note),
+        common::common_exception, common::common_exception::error_code::input_contract_error);
+}
 
 } // namespace suite1
