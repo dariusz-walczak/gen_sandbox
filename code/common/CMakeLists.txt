@@ -16,6 +16,7 @@ add_library(
   gen_common
   src/command_line_utils.cpp
   src/common_exception.cpp
+  src/contract.cpp
   src/file_system_utils.cpp
   src/note.cpp
   src/person.cpp

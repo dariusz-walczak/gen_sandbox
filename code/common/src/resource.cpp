@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include <spdlog/spdlog.h>
 
+#include "common/contract.hpp"
 
 namespace common
 {
@@ -101,16 +102,7 @@ std::ostream& Resource::operator<<(std::ostream& os)
 std::vector<std::string> extract_uri_str_seq(
     const std::vector<std::shared_ptr<Resource>>& resources)
 {
-    const bool null_res_found = std::ranges::any_of(resources, [](const auto& p) { return !p; });
-    if (null_res_found)
-    {
-        spdlog::debug("{}: At least one of the `resources` pointers is null", __func__);
-
-        throw common_exception(
-            common_exception::error_code::input_contract_error,
-            "Assumption failure: expected non-null input resource pointers; observed at least one"
-            " null resource pointer");
-    }
+    ensure_resources_not_null(resources);
 
     std::vector<std::string> output;
     output.reserve(resources.size());
