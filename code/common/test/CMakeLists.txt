@@ -56,6 +56,7 @@ add_executable(
   src/person.cpp
   src/redland_utils.cpp
   src/resource.cpp
+  src/string.cpp
 )
 
 target_include_directories(
