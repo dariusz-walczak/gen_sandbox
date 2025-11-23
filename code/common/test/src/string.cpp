@@ -98,4 +98,4 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::ValuesIn(g_normal_success_cases_params),
     ParamNameGen);
 
-} // namespace join
+} // namespace suite_join

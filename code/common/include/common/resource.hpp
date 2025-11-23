@@ -82,6 +82,13 @@ std::shared_ptr<ResourceType> extract_resource(
     return std::make_shared<ResourceType>(uri_it->second);
 }
 
+/** @brief Extract sequence of URI strings from a sequence of resources
+ *
+ *  @param resources the input resource sequence
+ *  @return sequence of URI strings */
+std::vector<std::string> extract_uri_str_seq(
+    const std::vector<std::shared_ptr<Resource>>& resources);
+
 } // namespace common
 
 #endif // !defined COMMON_RESOURCE_HPP
