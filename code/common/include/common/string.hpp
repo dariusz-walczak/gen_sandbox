@@ -1,5 +1,5 @@
-#if !defined COMMON_VARIABLE_HPP
-#define COMMON_VARIABLE_HPP
+#if !defined COMMON_STRING_HPP
+#define COMMON_STRING_HPP
 
 #include <sstream>
 #include <string>
@@ -35,4 +35,4 @@ std::string join(const RangeType& range, const std::string& sep = ", ")
 
 } // namespace common
 
-#endif // !defined COMMON_VARIABLE_HPP
+#endif // !defined COMMON_STRING_HPP
