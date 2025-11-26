@@ -57,6 +57,7 @@ add_executable(
   src/redland_utils.cpp
   src/resource.cpp
   src/string.cpp
+  src/variable.cpp
 )
 
 target_include_directories(

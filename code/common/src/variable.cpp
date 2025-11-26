@@ -3,6 +3,7 @@
 #include <fmt/format.h>
 
 #include "common/common_exception.hpp"
+#include "common/contract.hpp"
 #include "common/resource.hpp"
 
 namespace common
@@ -70,6 +71,23 @@ nlohmann::json variable_to_json_int(const Variable& var, int current_depth)
             common_exception::error_code::internal_contract_error,
             "Unexpected Note::VarValue alternative type");
     }
+}
+
+Variable construct_sequence_variable(
+    const std::string& var_name,const std::vector<std::shared_ptr<Resource>>& resources)
+{
+    ensure_resources_not_null(resources);
+
+    Variable result_var = {var_name, {std::vector<Variable>{}}};
+    auto& vars = std::get<std::vector<Variable>>(result_var.value);
+    vars.reserve(resources.size());
+
+    for (const auto& res : resources)
+    {
+        vars.emplace_back(Variable{"", res});
+    }
+
+    return result_var;
 }
 
 nlohmann::json variable_to_json(const Variable& var)
