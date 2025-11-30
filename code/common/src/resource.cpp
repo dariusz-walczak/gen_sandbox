@@ -96,22 +96,4 @@ std::ostream& Resource::operator<<(std::ostream& os)
     return os;
 }
 
-//  Utility Functions
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
-
-std::vector<std::string> extract_uri_str_seq(
-    const std::vector<std::shared_ptr<Resource>>& resources)
-{
-    ensure_resources_not_null(resources);
-
-    std::vector<std::string> output;
-    output.reserve(resources.size());
-
-    std::ranges::transform(
-        resources, std::back_inserter(output),
-        [](const auto& res) { return res->get_uri_str(); });
-
-    return output;
-}
-
 } // namespace common

@@ -22,6 +22,7 @@ add_library(
   src/person.cpp
   src/redland_utils.cpp
   src/resource.cpp
+  src/resource_utils.cpp
   src/spdlog_utils.cpp
   src/string.cpp
   src/traits.cpp

@@ -9,6 +9,7 @@
 #include <boost/url.hpp>
 
 #include "common/common_exception.hpp"
+#include "common/contract.hpp"
 #include "common/note.hpp"
 #include "common/redland_utils.hpp"
 
@@ -81,13 +82,6 @@ std::shared_ptr<ResourceType> extract_resource(
     // The Resource::Resource counstructor may throw common_exception:
     return std::make_shared<ResourceType>(uri_it->second);
 }
-
-/** @brief Extract sequence of URI strings from a sequence of resources
- *
- *  @param resources the input resource sequence
- *  @return sequence of URI strings */
-std::vector<std::string> extract_uri_str_seq(
-    const std::vector<std::shared_ptr<Resource>>& resources);
 
 } // namespace common
 
