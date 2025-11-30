@@ -76,7 +76,7 @@ nlohmann::json variable_to_json_int(const Variable& var, int current_depth)
 Variable construct_sequence_variable(
     const std::string& var_name,const std::vector<std::shared_ptr<Resource>>& resources)
 {
-    ensure_resources_not_null(resources);
+    ensure_items_not_null(resources);
 
     Variable result_var = {var_name, {std::vector<Variable>{}}};
     auto& vars = std::get<std::vector<Variable>>(result_var.value);
