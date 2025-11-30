@@ -59,7 +59,7 @@ add_executable(
   src/resource.cpp
   src/resource_utils.cpp
   src/string.cpp
-  src/variable.cpp
+  src/variable_utils.cpp
 )
 
 target_include_directories(

@@ -27,6 +27,7 @@ add_library(
   src/string.cpp
   src/traits.cpp
   src/variable.cpp
+  src/variable_utils.cpp
 )
 
 target_include_directories(

@@ -2,11 +2,12 @@
 
 #include "common/resource.hpp"
 #include "common/variable.hpp"
+#include "common/variable_utils.hpp"
 
 #include "test/tools/assertions.hpp"
 #include "test/tools/variable.hpp"
 
-//  The extract_uri_str_seq function tests
+//  The construct_sequence_variable function tests MOVE TO SEPARATE FILE
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
 
 namespace test::suite_construct_sequence_variable
@@ -25,9 +26,9 @@ std::string ParamNameGen(const ::testing::TestParamInfo<Param>& info)
     return { info.param.case_name };
 }
 
-class Variable_ConstructSequenceVariable_ValidInput : public ::testing::TestWithParam<Param> {};
+class VariableUtils_ConstructSequenceVariable_ValidInput : public ::testing::TestWithParam<Param> {};
 
-TEST_P(Variable_ConstructSequenceVariable_ValidInput, NormalSuccessCases)
+TEST_P(VariableUtils_ConstructSequenceVariable_ValidInput, NormalSuccessCases)
 {
     const Param& param = GetParam();
 
@@ -151,15 +152,15 @@ const std::vector<Param> g_normal_success_cases_params{
 
 INSTANTIATE_TEST_SUITE_P(
     ,
-    Variable_ConstructSequenceVariable_ValidInput,
+    VariableUtils_ConstructSequenceVariable_ValidInput,
     ::testing::ValuesIn(g_normal_success_cases_params),
     ParamNameGen);
 
 /** Check if the construct_sequence_variable function raises an input contract error exception when
  *   the resources list contains one or more null pointers. */
-class Variable_ConstructSequenceVariable_InvalidInput : public ::testing::TestWithParam<Param> {};
+class VariableUtils_ConstructSequenceVariable_InvalidInput : public ::testing::TestWithParam<Param> {};
 
-TEST_P(Variable_ConstructSequenceVariable_InvalidInput, NullResourceInputContractViolation)
+TEST_P(VariableUtils_ConstructSequenceVariable_InvalidInput, NullResourceInputContractViolation)
 {
     const Param& param = GetParam();
 
@@ -194,9 +195,9 @@ const std::vector<Param> g_null_resource_cases_params{
 
 INSTANTIATE_TEST_SUITE_P(
     ,
-    Variable_ConstructSequenceVariable_InvalidInput,
+    VariableUtils_ConstructSequenceVariable_InvalidInput,
     ::testing::ValuesIn(g_null_resource_cases_params),
     ParamNameGen);
 
-} // namespace test::suite_extract_uri_str_seq
+} // namespace test::suite_construct_sequence_variable
 
