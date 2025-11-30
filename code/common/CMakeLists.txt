@@ -24,6 +24,7 @@ add_library(
   src/resource.cpp
   src/spdlog_utils.cpp
   src/string.cpp
+  src/traits.cpp
   src/variable.cpp
 )
 
