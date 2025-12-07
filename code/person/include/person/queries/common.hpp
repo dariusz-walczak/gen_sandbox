@@ -18,6 +18,52 @@ enum class retrieve_result : std::uint8_t
     Success
 };
 
+/** @brief Query caption data of the specified person resource
+ *
+ *  The caption data is the data needed by the common::Person::get_caption method.
+ *
+ *  Construct the @ref common::Person resource. The resource may or may not exist.
+ *
+ *  @param person_uri uri of the queried resource
+ *  @param world the librdf world data (expected non-null)
+ *  @param model the librdf model data (expected non-null)
+ *
+ *  @return the resource if found
+ *  @return nullptr if the resource is not found
+ *
+ *  @throws common::common_exception (redland_query_error) on an unexpected query execution error */
+std::shared_ptr<common::Person> retrieve_person_caption_data_opt(
+    const std::string& person_uri, librdf_world* world, librdf_model* model);
+
+/** @brief Query caption data of the specified person resource
+ *
+ *  Construct the @ref common::Person resource. The resource is expected to exist.
+ *
+ *  @param person_uri uri of the queried resource
+ *  @param world the librdf world data (expected non-null)
+ *  @param model the librdf model data (expected non-null)
+ *
+ *  @return the resource
+ *  @throws common::common_exception (redland_query_error) on an unexpected query execution error
+ *  @throws person_exception (resource_not_found) on the resource not found */
+std::shared_ptr<common::Person> retrieve_person_caption_data_req(
+    const std::string& person_uri, librdf_world* world, librdf_model* model);
+
+/** @brief Query caption data of the specified person resources
+ *
+ *  Construct a sequence of the @ref common::Person resources. All the resources are expected to
+ *   exist
+ *
+ *  @param person_uri_seq sequence of the person identifiers
+ *  @param world the librdf world data (expected non-null)
+ *  @param model the librdf model data (expected non-null)
+ *
+ *  @throws common::common_exception (redland_query_error) on an unexpected query execution error
+ *  @throws person::person_exception (resource_not_found) on any of the person resources not found
+ */
+std::vector<std::shared_ptr<common::Person>> retrieve_person_caption_data_seq_req(
+    const std::vector<std::string>& person_uri_seq, librdf_world* world, librdf_model* model);
+
 /** @brief Query base data of the specified person resource
  *
  *  Construct the @ref common::Person resource. The resource may or may not exist.
@@ -29,7 +75,7 @@ enum class retrieve_result : std::uint8_t
 std::shared_ptr<common::Person> retrieve_person_base_data_opt(
     const std::string& person_uri, librdf_world* world, librdf_model* model);
 
-/** @biref Query base data of the specified person resource
+/** @brief Query base data of the specified person resource
  *
  *  Construct the @ref common::Person resource. The resource is expected to exist.
  *

@@ -1,0 +1,88 @@
+@prefix gx: <http://gedcomx.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix ex: <http://example.org/> .
+
+ex:Person1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] ;
+    gx:name [
+        gx:type gx:BirthName ;
+        gx:preferred "true"^^xsd:boolean ;
+        gx:nameForm [
+            gx:lang "lt" ;
+            gx:part [
+                gx:type gx:Given ;
+                gx:value "Ugnė" ] ;
+            gx:part [
+                gx:type gx:Surname ;
+                gx:value "Petrauskaitė" ] ] ] .
+
+ex:Person2 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] ;
+    gx:name [
+        gx:type gx:BirthName ;
+        gx:preferred "true"^^xsd:boolean ;
+        gx:nameForm [
+            gx:lang "lt" ;
+            gx:part [
+                gx:type gx:Given ;
+                gx:value "Domantas" ] ;
+            gx:part [
+                gx:type gx:Surname ;
+                gx:value "Navickas" ] ] ] .
+
+ex:Person3 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] ;
+    gx:name [
+        gx:type gx:BirthName ;
+        gx:preferred "true"^^xsd:boolean ;
+        gx:nameForm [
+            gx:lang "lt" ;
+            gx:part [
+                gx:type gx:Given ;
+                gx:value "Justinas" ] ] ] .
+
+
+ex:Person4 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] ;
+    gx:name [
+        gx:type gx:BirthName ;
+        gx:preferred "true"^^xsd:boolean ;
+        gx:nameForm [
+            gx:lang "lt" ;
+        gx:part [
+                gx:type gx:Surname ;
+                gx:value "Kazlauskaitė" ] ] ] .
+
+
+ex:Person5 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] ;
+    gx:name [
+        gx:type gx:BirthName ;
+        gx:preferred "true"^^xsd:boolean ;
+        gx:nameForm [
+            gx:lang "lt" ;
+            gx:part [
+                gx:type gx:Given ;
+                gx:value "Austėja" ] ;
+            gx:part [
+                gx:type gx:Surname ;
+                gx:value "Jankauskaitė" ] ] ] .
+
+
+ex:Person6 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] ;
+    gx:name [
+        gx:type gx:BirthName ;
+        gx:preferred "true"^^xsd:boolean ;
+        gx:nameForm [
+            gx:lang "lt" ;
+            gx:part [
+                gx:type gx:Given ;
+                gx:value "Matas" ] ;
+            gx:part [
+                gx:type gx:Surname ;
+                gx:value "Jankauskas" ] ] ] .
+
+
+ex:Person7 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .

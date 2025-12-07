@@ -26,6 +26,20 @@ ComparablePerson to_comparable(const common::Person& person)
     return ComparablePerson{person.get_uri_str(), person.get_caption()};
 }
 
+std::vector<ComparablePerson> to_comparable(
+    const std::vector<std::shared_ptr<common::Person>>& person_seq)
+{
+    std::vector<ComparablePerson> output;
+    output.reserve(person_seq.size());
+
+    for (const auto& person : person_seq)
+    {
+        output.push_back(to_comparable(*person));
+    }
+
+    return output;
+}
+
 std::string to_string(const ComparablePerson& person, std::uint8_t depth) noexcept
 {
     const std::string indent = construct_indent(depth);

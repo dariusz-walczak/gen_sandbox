@@ -28,6 +28,8 @@ inline bool operator==(const ComparablePerson& lhs, const ComparablePerson& rhs)
 }
 
 [[nodiscard]] ComparablePerson to_comparable(const common::Person& person);
+[[nodiscard]] std::vector<ComparablePerson> to_comparable(
+    const std::vector<std::shared_ptr<common::Person>>& person_seq);
 [[nodiscard]] std::string to_string(const ComparablePerson& person, std::uint8_t depth=0) noexcept;
 
 inline void PrintTo(const ComparablePerson& person, std::ostream* os)

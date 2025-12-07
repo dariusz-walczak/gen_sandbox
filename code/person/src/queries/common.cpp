@@ -7,11 +7,91 @@
 namespace person
 {
 
+std::shared_ptr<common::Person> retrieve_person_caption_data_opt(
+    const std::string& person_uri, librdf_world* world, librdf_model* model)
+{
+    spdlog::trace("{}: Entry checkpoint ({})", __func__, person_uri);
+
+    const std::string query = R"(
+        PREFIX gx: <http://gedcomx.org/>
+
+        SELECT ?person
+        WHERE {
+            ?person a gx:Person .
+            FILTER (?person = <)" + person_uri + R"(>)
+        })";
+
+    spdlog::debug("{}: The query: {}", __func__, query);
+
+    common::exec_query_result res = common::exec_query(world, model, query, __func__);
+    const common::extract_data_table_result data_tuple = common::extract_data_table(res->results);
+    const common::data_table& data_table = std::get<1>(data_tuple);
+
+    if (data_table.empty())
+    {
+        spdlog::debug("{}: Person not found: {}", __func__, person_uri);
+
+        return { nullptr };
+    }
+
+    if (data_table.size() > 1)
+    {
+        spdlog::error("{}: Multiple ({}) person resources found", __func__, person_uri);
+
+        throw person_exception(
+            person_exception::error_code::internal_contract_error,
+            fmt::format(
+                "Assumption failure: expected at most one person query result row; observed {}"
+                " rows", data_table.size()));
+    }
+
+    const common::data_row& data_row = data_table.front();
+    auto person = common::extract_resource<common::Person>(data_row, "person");
+    retrieve_person_name(*person, world, model);
+
+    return person;
+}
+
+std::shared_ptr<common::Person> retrieve_person_caption_data_req(
+    const std::string& person_uri, librdf_world* world, librdf_model* model)
+{
+    spdlog::trace("{}: Entry checkpoint ({})", __func__, person_uri);
+
+    auto person = retrieve_person_caption_data_opt(person_uri, world, model);
+
+    if (!person)
+    {
+        spdlog::error("{}: Person not found: {}", __func__, person_uri);
+
+        throw person_exception(
+            person_exception::error_code::resource_not_found,
+            fmt::format("Person not found: '{}'", person_uri));
+    }
+
+    return person;
+}
+
+std::vector<std::shared_ptr<common::Person>> retrieve_person_caption_data_seq_req(
+    const std::vector<std::string>& person_uri_seq, librdf_world* world, librdf_model* model)
+{
+    std::vector<std::shared_ptr<common::Person>> result;
+    result.reserve(person_uri_seq.size());
+
+    for (const auto& person_uri : person_uri_seq)
+    {
+        result.push_back(
+            retrieve_person_caption_data_req(
+                person_uri, world, model));
+    }
+
+    return result;
+}
+
 std::shared_ptr<common::Person> retrieve_person_base_data_opt(
     const std::string& person_uri, librdf_world* world, librdf_model* model)
 {
 
-    spdlog::trace(fmt::format("retrieve_person: Entry checkpoint ({})", person_uri));
+    spdlog::trace("{}: Entry checkpoint ({})", __func__, person_uri);
 
     const std::string query = R"(
         PREFIX gx: <http://gedcomx.org/>
@@ -33,7 +113,7 @@ std::shared_ptr<common::Person> retrieve_person_base_data_opt(
             FILTER (?person = <)" + person_uri + R"(>)
         })";
 
-    spdlog::debug("retrieve_person: The query: {}", query);
+    spdlog::debug("{}: The query: {}", __func__, query);
 
     common::exec_query_result res = common::exec_query(world, model, query, __func__);
     const common::extract_data_table_result data_tuple = common::extract_data_table(res->results);
@@ -61,6 +141,8 @@ std::shared_ptr<common::Person> retrieve_person_base_data_opt(
 std::shared_ptr<common::Person> retrieve_person_base_data_req(
     const std::string& person_uri, librdf_world* world, librdf_model* model)
 {
+    spdlog::trace("{}: Entry checkpoint ({})", __func__, person_uri);
+
     auto person = retrieve_person_base_data_opt(person_uri, world, model);
 
     if (!person)

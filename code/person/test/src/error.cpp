@@ -53,16 +53,22 @@ const std::vector<Param> g_params{
         .code = person::person_exception::error_code::multiple_resources_found,
         .details =
             "Too Many Resources: found 3 resources when at most one was expected",
-        .expected =
-            "<multiple resources found> Too Many Resources: found 3 resources when at most one was expected",
+        .expected = (
+            "<multiple resources found> Too Many Resources: found 3 resources when at most one was"
+            " expected"),
     },
     {
         .case_name = "InputContractError",
         .code = person::person_exception::error_code::input_contract_error,
         .details = "Precondition failure: person must not be null",
-        .expected =
-            "<input contract error> Precondition failure: person must not be null",
+        .expected = "<input contract error> Precondition failure: person must not be null",
     },
+    {
+        .case_name = "InternalContractError",
+        .code = person::person_exception::error_code::internal_contract_error,
+        .details = "Assumption failure: expected good; observed bad",
+        .expected = "<internal contract error> Assumption failure: expected good; observed bad",
+    }
 };
 
 std::string ParamNameGen(const ::testing::TestParamInfo<Param>& info)

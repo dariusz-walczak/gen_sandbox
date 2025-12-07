@@ -44,6 +44,9 @@ void person_exception::set_what(error_code code, const char* msg)
     case error_code::input_contract_error:
         oss << "<input contract error>";
         break;
+    case error_code::internal_contract_error:
+        oss << "<internal contract error>";
+        break;
     default:
         oss << "<invalid code>";
     }
