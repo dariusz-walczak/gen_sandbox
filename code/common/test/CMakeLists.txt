@@ -52,6 +52,7 @@ target_compile_definitions(gen_test_lib PRIVATE BOOST_DLL_USE_STD_FS=1)
 add_executable(
   gen_common_test
   src/contract.cpp
+  src/data_table.cpp
   src/main.cpp
   src/note.cpp
   src/person.cpp
