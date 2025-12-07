@@ -7,7 +7,7 @@
 #include "test/tools/assertions.hpp"
 #include "test/tools/variable.hpp"
 
-//  The construct_sequence_variable function tests MOVE TO SEPARATE FILE
+//  The construct_sequence_variable function tests
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
 
 namespace test::suite_construct_sequence_variable
