@@ -1,8 +1,14 @@
 #include "person/queries/details.hpp"
 
+#include <ranges>
+
 #include <fmt/format.h>
 
+#include "common/data_table.hpp"
+#include "common/resource_utils.hpp"
+#include "common/string.hpp"
 #include "common/spdlog_utils.hpp"
+#include "common/variable_utils.hpp"
 #include "person/error.hpp"
 
 
@@ -20,10 +26,33 @@ common::Note create_inferred_partner_note(const std::shared_ptr<common::Person>&
         fmt::format("Partner inferred: {}", partner->get_uri_str()));
 }
 
+common::Note create_multiple_fathers_note(
+    const std::vector<std::shared_ptr<common::Person>>& fathers)
+{
+    return common::Note(
+        common::Note::Type::Error, std::string(k_multiple_fathers_note_id),
+        {construct_sequence_variable("fathers", fathers)},
+        fmt::format(
+            "Multiple fathers found:\n    {}",
+            common::join(common::extract_uri_str_seq(fathers), "\n    ")));
+}
+
+common::Note create_multiple_mothers_note(
+    const std::vector<std::shared_ptr<common::Person>>& mothers)
+{
+    return common::Note(
+        common::Note::Type::Error, std::string(k_multiple_mothers_note_id),
+        {construct_sequence_variable("mothers", mothers)},
+        fmt::format(
+            "Multiple mothers found:\n    {}",
+            common::join(common::extract_uri_str_seq(mothers), "\n    ")));
+}
+
 } // anonymous namespace
 
-std::shared_ptr<common::Person> retrieve_person_father_opt(
-    const common::Person* proband, librdf_world* world, librdf_model* model)
+std::shared_ptr<common::Person> retrieve_person_father(
+    const common::Person* proband, librdf_world* world, librdf_model* model,
+    std::vector<common::Note>& notes)
 {
     if (!proband)
     {
@@ -77,17 +106,22 @@ std::shared_ptr<common::Person> retrieve_person_father_opt(
 
     if (data_table.empty())
     {
-        spdlog::debug(
-            "{}: Father of proband {} wasn't found", __func__, proband->get_uri_str());
-
+        spdlog::debug("{}: Father of proband {} wasn't found", __func__, proband->get_uri_str());
         return {};
     }
     else if (data_table.size() > 1)
     {
-        throw person_exception(
-            person_exception::error_code::multiple_resources_found,
-            fmt::format("Too Many Resources: found {} fathers of the proband: {}",
-                        data_table.size(), proband->get_uri_str()));
+        spdlog::debug(
+            "{}: Multiple ({}) fathers of proband {} were found",
+            __func__, data_table.size(), proband->get_uri_str());
+
+        notes.emplace_back(
+            create_multiple_fathers_note(
+                retrieve_person_caption_data_seq_req(
+                    common::extract_resource_uri_seq(data_table, "father"),
+                    world, model)));
+
+        return {};
     }
 
     const auto& row = data_table.front();
@@ -98,8 +132,9 @@ std::shared_ptr<common::Person> retrieve_person_father_opt(
     return parent;
 }
 
-std::shared_ptr<common::Person> retrieve_person_mother_opt(
-    const common::Person* proband, librdf_world* world, librdf_model* model)
+std::shared_ptr<common::Person> retrieve_person_mother(
+    const common::Person* proband, librdf_world* world, librdf_model* model,
+    std::vector<common::Note>& notes)
 {
     if (!proband)
     {
@@ -153,17 +188,23 @@ std::shared_ptr<common::Person> retrieve_person_mother_opt(
 
     if (data_table.empty())
     {
-        spdlog::debug(
-            "{}: Mother of proband {} wasn't found", __func__, proband->get_uri_str());
+        spdlog::debug("{}: Mother of proband {} wasn't found", __func__, proband->get_uri_str());
 
         return {};
     }
     else if (data_table.size() > 1)
     {
-        throw person_exception(
-            person_exception::error_code::multiple_resources_found,
-            fmt::format("Too Many Resources: found {} mothers of the proband: {}",
-                        data_table.size(), proband->get_uri_str()));
+        spdlog::debug(
+            "{}: Multiple ({}) mothers of proband {} were found",
+            __func__, data_table.size(), proband->get_uri_str());
+
+        notes.emplace_back(
+            create_multiple_mothers_note(
+                retrieve_person_caption_data_seq_req(
+                    common::extract_resource_uri_seq(data_table, "mother"),
+                    world, model)));
+
+        return {};
     }
 
     const auto& row = data_table.front();

@@ -12,6 +12,8 @@ namespace person
 {
 
 inline constexpr std::string_view k_inferred_partner_note_id = "INFERRED_PARTNER";
+inline constexpr std::string_view k_multiple_fathers_note_id = "MULTIPLE_FATHERS";
+inline constexpr std::string_view k_multiple_mothers_note_id = "MULTIPLE_MOTHERS";
 
 /** @brief Find the father of the given person
  *
@@ -22,15 +24,14 @@ inline constexpr std::string_view k_inferred_partner_note_id = "INFERRED_PARTNER
  *  @param[in] world the Redland RDF Library world owning the @p model.
  *  @param[in] model the Redland RDF Library model to query.
  *  @retval std::shared_ptr<common::Person> representing the father if found
- *  @retval nullptr if the father was not found
+ *  @retval nullptr if no father or more than one father was found
  *
  *  @throws person_exception (input_contract_error) if any of the input parameters is null
  *  @throws common::common_exception (redland_query_error) on the SPARQL query execution error
- *  @throws person_exception (multiple_resources_found) if more than one father is found for the
- *      @p proband
  */
-std::shared_ptr<common::Person> retrieve_person_father_opt(
-    const common::Person* proband, librdf_world* world, librdf_model* model);
+std::shared_ptr<common::Person> retrieve_person_father(
+    const common::Person* proband, librdf_world* world, librdf_model* model,
+    std::vector<common::Note>& notes);
 
 /** @brief Find the mother of the given person
  *
@@ -41,15 +42,14 @@ std::shared_ptr<common::Person> retrieve_person_father_opt(
  *  @param[in] world the Redland RDF Library world owning the @p model.
  *  @param[in] model the Redland RDF Library model to query.
  *  @retval std::shared_ptr<common::Person> representing the mother if found
- *  @retval nullptr if the mother was not found
+ *  @retval nullptr if no mother or more than one mother was found
  *
  *  @throws person_exception (input_contract_error) if any of the input parameters is null
  *  @throws common::common_exception (redland_query_error) on the SPARQL query execution error
- *  @throws person_exception (multiple_resources_found) if more than one mother is found for the
- *      @p proband
  */
-std::shared_ptr<common::Person> retrieve_person_mother_opt(
-    const common::Person* proband, librdf_world* world, librdf_model* model);
+std::shared_ptr<common::Person> retrieve_person_mother(
+    const common::Person* proband, librdf_world* world, librdf_model* model,
+    std::vector<common::Note>& notes);
 
 std::vector<common::Person::PartnerRelation> retrieve_person_partners(
     const common::Person* proband, librdf_world* world, librdf_model* model,
