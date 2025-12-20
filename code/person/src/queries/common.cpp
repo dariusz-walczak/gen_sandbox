@@ -131,7 +131,7 @@ std::shared_ptr<common::Person> retrieve_person_base_data_opt(
 
     auto person = common::extract_resource<common::Person>(data_row, "person");
 
-    extract_person_gender(*person, data_row, "genderType");
+    person->gender = extract_person_gender(data_row, "genderType", person->notes());
     extract_person_birth_date(*person, data_row, "birthDate");
     extract_person_death_date(*person, data_row, "deathDate");
 
@@ -464,7 +464,7 @@ std::vector<std::shared_ptr<common::Person>> retrieve_person_list(
     {
         auto person = common::extract_resource<common::Person>(row, "person");
 
-        extract_person_gender(*person, row, "genderType");
+        person->gender = extract_person_gender(row, "genderType", person->notes());
         extract_person_birth_date(*person, row, "birthDate");
         extract_person_death_date(*person, row, "deathDate");
         retrieve_person_name(*person, world, model);

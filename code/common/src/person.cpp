@@ -12,10 +12,30 @@
 namespace common
 {
 
-namespace {
-    const char* g_male = "male";
-    const char* g_female = "female";
+namespace
+{
+const char* g_male = "male";
+const char* g_female = "female";
+
+common::Note create_invalid_gender_note()
+{
+    return {
+        common::Note::Type::Error, std::string(k_invalid_gender_note_id),
+        {},
+        "Invalid gender value"
+    };
 }
+
+common::Note create_unspecified_gender_note()
+{
+    return {
+        common::Note::Type::Info, std::string(k_unspecified_gender_note_id),
+        {},
+        "Unspecified gender"
+    };
+}
+
+} // anonymous namespace
 
 std::string_view to_string(Gender g) noexcept
 {
@@ -26,6 +46,7 @@ std::string_view to_string(Gender g) noexcept
     case Uninitialized: return "uninitialized";
     case Male: return g_male;
     case Female: return g_female;
+    case Invalid: return "invalid";
     case Unknown: return "unknown";
     };
     return "invalid";
@@ -104,24 +125,6 @@ void Person::print_state(std::ostream& os) const
 }
 
 
-std::string extract_gender_raw(librdf_node* node) {
-    assert(node);
-
-    librdf_uri* uri = librdf_node_get_uri(node);
-    std::string_view raw_value(
-        reinterpret_cast<char*>(
-            librdf_uri_as_string(uri)));
-
-    if (raw_value == "http://gedcomx.org/Male") {
-        return g_male;
-    } else if (raw_value == "http://gedcomx.org/Female") {
-        return g_female;
-    } else {
-        return "";
-    }
-}
-
-
 #if defined(__GNUC__) && !defined(__clang__) && (__GNUC__ < 14)
 # error "g++-14 is required to use the std::chrono::parse function"
 #endif
@@ -183,29 +186,31 @@ void extract_person_death_date(Person& person, const data_row& row, const std::s
 }
 
 
-void extract_person_gender(
-    Person& person, const data_row& row, const std::string& gender_type_bn)
+Gender extract_person_gender(
+    const data_row& row, const std::string& gender_type_bn, std::vector<Note>& notes)
 {
     auto gender_it = row.find(gender_type_bn);
 
     if (gender_it != row.end())
     {
-        if (gender_it->second == g_male)
+        if (gender_it->second == k_gender_uri_male)
         {
-            person.gender = Gender::Male;
+            return Gender::Male;
         }
-        else if (gender_it->second == g_female)
+        else if (gender_it->second == k_gender_uri_female)
         {
-            person.gender = Gender::Female;
+            return Gender::Female;
         }
         else
         {
-            person.gender = Gender::Unknown;
+            notes.emplace_back(create_invalid_gender_note());
+            return Gender::Invalid;
         }
     }
     else
     {
-        person.gender = Gender::Unknown;
+        notes.emplace_back(create_unspecified_gender_note());
+        return Gender::Unknown;
     }
 }
 

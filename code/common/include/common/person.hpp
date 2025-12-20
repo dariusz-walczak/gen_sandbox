@@ -11,17 +11,24 @@
 #include <nlohmann/json.hpp>
 #include <redland.h>
 
+#include "common/note.hpp"
 #include "common/redland_utils.hpp"
 #include "common/resource.hpp"
 
 namespace common
 {
 
+inline constexpr std::string_view k_invalid_gender_note_id = "INVALID_GENDER";
+inline constexpr std::string_view k_unspecified_gender_note_id = "UNSPECIFIED_GENDER";
+inline constexpr std::string_view k_gender_uri_male = "http://gedcomx.org/Male";
+inline constexpr std::string_view k_gender_uri_female = "http://gedcomx.org/Female";
+
 enum class Gender : std::uint8_t
 {
     Uninitialized = 0,
     Male,
     Female,
+    Invalid,
     Unknown
 };
 
@@ -73,14 +80,10 @@ public:
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
 
-/* @brief Extract the string representation of the gender from the Redland Node
- *
- * @note This function work as an extraction callback provided to the extract_cb_lut function */
-std::string extract_gender_raw(librdf_node* node);
-
 void extract_person_birth_date(Person& person, const data_row& row, const std::string& date_bn);
 void extract_person_death_date(Person& person, const data_row& row, const std::string& date_bn);
-void extract_person_gender(Person& person, const data_row& row, const std::string& gender_type_bn);
+Gender extract_person_gender(
+    const data_row& row, const std::string& gender_type_bn, std::vector<Note>& notes);
 void extract_person_names(Person& person, const data_table& table);
 
 nlohmann::json person_to_json(const Person& person);

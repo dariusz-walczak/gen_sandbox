@@ -440,19 +440,7 @@ extract_data_table_result extract_data_table(
                     std::string_view raw_value(
                         reinterpret_cast<char*>(
                             librdf_uri_as_string(uri)));
-
-                    if (raw_value == "http://gedcomx.org/Male")
-                    {
-                        value = "male";
-                    }
-                    else if (raw_value == "http://gedcomx.org/Female")
-                    {
-                        value = "female";
-                    }
-                    else
-                    {
-                        value = raw_value;
-                    }
+                    value = raw_value;
                 }
                 else if (librdf_node_is_blank(ctx->node))
                 {
