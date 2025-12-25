@@ -12,6 +12,8 @@ namespace person
 {
 
 inline constexpr std::string_view k_inferred_partner_note_id = "INFERRED_PARTNER";
+inline constexpr std::string_view k_invalid_inferred_partner_note_id = "INVALID_INFERRED_PARTNER";
+inline constexpr std::string_view k_invalid_stated_partner_note_id = "INVALID_STATED_PARTNER";
 inline constexpr std::string_view k_multiple_fathers_note_id = "MULTIPLE_FATHERS";
 inline constexpr std::string_view k_multiple_mothers_note_id = "MULTIPLE_MOTHERS";
 

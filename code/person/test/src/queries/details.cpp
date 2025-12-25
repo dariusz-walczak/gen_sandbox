@@ -16,6 +16,8 @@
 #include "test/tools/redland.hpp"
 #include "test/tools/resource.hpp"
 
+#include "test/tools/person/comparable_note_factory.hpp"
+
 #include "common/comparators.hpp"
 #include "person/error.hpp"
 #include "person/queries/details.hpp"
@@ -58,8 +60,10 @@ std::vector<ComparablePartnerRelation> adapt(
 //  The retrieve_person_partners function tests
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
 
-namespace
+namespace test::suite_retrieve_person_partners
 {
+
+using namespace tools::person;
 
 struct Param
 {
@@ -90,40 +94,437 @@ TEST_P(DetailsQueries_RetrievePersonPartners, NormalSuccessCases)
     EXPECT_EQ(param.expected_notes, tools::to_comparable(actual_notes));
 };
 
-const std::vector<Param> g_params {
+const std::vector<Param> g_other_cases
+{
     {
         .case_name="NoPartner",
-        .data_file="data/deps_queries/retrieve_person_partners/normal_success_cases/model-00_no-partner.ttl",
+        .data_file="data/queries/details/retrieve_person_partners/model-00_no-partner.ttl",
         .proband_uri="http://example.org/P1",
         .expected_partners={
         },
         .expected_notes={
         }
-    },
+    }
+};
+
+/**
+ * @brief Suite of single couple test cases
+ *
+ * For details see the comment in the data file */
+const std::vector<Param> g_one_couple_cases
+{
     {
-        .case_name="SinglePartner",
-        .data_file="data/deps_queries/retrieve_person_partners/normal_success_cases/model-01_one-partner.ttl",
-        .proband_uri="http://example.org/P1",
-        .expected_partners={
-            {common::Person("http://example.org/P2"), false}
-        },
+        .case_name="OneCoupleVariant01",
+        .data_file="data/queries/details/retrieve_person_partners/model-01_one-couple.ttl",
+        .proband_uri="http://example.org/V01P1",
+        .expected_partners={},
         .expected_notes={
+            create_invalid_stated_partner_comparable_note("http://example.org/V01P2")
         }
     },
     {
-        .case_name="SinglePartnerInverted",
-        .data_file="data/deps_queries/retrieve_person_partners/normal_success_cases/model-01_one-partner.ttl",
-        .proband_uri="http://example.org/P2",
-        .expected_partners={
-            {common::Person("http://example.org/P1"), false}
-        },
+        .case_name="OneCoupleVariant02",
+        .data_file="data/queries/details/retrieve_person_partners/model-01_one-couple.ttl",
+        .proband_uri="http://example.org/V02P1",
+        .expected_partners={},
         .expected_notes={
+            create_invalid_stated_partner_comparable_note("http://example.org/V02P2")
         }
     },
+    {
+        .case_name="OneCoupleVariant03",
+        .data_file="data/queries/details/retrieve_person_partners/model-01_one-couple.ttl",
+        .proband_uri="http://example.org/V03P1",
+        .expected_partners={},
+        .expected_notes={
+            create_invalid_stated_partner_comparable_note("http://example.org/V03P2")
+        }
+    },
+    {
+        .case_name="OneCoupleVariant04_V04P1",
+        .data_file="data/queries/details/retrieve_person_partners/model-01_one-couple.ttl",
+        .proband_uri="http://example.org/V04P1",
+        .expected_partners={
+            {common::Person("http://example.org/V04P2"), false}
+        },
+        .expected_notes={}
+    },
+    {
+        .case_name="OneCoupleVariant04_V04P2",
+        .data_file="data/queries/details/retrieve_person_partners/model-01_one-couple.ttl",
+        .proband_uri="http://example.org/V04P2",
+        .expected_partners={
+            {common::Person("http://example.org/V04P1"), false}
+        },
+        .expected_notes={}
+    },
+    {
+        .case_name="OneCoupleVariant05",
+        .data_file="data/queries/details/retrieve_person_partners/model-01_one-couple.ttl",
+        .proband_uri="http://example.org/V05P1",
+        .expected_partners={},
+        .expected_notes={
+            create_invalid_inferred_partner_comparable_note("http://example.org/V05P2")
+        }
+    },
+    {
+        .case_name="OneCoupleVariant06",
+        .data_file="data/queries/details/retrieve_person_partners/model-01_one-couple.ttl",
+        .proband_uri="http://example.org/V06P1",
+        .expected_partners={},
+        .expected_notes={
+            create_invalid_inferred_partner_comparable_note("http://example.org/V06P2")
+        }
+    },
+    {
+        .case_name="OneCoupleVariant07",
+        .data_file="data/queries/details/retrieve_person_partners/model-01_one-couple.ttl",
+        .proband_uri="http://example.org/V07P1",
+        .expected_partners={},
+        .expected_notes={
+            create_invalid_inferred_partner_comparable_note("http://example.org/V07P2")
+        }
+    },
+    {
+        .case_name="OneCoupleVariant08",
+        .data_file="data/queries/details/retrieve_person_partners/model-01_one-couple.ttl",
+        .proband_uri="http://example.org/V08P1",
+        .expected_partners={},
+        .expected_notes={
+            create_invalid_inferred_partner_comparable_note("http://example.org/V08P2")
+        }
+    },
+    {
+        .case_name="OneCoupleVariant09",
+        .data_file="data/queries/details/retrieve_person_partners/model-01_one-couple.ttl",
+        .proband_uri="http://example.org/V09P1",
+        .expected_partners={},
+        .expected_notes={
+            create_invalid_inferred_partner_comparable_note("http://example.org/V09P2")
+        }
+    },
+    {
+        .case_name="OneCoupleVariant10",
+        .data_file="data/queries/details/retrieve_person_partners/model-01_one-couple.ttl",
+        .proband_uri="http://example.org/V10P1",
+        .expected_partners={},
+        .expected_notes={
+            create_invalid_inferred_partner_comparable_note("http://example.org/V10P2")
+        }
+    },
+    {
+        .case_name="OneCoupleVariant11",
+        .data_file="data/queries/details/retrieve_person_partners/model-01_one-couple.ttl",
+        .proband_uri="http://example.org/V11P1",
+        .expected_partners={},
+        .expected_notes={
+            create_invalid_inferred_partner_comparable_note("http://example.org/V11P2")
+        }
+    },
+    {
+        .case_name="OneCoupleVariant12",
+        .data_file="data/queries/details/retrieve_person_partners/model-01_one-couple.ttl",
+        .proband_uri="http://example.org/V12P1",
+        .expected_partners={},
+        .expected_notes={
+            create_invalid_inferred_partner_comparable_note("http://example.org/V12P2")
+        }
+    },
+    {
+        .case_name="OneCoupleVariant13",
+        .data_file="data/queries/details/retrieve_person_partners/model-01_one-couple.ttl",
+        .proband_uri="http://example.org/V13P1",
+        .expected_partners={},
+        .expected_notes={
+            create_invalid_inferred_partner_comparable_note("http://example.org/V13P2")
+        }
+    },
+    {
+        .case_name="OneCoupleVariant14",
+        .data_file="data/queries/details/retrieve_person_partners/model-01_one-couple.ttl",
+        .proband_uri="http://example.org/V14P1",
+        .expected_partners={},
+        .expected_notes={
+            create_invalid_inferred_partner_comparable_note("http://example.org/V14P2")
+        }
+    },
+    {
+        .case_name="OneCoupleVariant15",
+        .data_file="data/queries/details/retrieve_person_partners/model-01_one-couple.ttl",
+        .proband_uri="http://example.org/V15P1",
+        .expected_partners={},
+        .expected_notes={
+            create_invalid_inferred_partner_comparable_note("http://example.org/V15P2")
+        }
+    },
+    {
+        .case_name="OneCoupleVariant16",
+        .data_file="data/queries/details/retrieve_person_partners/model-01_one-couple.ttl",
+        .proband_uri="http://example.org/V16P1",
+        .expected_partners={},
+        .expected_notes={
+            create_invalid_inferred_partner_comparable_note("http://example.org/V16P2")
+        }
+    },
+    {
+        .case_name="OneCoupleVariant17_V17P1",
+        .data_file="data/queries/details/retrieve_person_partners/model-01_one-couple.ttl",
+        .proband_uri="http://example.org/V17P1",
+        .expected_partners={
+            {common::Person("http://example.org/V17P2"), true}
+        },
+        .expected_notes={}
+    },
+    {
+        .case_name="OneCoupleVariant17_V17P2",
+        .data_file="data/queries/details/retrieve_person_partners/model-01_one-couple.ttl",
+        .proband_uri="http://example.org/V17P2",
+        .expected_partners={
+            {common::Person("http://example.org/V17P1"), true}
+        },
+        .expected_notes={}
+    },
+    {
+        .case_name="OneCoupleVariant18_V18P1",
+        .data_file="data/queries/details/retrieve_person_partners/model-01_one-couple.ttl",
+        .proband_uri="http://example.org/V18P1",
+        .expected_partners={
+            {common::Person("http://example.org/V18P2"), true}
+        },
+        .expected_notes={}
+    },
+    {
+        .case_name="OneCoupleVariant18_V18P2",
+        .data_file="data/queries/details/retrieve_person_partners/model-01_one-couple.ttl",
+        .proband_uri="http://example.org/V18P2",
+        .expected_partners={
+            {common::Person("http://example.org/V18P1"), true}
+        },
+        .expected_notes={}
+    },
+    {
+        .case_name="OneCoupleVariant19_V19P1",
+        .data_file="data/queries/details/retrieve_person_partners/model-01_one-couple.ttl",
+        .proband_uri="http://example.org/V19P1",
+        .expected_partners={
+            {common::Person("http://example.org/V19P2"), true}
+        },
+        .expected_notes={}
+    },
+    {
+        .case_name="OneCoupleVariant19_V19P2",
+        .data_file="data/queries/details/retrieve_person_partners/model-01_one-couple.ttl",
+        .proband_uri="http://example.org/V19P2",
+        .expected_partners={
+            {common::Person("http://example.org/V19P1"), true}
+        },
+        .expected_notes={}
+    },
+    {
+        .case_name="OneCoupleVariant20_V20P1",
+        .data_file="data/queries/details/retrieve_person_partners/model-01_one-couple.ttl",
+        .proband_uri="http://example.org/V20P1",
+        .expected_partners={
+            {common::Person("http://example.org/V20P2"), true}
+        },
+        .expected_notes={}
+    },
+    {
+        .case_name="OneCoupleVariant20_V20P2",
+        .data_file="data/queries/details/retrieve_person_partners/model-01_one-couple.ttl",
+        .proband_uri="http://example.org/V20P2",
+        .expected_partners={
+            {common::Person("http://example.org/V20P1"), true}
+        },
+        .expected_notes={}
+    },
+    {
+        .case_name="OneCoupleVariant21",
+        .data_file="data/queries/details/retrieve_person_partners/model-01_one-couple.ttl",
+        .proband_uri="http://example.org/V21P1",
+        .expected_partners={},
+        .expected_notes={
+            create_invalid_stated_partner_comparable_note("http://example.org/V21P2")
+        }
+    },
+    {
+        .case_name="OneCoupleVariant22",
+        .data_file="data/queries/details/retrieve_person_partners/model-01_one-couple.ttl",
+        .proband_uri="http://example.org/V22P1",
+        .expected_partners={},
+        .expected_notes={
+            create_invalid_stated_partner_comparable_note("http://example.org/V22P2")
+        }
+    },
+    {
+        .case_name="OneCoupleVariant23",
+        .data_file="data/queries/details/retrieve_person_partners/model-01_one-couple.ttl",
+        .proband_uri="http://example.org/V23P1",
+        .expected_partners={},
+        .expected_notes={
+            create_invalid_stated_partner_comparable_note("http://example.org/V23P2")
+        }
+    },
+    {
+        .case_name="OneCoupleVariant24",
+        .data_file="data/queries/details/retrieve_person_partners/model-01_one-couple.ttl",
+        .proband_uri="http://example.org/V24P1",
+        .expected_partners={},
+        .expected_notes={
+            create_invalid_stated_partner_comparable_note("http://example.org/V24P2")
+        }
+    },
+    {
+        .case_name="OneCoupleVariant25",
+        .data_file="data/queries/details/retrieve_person_partners/model-01_one-couple.ttl",
+        .proband_uri="http://example.org/V25P1",
+        .expected_partners={},
+        .expected_notes={
+            create_invalid_stated_partner_comparable_note("http://example.org/V25P2")
+        }
+    },
+    {
+        .case_name="OneCoupleVariant26",
+        .data_file="data/queries/details/retrieve_person_partners/model-01_one-couple.ttl",
+        .proband_uri="http://example.org/V26P1",
+        .expected_partners={},
+        .expected_notes={
+            create_invalid_stated_partner_comparable_note("http://example.org/V26P2")
+        }
+    },
+    {
+        .case_name="OneCoupleVariant27",
+        .data_file="data/queries/details/retrieve_person_partners/model-01_one-couple.ttl",
+        .proband_uri="http://example.org/V27P1",
+        .expected_partners={},
+        .expected_notes={
+            create_invalid_stated_partner_comparable_note("http://example.org/V27P2")
+        }
+    },
+    {
+        .case_name="OneCoupleVariant28",
+        .data_file="data/queries/details/retrieve_person_partners/model-01_one-couple.ttl",
+        .proband_uri="http://example.org/V28P1",
+        .expected_partners={},
+        .expected_notes={
+            create_invalid_stated_partner_comparable_note("http://example.org/V28P2")
+        }
+    },
+    {
+        .case_name="OneCoupleVariant29",
+        .data_file="data/queries/details/retrieve_person_partners/model-01_one-couple.ttl",
+        .proband_uri="http://example.org/V29P1",
+        .expected_partners={},
+        .expected_notes={
+            create_invalid_stated_partner_comparable_note("http://example.org/V29P2")
+        }
+    },
+    {
+        .case_name="OneCoupleVariant30",
+        .data_file="data/queries/details/retrieve_person_partners/model-01_one-couple.ttl",
+        .proband_uri="http://example.org/V30P1",
+        .expected_partners={},
+        .expected_notes={
+            create_invalid_stated_partner_comparable_note("http://example.org/V30P2")
+        }
+    },
+    {
+        .case_name="OneCoupleVariant31",
+        .data_file="data/queries/details/retrieve_person_partners/model-01_one-couple.ttl",
+        .proband_uri="http://example.org/V31P1",
+        .expected_partners={},
+        .expected_notes={
+            create_invalid_stated_partner_comparable_note("http://example.org/V31P2")
+        }
+    },
+    {
+        .case_name="OneCoupleVariant32",
+        .data_file="data/queries/details/retrieve_person_partners/model-01_one-couple.ttl",
+        .proband_uri="http://example.org/V32P1",
+        .expected_partners={},
+        .expected_notes={
+            create_invalid_stated_partner_comparable_note("http://example.org/V32P2")
+        }
+    },
+    {
+        .case_name="OneCoupleVariant33_V33P1",
+        .data_file="data/queries/details/retrieve_person_partners/model-01_one-couple.ttl",
+        .proband_uri="http://example.org/V33P1",
+        .expected_partners={
+            {common::Person("http://example.org/V33P2"), true}
+        },
+        .expected_notes={}
+    },
+    {
+        .case_name="OneCoupleVariant33_V33P2",
+        .data_file="data/queries/details/retrieve_person_partners/model-01_one-couple.ttl",
+        .proband_uri="http://example.org/V33P2",
+        .expected_partners={
+            {common::Person("http://example.org/V33P1"), true}
+        },
+        .expected_notes={}
+    },
+    {
+        .case_name="OneCoupleVariant34_V34P1",
+        .data_file="data/queries/details/retrieve_person_partners/model-01_one-couple.ttl",
+        .proband_uri="http://example.org/V34P1",
+        .expected_partners={
+            {common::Person("http://example.org/V34P2"), true}
+        },
+        .expected_notes={}
+    },
+    {
+        .case_name="OneCoupleVariant34_V34P2",
+        .data_file="data/queries/details/retrieve_person_partners/model-01_one-couple.ttl",
+        .proband_uri="http://example.org/V34P2",
+        .expected_partners={
+            {common::Person("http://example.org/V34P1"), true}
+        },
+        .expected_notes={}
+    },
+    {
+        .case_name="OneCoupleVariant35_V35P1",
+        .data_file="data/queries/details/retrieve_person_partners/model-01_one-couple.ttl",
+        .proband_uri="http://example.org/V35P1",
+        .expected_partners={
+            {common::Person("http://example.org/V35P2"), true}
+        },
+        .expected_notes={}
+    },
+    {
+        .case_name="OneCoupleVariant35_V35P2",
+        .data_file="data/queries/details/retrieve_person_partners/model-01_one-couple.ttl",
+        .proband_uri="http://example.org/V35P2",
+        .expected_partners={
+            {common::Person("http://example.org/V35P1"), true}
+        },
+        .expected_notes={}
+    },
+    {
+        .case_name="OneCoupleVariant36_V36P1",
+        .data_file="data/queries/details/retrieve_person_partners/model-01_one-couple.ttl",
+        .proband_uri="http://example.org/V36P1",
+        .expected_partners={
+            {common::Person("http://example.org/V36P2"), true}
+        },
+        .expected_notes={}
+    },
+    {
+        .case_name="OneCoupleVariant36_V36P2",
+        .data_file="data/queries/details/retrieve_person_partners/model-01_one-couple.ttl",
+        .proband_uri="http://example.org/V36P2",
+        .expected_partners={
+            {common::Person("http://example.org/V36P1"), true}
+        },
+        .expected_notes={}
+    }
+};
+
+const std::vector<Param> g_two_couples_cases
+{
     {
         .case_name="TwoPartnersP1",
-        .data_file=("data/deps_queries/retrieve_person_partners/normal_success_cases/"
-                    "model-02_two-partners.ttl"),
+        .data_file="data/queries/details/retrieve_person_partners/model-02_two-partners.ttl",
         .proband_uri="http://example.org/P1",
         .expected_partners={
             {common::Person("http://example.org/P2"), false},
@@ -134,8 +535,7 @@ const std::vector<Param> g_params {
     },
     {
         .case_name="TwoPartnersP2",
-        .data_file=("data/deps_queries/retrieve_person_partners/normal_success_cases/"
-                    "model-02_two-partners.ttl"),
+        .data_file="data/queries/details/retrieve_person_partners/model-02_two-partners.ttl",
         .proband_uri="http://example.org/P2",
         .expected_partners={
             {common::Person("http://example.org/P1"), false}
@@ -145,8 +545,7 @@ const std::vector<Param> g_params {
     },
     {
         .case_name="TwoPartnersP3",
-        .data_file=("data/deps_queries/retrieve_person_partners/normal_success_cases/"
-                    "model-02_two-partners.ttl"),
+        .data_file="data/queries/details/retrieve_person_partners/model-02_two-partners.ttl",
         .proband_uri="http://example.org/P3",
         .expected_partners={
             {common::Person("http://example.org/P1"), false},
@@ -157,8 +556,7 @@ const std::vector<Param> g_params {
     },
     {
         .case_name="ThreeGensG1P1",
-        .data_file=("data/deps_queries/retrieve_person_partners/normal_success_cases/"
-                    "model-03_three-generations.ttl"),
+        .data_file="data/queries/details/retrieve_person_partners/model-03_three-generations.ttl",
         .proband_uri="http://example.org/G1P1",
         .expected_partners={
             {common::Person("http://example.org/G1P2"), false}
@@ -168,8 +566,7 @@ const std::vector<Param> g_params {
     },
     {
         .case_name="ThreeGensG2P1",
-        .data_file=("data/deps_queries/retrieve_person_partners/normal_success_cases/"
-                    "model-03_three-generations.ttl"),
+        .data_file="data/queries/details/retrieve_person_partners/model-03_three-generations.ttl",
         .proband_uri="http://example.org/G2P1",
         .expected_partners={
             {common::Person("http://example.org/G2P2"), false}
@@ -179,8 +576,7 @@ const std::vector<Param> g_params {
     },
     {
         .case_name="ThreeGensG3P1",
-        .data_file=("data/deps_queries/retrieve_person_partners/normal_success_cases/"
-                    "model-03_three-generations.ttl"),
+        .data_file="data/queries/details/retrieve_person_partners/model-03_three-generations.ttl",
         .proband_uri="http://example.org/G3P1",
         .expected_partners={
         },
@@ -189,8 +585,7 @@ const std::vector<Param> g_params {
     },
     {
         .case_name="OWL84_P00010",
-        .data_file=("data/deps_queries/retrieve_person_partners/normal_success_cases/"
-                    "model-04_owl-84-repro.ttl"),
+        .data_file="data/queries/details/retrieve_person_partners/model-04_owl-84-repro.ttl",
         .proband_uri="http://example.org/P00010",
         .expected_partners={
             {common::Person("http://example.org/P00000"), false}
@@ -200,7 +595,7 @@ const std::vector<Param> g_params {
     },
     {
         .case_name="ThreeGensInferredG1P1",
-        .data_file=("data/deps_queries/retrieve_person_partners/normal_success_cases/"
+        .data_file=("data/queries/details/retrieve_person_partners/"
                     "model-05_three-generations-some-inferred.ttl"),
         .proband_uri="http://example.org/G1P1",
         .expected_partners={
@@ -220,7 +615,7 @@ const std::vector<Param> g_params {
     },
     {
         .case_name="ThreeGensInferredG1P2",
-        .data_file=("data/deps_queries/retrieve_person_partners/normal_success_cases/"
+        .data_file=("data/queries/details/retrieve_person_partners/"
                     "model-05_three-generations-some-inferred.ttl"),
         .proband_uri="http://example.org/G1P2",
         .expected_partners={
@@ -240,7 +635,7 @@ const std::vector<Param> g_params {
     },
     {
         .case_name="ThreeGensInferredG1P3",
-        .data_file=("data/deps_queries/retrieve_person_partners/normal_success_cases/"
+        .data_file=("data/queries/details/retrieve_person_partners/"
                     "model-05_three-generations-some-inferred.ttl"),
         .proband_uri="http://example.org/G1P3",
         .expected_partners={
@@ -251,7 +646,7 @@ const std::vector<Param> g_params {
     },
     {
         .case_name="ThreeGensInferredG2P1",
-        .data_file=("data/deps_queries/retrieve_person_partners/normal_success_cases/"
+        .data_file=("data/queries/details/retrieve_person_partners/"
                     "model-05_three-generations-some-inferred.ttl"),
         .proband_uri="http://example.org/G2P1",
         .expected_partners={
@@ -271,7 +666,7 @@ const std::vector<Param> g_params {
     },
     {
         .case_name="ThreeGensInferredG2P2",
-        .data_file=("data/deps_queries/retrieve_person_partners/normal_success_cases/"
+        .data_file=("data/queries/details/retrieve_person_partners/"
                     "model-05_three-generations-some-inferred.ttl"),
         .proband_uri="http://example.org/G2P2",
         .expected_partners={
@@ -291,12 +686,149 @@ const std::vector<Param> g_params {
     },
     {
         .case_name="ThreeGensInferredG3P1",
-        .data_file=("data/deps_queries/retrieve_person_partners/normal_success_cases/"
+        .data_file=("data/queries/details/retrieve_person_partners/"
                     "model-05_three-generations-some-inferred.ttl"),
         .proband_uri="http://example.org/G3P1",
+        .expected_partners={},
+        .expected_notes={}
+    },
+    {
+        .case_name="TwoInvalidStatedPartners",
+        .data_file="data/queries/details/retrieve_person_partners/model-06_invalid-partners.ttl",
+        .proband_uri="http://example.org/F2P2",
+        .expected_partners={},
+        .expected_notes={
+            {
+                .type=common::Note::Type::Warning,
+                .id=std::string(person::k_invalid_stated_partner_note_id),
+                .vars={
+                    tools::ComparableVariable{
+                        .name="partner",
+                        .value={tools::ComparableResource{"http://example.org/F2P1", ""}}}},
+                .diagnostic_text="Invalid stated partner: http://example.org/F2P1"
+            },
+            {
+                .type=common::Note::Type::Warning,
+                .id=std::string(person::k_invalid_stated_partner_note_id),
+                .vars={
+                    tools::ComparableVariable{
+                        .name="partner",
+                        .value={tools::ComparableResource{"http://example.org/F2P3", ""}}}},
+                .diagnostic_text="Invalid stated partner: http://example.org/F2P3"
+            }
+        }
+    },
+    {
+        .case_name="OneInvalidOneValidStatedPartner",
+        .data_file="data/queries/details/retrieve_person_partners/model-06_invalid-partners.ttl",
+        .proband_uri="http://example.org/F3P2",
+        .expected_partners={},
+        .expected_notes={
+            {
+                .type=common::Note::Type::Warning,
+                .id=std::string(person::k_invalid_stated_partner_note_id),
+                .vars={
+                    tools::ComparableVariable{
+                        .name="partner",
+                        .value={tools::ComparableResource{"http://example.org/F3P3", ""}}}},
+                .diagnostic_text="Invalid stated partner: http://example.org/F3P3"
+            }
+        }
+    },
+    {
+        .case_name="OneInvalidInferredPartner",
+        .data_file="data/queries/details/retrieve_person_partners/model-06_invalid-partners.ttl",
+        .proband_uri="http://example.org/F4P2",
+        .expected_partners={},
+        .expected_notes={
+            {
+                .type=common::Note::Type::Warning,
+                .id=std::string(person::k_invalid_inferred_partner_note_id),
+                .vars={
+                    tools::ComparableVariable{
+                        .name="partner",
+                        .value={tools::ComparableResource{"http://example.org/F4P1", ""}}}},
+                .diagnostic_text="Invalid inferred partner: http://example.org/F4P1"
+            }
+        }
+    },
+    {
+        .case_name="TwoInvalidInferredPartners",
+        .data_file="data/queries/details/retrieve_person_partners/model-06_invalid-partners.ttl",
+        .proband_uri="http://example.org/F5P2",
+        .expected_partners={},
+        .expected_notes={
+            {
+                .type=common::Note::Type::Warning,
+                .id=std::string(person::k_invalid_inferred_partner_note_id),
+                .vars={
+                    tools::ComparableVariable{
+                        .name="partner",
+                        .value={tools::ComparableResource{"http://example.org/F5P1", ""}}}},
+                .diagnostic_text="Invalid inferred partner: http://example.org/F5P1"
+            },
+            {
+                .type=common::Note::Type::Warning,
+                .id=std::string(person::k_invalid_inferred_partner_note_id),
+                .vars={
+                    tools::ComparableVariable{
+                        .name="partner",
+                        .value={tools::ComparableResource{"http://example.org/F5P3", ""}}}},
+                .diagnostic_text="Invalid inferred partner: http://example.org/F5P3"
+            }
+        }
+    },
+    {
+        .case_name="OneInvalidTwiceInferredPartnerF6P1",
+        .data_file="data/queries/details/retrieve_person_partners/model-06_invalid-partners.ttl",
+        .proband_uri="http://example.org/F6P1",
+        .expected_partners={},
+        .expected_notes={
+            {
+                .type=common::Note::Type::Warning,
+                .id=std::string(person::k_invalid_inferred_partner_note_id),
+                .vars={
+                    tools::ComparableVariable{
+                        .name="partner",
+                        .value={tools::ComparableResource{"http://example.org/F6P2", ""}}}},
+                .diagnostic_text="Invalid inferred partner: http://example.org/F6P2"
+            }
+        }
+    },
+    {
+        .case_name="OneInvalidTwiceInferredPartnerF6P3",
+        .data_file="data/queries/details/retrieve_person_partners/model-06_invalid-partners.ttl",
+        .proband_uri="http://example.org/F6P3",
+        .expected_partners={},
+        .expected_notes={
+            {
+                .type=common::Note::Type::Warning,
+                .id=std::string(person::k_invalid_inferred_partner_note_id),
+                .vars={
+                    tools::ComparableVariable{
+                        .name="partner",
+                        .value={tools::ComparableResource{"http://example.org/F6P2", ""}}}},
+                .diagnostic_text="Invalid inferred partner: http://example.org/F6P2"
+            }
+        }
+    },
+    {
+        .case_name="OneInvalidOneValidInferredPartner",
+        .data_file="data/queries/details/retrieve_person_partners/model-06_invalid-partners.ttl",
+        .proband_uri="http://example.org/F7P2",
         .expected_partners={
+            {common::Person("http://example.org/F7P3"), true}
         },
         .expected_notes={
+            {
+                .type=common::Note::Type::Warning,
+                .id=std::string(person::k_invalid_inferred_partner_note_id),
+                .vars={
+                    tools::ComparableVariable{
+                        .name="partner",
+                        .value={tools::ComparableResource{"http://example.org/F7P1", ""}}}},
+                .diagnostic_text="Invalid inferred partner: http://example.org/F7P1"
+            }
         }
     }
 };
@@ -308,9 +840,21 @@ std::string ParamNameGen(const ::testing::TestParamInfo<Param>& info)
 
 
 INSTANTIATE_TEST_SUITE_P(
-    ,
+    OtherCases,
     DetailsQueries_RetrievePersonPartners,
-    ::testing::ValuesIn(g_params),
+    ::testing::ValuesIn(g_other_cases),
+    ParamNameGen);
+
+INSTANTIATE_TEST_SUITE_P(
+    OneCoupleCases,
+    DetailsQueries_RetrievePersonPartners,
+    ::testing::ValuesIn(g_one_couple_cases),
+    ParamNameGen);
+
+INSTANTIATE_TEST_SUITE_P(
+    TwoCouplesCases,
+    DetailsQueries_RetrievePersonPartners,
+    ::testing::ValuesIn(g_two_couples_cases),
     ParamNameGen);
 
 // Check if the retrieve_person_partners function throws the person_exception when any of its
@@ -334,7 +878,7 @@ TEST_F(DetailsQueries_RetrievePersonPartners, InputContractViolations)
         person::person_exception, person::person_exception::error_code::input_contract_error);
 }
 
-} // anonymous namespace
+} // namespace test::suite_retrieve_person_partners
 
 //  The retrieve_person_father and retrieve_person_mother functions tests
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //

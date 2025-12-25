@@ -1,0 +1,840 @@
+
+#
+# This dataset defines all simple family variants using given constraints:
+# 1. The proband is always a Non-Person Resource.
+# 2. The partner gender is always the opposite of the proband gender.
+# 3. The proband gender is male in 50% of cases and female in the remaining 50% of cases.
+# 4. The couple can have zero or one child.
+# 5. The partner may be a Stubbed, Untyped, Typed, or Non-Person Resource.
+# 6. The child may be a Stubbed, Untyped, Typed, or Non-Person Resource, or not applicable when the
+#    couple has no child
+# 7. The couple may be stated using the gx:Couple relationship or inferred based on the common
+#    child existence.
+#
+# See docs/terms-and-definitions.md for terms definitions
+#
+# +---------+-------+----------+----------+--------+----------+---------+
+# | Variant | Child | Partner  | Child    | Stated | Inferred | Partner |
+# |         | Count | State    | State    | Couple | Couple   | Gender  |
+# +---------+-------+----------+----------+--------+----------+---------+
+# | V01     |     0 | Stubbed  | N/A      | Yes    | No       | Male    | W+
+# | V02     |     0 | Untyped  | N/A      | Yes    | No       | Female  | W+
+# | V03     |     0 | Mistyped | N/A      | Yes    | No       | Male    | W+
+# | V04     |     0 | Typed    | N/A      | Yes    | No       | Female  |  +
+# +---------+-------+----------+----------+--------+----------+---------+
+# | V05     |     1 | Stubbed  | Stubbed  | No     | Yes      | Male    | I
+# | V06     |     1 | Stubbed  | Untyped  | No     | Yes      | Female  | I
+# | V07     |     1 | Stubbed  | Mistyped | No     | Yes      | Male    | I
+# | V08     |     1 | Stubbed  | Typed    | No     | Yes      | Female  | I
+# | V09     |     1 | Untyped  | Stubbed  | No     | Yes      | Male    | I
+# | V10     |     1 | Untyped  | Untyped  | No     | Yes      | Female  | I
+# | V11     |     1 | Untyped  | Mistyped | No     | Yes      | Male    | I
+# | V12     |     1 | Untyped  | Typed    | No     | Yes      | Female  | I
+# | V13     |     1 | Mistyped | Stubbed  | No     | Yes      | Male    | I
+# | V14     |     1 | Mistyped | Untyped  | No     | Yes      | Female  | I
+# | V15     |     1 | Mistyped | Mistyped | No     | Yes      | Male    | I
+# | V16     |     1 | Mistyped | Typed    | No     | Yes      | Female  | I
+# | V17     |     1 | Typed    | Stubbed  | No     | Yes      | Male    |
+# | V18     |     1 | Typed    | Untyped  | No     | Yes      | Female  |
+# | V19     |     1 | Typed    | Mistyped | No     | Yes      | Male    |
+# | V20     |     1 | Typed    | Typed    | No     | Yes      | Female  |
+# +---------+-------+----------+----------+--------+----------+---------+
+# | V21     |     1 | Stubbed  | Stubbed  | Yes    | Yes      | Male    |
+# | V22     |     1 | Stubbed  | Untyped  | Yes    | Yes      | Female  |
+# | V23     |     1 | Stubbed  | Mistyped | Yes    | Yes      | Male    |
+# | V24     |     1 | Stubbed  | Typed    | Yes    | Yes      | Female  |
+# | V25     |     1 | Untyped  | Stubbed  | Yes    | Yes      | Male    |
+# | V26     |     1 | Untyped  | Untyped  | Yes    | Yes      | Female  |
+# | V27     |     1 | Untyped  | Mistyped | Yes    | Yes      | Male    |
+# | V28     |     1 | Untyped  | Typed    | Yes    | Yes      | Female  |
+# | V29     |     1 | Mistyped | Stubbed  | Yes    | Yes      | Male    |
+# | V30     |     1 | Mistyped | Untyped  | Yes    | Yes      | Female  |
+# | V31     |     1 | Mistyped | Mistyped | Yes    | Yes      | Male    |
+# | V32     |     1 | Mistyped | Typed    | Yes    | Yes      | Female  |
+# | V33     |     1 | Typed    | Stubbed  | Yes    | Yes      | Male    |
+# | V34     |     1 | Typed    | Untyped  | Yes    | Yes      | Female  |
+# | V35     |     1 | Typed    | Mistyped | Yes    | Yes      | Male    |
+# | V36     |     1 | Typed    | Typed    | Yes    | Yes      | Female  |
+# +---------+-------+----------+----------+--------+----------+---------+
+
+
+@prefix gx: <http://gedcomx.org/> .
+@prefix ex: <http://example.org/> .
+
+######################################################################
+# V01: Stated Couple, partner=Stubbed
+######################################################################
+ex:V01P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+# ex:V01P2 is Stubbed (no triples with ex:V01P2 as subject)
+
+ex:V01R1 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V01P1 ;
+    gx:person2 ex:V01P2 .
+
+######################################################################
+# V2: Stated Couple, partner=Untyped
+######################################################################
+ex:V02P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V02P2
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:V02R1 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V02P1 ;
+    gx:person2 ex:V02P2 .
+
+######################################################################
+# V3: Stated Couple, partner=Mistyped
+######################################################################
+ex:V03P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:V03P2 a gx:Relationship .
+
+ex:V03R1 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V03P1 ;
+    gx:person2 ex:V03P2 .
+
+######################################################################
+# V4: Stated Couple, partner=Typed
+######################################################################
+ex:V04P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V04P2 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:V04R1 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V04P1 ;
+    gx:person2 ex:V04P2 .
+
+######################################################################
+# V5: Inferred Couple, partner=Stubbed, child=Stubbed
+######################################################################
+ex:V05P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+# ex:V05P2 Stubbed
+# ex:V05P3 Stubbed
+
+ex:V05R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V05P1 ;
+    gx:person2 ex:V05P3 .
+
+ex:V05R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V05P2 ;
+    gx:person2 ex:V05P3 .
+
+######################################################################
+# V6: Inferred Couple, partner=Stubbed, child=Untyped
+######################################################################
+ex:V06P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+# ex:V06P2 Stubbed
+
+ex:V06P3
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V06R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V06P1 ;
+    gx:person2 ex:V06P3 .
+
+ex:V06R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V06P2 ;
+    gx:person2 ex:V06P3 .
+
+######################################################################
+# V7: Inferred Couple, partner=Stubbed, child=Mistyped
+######################################################################
+ex:V07P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+# ex:V07P2 Stubbed
+
+ex:V07P3 a gx:Relationship .
+
+ex:V07R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V07P1 ;
+    gx:person2 ex:V07P3 .
+
+ex:V07R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V07P2 ;
+    gx:person2 ex:V07P3 .
+
+######################################################################
+# V8: Inferred Couple, partner=Stubbed, child=Typed
+######################################################################
+ex:V08P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+# ex:V08P2 Stubbed
+
+ex:V08P3 a gx:Person .
+
+ex:V08R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V08P1 ;
+    gx:person2 ex:V08P3 .
+
+ex:V08R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V08P2 ;
+    gx:person2 ex:V08P3 .
+
+######################################################################
+# V9: Inferred Couple, partner=Untyped, child=Stubbed
+######################################################################
+ex:V09P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:V09P2
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+# ex:V09P3 Stubbed
+
+ex:V09R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V09P1 ;
+    gx:person2 ex:V09P3 .
+
+ex:V09R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V09P2 ;
+    gx:person2 ex:V09P3 .
+
+######################################################################
+# V10: Inferred Couple, partner=Untyped, child=Untyped
+######################################################################
+ex:V10P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V10P2
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:V10P3
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V10R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V10P1 ;
+    gx:person2 ex:V10P3 .
+
+ex:V10R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V10P2 ;
+    gx:person2 ex:V10P3 .
+
+######################################################################
+# V11: Inferred Couple, partner=Untyped, child=Mistyped
+######################################################################
+ex:V11P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:V11P2
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V11P3 a gx:Relationship .
+
+ex:V11R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V11P1 ;
+    gx:person2 ex:V11P3 .
+
+ex:V11R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V11P2 ;
+    gx:person2 ex:V11P3 .
+
+######################################################################
+# V12: Inferred Couple, partner=Untyped, child=Typed
+######################################################################
+ex:V12P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V12P2
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:V12P3 a gx:Person .
+
+ex:V12R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V12P1 ;
+    gx:person2 ex:V12P3 .
+
+ex:V12R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V12P2 ;
+    gx:person2 ex:V12P3 .
+
+######################################################################
+# V13: Inferred Couple, partner=Mistyped, child=Stubbed
+######################################################################
+ex:V13P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:V13P2 a gx:Relationship .
+# ex:V13P3 Stubbed
+
+ex:V13R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V13P1 ;
+    gx:person2 ex:V13P3 .
+
+ex:V13R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V13P2 ;
+    gx:person2 ex:V13P3 .
+
+######################################################################
+# V14: Inferred Couple, partner=Mistyped, child=Untyped
+######################################################################
+ex:V14P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V14P2 a gx:Relationship .
+
+ex:V14P3
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V14R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V14P1 ;
+    gx:person2 ex:V14P3 .
+
+ex:V14R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V14P2 ;
+    gx:person2 ex:V14P3 .
+
+######################################################################
+# V15: Inferred Couple, partner=Mistyped, child=Mistyped
+######################################################################
+ex:V15P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:V15P2 a gx:Relationship .
+ex:V15P3 a gx:Relationship .
+
+ex:V15R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V15P1 ;
+    gx:person2 ex:V15P3 .
+
+ex:V15R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V15P2 ;
+    gx:person2 ex:V15P3 .
+
+######################################################################
+# V16: Inferred Couple, partner=Mistyped, child=Typed
+######################################################################
+ex:V16P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V16P2 a gx:Relationship .
+ex:V16P3 a gx:Person .
+
+ex:V16R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V16P1 ;
+    gx:person2 ex:V16P3 .
+
+ex:V16R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V16P2 ;
+    gx:person2 ex:V16P3 .
+
+######################################################################
+# V17: Inferred Couple, partner=Typed, child=Stubbed
+######################################################################
+ex:V17P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:V17P2 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+# ex:V17P3 Stubbed
+
+ex:V17R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V17P1 ;
+    gx:person2 ex:V17P3 .
+
+ex:V17R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V17P2 ;
+    gx:person2 ex:V17P3 .
+
+######################################################################
+# V18: Inferred Couple, partner=Typed, child=Untyped
+######################################################################
+ex:V18P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V18P2 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:V18P3
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V18R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V18P1 ;
+    gx:person2 ex:V18P3 .
+
+ex:V18R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V18P2 ;
+    gx:person2 ex:V18P3 .
+
+######################################################################
+# V19: Inferred Couple, partner=Typed, child=Mistyped
+######################################################################
+ex:V19P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:V19P2 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V19P3 a gx:Relationship .
+
+ex:V19R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V19P1 ;
+    gx:person2 ex:V19P3 .
+
+ex:V19R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V19P2 ;
+    gx:person2 ex:V19P3 .
+
+######################################################################
+# V20: Inferred Couple, partner=Typed, child=Typed
+######################################################################
+ex:V20P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V20P2 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:V20P3 a gx:Person .
+
+ex:V20R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V20P1 ;
+    gx:person2 ex:V20P3 .
+
+ex:V20R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V20P2 ;
+    gx:person2 ex:V20P3 .
+
+######################################################################
+# V21: Stated and Inferred Couple, partner=Stubbed, child=Stubbed
+######################################################################
+ex:V21P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+# ex:V21P2 Stubbed
+# ex:V21P3 Stubbed
+
+ex:V21R1 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V21P1 ;
+    gx:person2 ex:V21P2 .
+
+ex:V21R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V21P1 ;
+    gx:person2 ex:V21P3 .
+
+ex:V21R3 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V21P2 ;
+    gx:person2 ex:V21P3 .
+
+######################################################################
+# V22: Stated and Inferred Couple, partner=Stubbed, child=Untyped
+######################################################################
+ex:V22P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+# ex:V22P2 Stubbed
+
+ex:V22P3
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V22R1 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V22P1 ;
+    gx:person2 ex:V22P2 .
+
+ex:V22R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V22P1 ;
+    gx:person2 ex:V22P3 .
+
+ex:V22R3 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V22P2 ;
+    gx:person2 ex:V22P3 .
+
+######################################################################
+# V23: Stated and Inferred Couple, partner=Stubbed, child=Mistyped
+######################################################################
+ex:V23P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+# ex:V23P2 Stubbed
+
+ex:V23P3 a gx:Relationship .
+
+ex:V23R1 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V23P1 ;
+    gx:person2 ex:V23P2 .
+
+ex:V23R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V23P1 ;
+    gx:person2 ex:V23P3 .
+
+ex:V23R3 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V23P2 ;
+    gx:person2 ex:V23P3 .
+
+######################################################################
+# V24: Stated and Inferred Couple, partner=Stubbed, child=Typed
+######################################################################
+ex:V24P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+# ex:V24P2 Stubbed
+
+ex:V24P3 a gx:Person .
+
+ex:V24R1 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V24P1 ;
+    gx:person2 ex:V24P2 .
+
+ex:V24R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V24P1 ;
+    gx:person2 ex:V24P3 .
+
+ex:V24R3 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V24P2 ;
+    gx:person2 ex:V24P3 .
+
+######################################################################
+# V25: Stated and Inferred Couple, partner=Untyped, child=Stubbed
+######################################################################
+ex:V25P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:V25P2
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+# ex:V25P3 Stubbed
+
+ex:V25R1 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V25P1 ;
+    gx:person2 ex:V25P2 .
+
+ex:V25R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V25P1 ;
+    gx:person2 ex:V25P3 .
+
+ex:V25R3 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V25P2 ;
+    gx:person2 ex:V25P3 .
+
+######################################################################
+# V26: Stated and Inferred Couple, partner=Untyped, child=Untyped
+######################################################################
+ex:V26P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V26P2
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:V26P3
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V26R1 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V26P1 ;
+    gx:person2 ex:V26P2 .
+
+ex:V26R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V26P1 ;
+    gx:person2 ex:V26P3 .
+
+ex:V26R3 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V26P2 ;
+    gx:person2 ex:V26P3 .
+
+######################################################################
+# V27: Stated and Inferred Couple, partner=Untyped, child=Mistyped
+######################################################################
+ex:V27P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:V27P2
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V27P3 a gx:Relationship .
+
+ex:V27R1 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V27P1 ;
+    gx:person2 ex:V27P2 .
+
+ex:V27R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V27P1 ;
+    gx:person2 ex:V27P3 .
+
+ex:V27R3 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V27P2 ;
+    gx:person2 ex:V27P3 .
+
+######################################################################
+# V28: Stated and Inferred Couple, partner=Untyped, child=Typed
+######################################################################
+ex:V28P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V28P2
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:V28P3 a gx:Person .
+
+ex:V28R1 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V28P1 ;
+    gx:person2 ex:V28P2 .
+
+ex:V28R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V28P1 ;
+    gx:person2 ex:V28P3 .
+
+ex:V28R3 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V28P2 ;
+    gx:person2 ex:V28P3 .
+
+######################################################################
+# V29: Stated and Inferred Couple, partner=Mistyped, child=Stubbed
+######################################################################
+ex:V29P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:V29P2 a gx:Relationship .
+# ex:V29P3 Stubbed
+
+ex:V29R1 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V29P1 ;
+    gx:person2 ex:V29P2 .
+
+ex:V29R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V29P1 ;
+    gx:person2 ex:V29P3 .
+
+ex:V29R3 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V29P2 ;
+    gx:person2 ex:V29P3 .
+
+######################################################################
+# V30: Stated and Inferred Couple, partner=Mistyped, child=Untyped
+######################################################################
+ex:V30P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V30P2 a gx:Relationship .
+
+ex:V30P3
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V30R1 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V30P1 ;
+    gx:person2 ex:V30P2 .
+
+ex:V30R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V30P1 ;
+    gx:person2 ex:V30P3 .
+
+ex:V30R3 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V30P2 ;
+    gx:person2 ex:V30P3 .
+
+######################################################################
+# V31: Stated and Inferred Couple, partner=Mistyped, child=Mistyped
+######################################################################
+ex:V31P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:V31P2 a gx:Relationship .
+ex:V31P3 a gx:Relationship .
+
+ex:V31R1 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V31P1 ;
+    gx:person2 ex:V31P2 .
+
+ex:V31R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V31P1 ;
+    gx:person2 ex:V31P3 .
+
+ex:V31R3 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V31P2 ;
+    gx:person2 ex:V31P3 .
+
+######################################################################
+# V32: Stated and Inferred Couple, partner=Mistyped, child=Typed
+######################################################################
+ex:V32P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V32P2 a gx:Relationship .
+ex:V32P3 a gx:Person .
+
+ex:V32R1 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V32P1 ;
+    gx:person2 ex:V32P2 .
+
+ex:V32R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V32P1 ;
+    gx:person2 ex:V32P3 .
+
+ex:V32R3 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V32P2 ;
+    gx:person2 ex:V32P3 .
+
+######################################################################
+# V33: Stated and Inferred Couple, partner=Typed, child=Stubbed
+######################################################################
+ex:V33P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:V33P2 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+# ex:V33P3 Stubbed
+
+ex:V33R1 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V33P1 ;
+    gx:person2 ex:V33P2 .
+
+ex:V33R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V33P1 ;
+    gx:person2 ex:V33P3 .
+
+ex:V33R3 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V33P2 ;
+    gx:person2 ex:V33P3 .
+
+######################################################################
+# V34: Stated and Inferred Couple, partner=Typed, child=Untyped
+######################################################################
+ex:V34P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V34P2 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:V34P3
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V34R1 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V34P1 ;
+    gx:person2 ex:V34P2 .
+
+ex:V34R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V34P1 ;
+    gx:person2 ex:V34P3 .
+
+ex:V34R3 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V34P2 ;
+    gx:person2 ex:V34P3 .
+
+######################################################################
+# V35: Stated and Inferred Couple, partner=Typed, child=Mistyped
+######################################################################
+ex:V35P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:V35P2 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V35P3 a gx:Relationship .
+
+ex:V35R1 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V35P1 ;
+    gx:person2 ex:V35P2 .
+
+ex:V35R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V35P1 ;
+    gx:person2 ex:V35P3 .
+
+ex:V35R3 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V35P2 ;
+    gx:person2 ex:V35P3 .
+
+######################################################################
+# V36: Stated and Inferred Couple, partner=Typed, child=Typed
+######################################################################
+ex:V36P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V36P2 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:V36P3 a gx:Person .
+
+ex:V36R1 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V36P1 ;
+    gx:person2 ex:V36P2 .
+
+ex:V36R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V36P1 ;
+    gx:person2 ex:V36P3 .
+
+ex:V36R3 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V36P2 ;
+    gx:person2 ex:V36P3 .

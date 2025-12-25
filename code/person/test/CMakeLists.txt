@@ -8,6 +8,7 @@ add_executable(
   src/queries/common.cpp
   src/queries/deps.cpp
   src/queries/details.cpp
+  src/test/tools/person/comparable_note_factory.cpp
 )
 
 target_include_directories(
