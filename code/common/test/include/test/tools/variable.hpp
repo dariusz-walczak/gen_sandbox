@@ -17,8 +17,8 @@ namespace test::tools
 struct ComparableVariable
 {
     using Value = std::variant<
-        std::string,
         int,
+        std::string,
         ComparableResource,
         std::vector<ComparableVariable>>;
 

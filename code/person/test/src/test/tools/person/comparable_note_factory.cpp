@@ -8,6 +8,26 @@
 namespace test::tools::person
 {
 
+ComparableNote create_inferred_partner_comparable_note(
+    const char* partner_uri, const char* partner_caption)
+{
+    const char* caption = (!partner_caption ? "" : partner_caption);
+
+    return {
+        .type=common::Note::Type::Info,
+        .id=std::string(::person::k_inferred_partner_note_id),
+        .vars={
+            tools::ComparableVariable{
+                .name="partner",
+                .value=tools::ComparableResource{
+                    .id=partner_uri, .caption=caption
+                }
+            }
+        },
+        .diagnostic_text=fmt::format("Partner inferred: {}", partner_uri)
+    };
+}
+
 ComparableNote create_invalid_inferred_partner_comparable_note(const char* partner_uri)
 {
     return {
@@ -16,7 +36,7 @@ ComparableNote create_invalid_inferred_partner_comparable_note(const char* partn
         .vars={
             tools::ComparableVariable{
                 .name="partner",
-                .value={tools::ComparableResource{partner_uri, ""}}
+                .value=partner_uri
             }
         },
         .diagnostic_text=fmt::format("Invalid inferred partner: {}", partner_uri)
@@ -31,7 +51,7 @@ ComparableNote create_invalid_stated_partner_comparable_note(const char* partner
         .vars={
             tools::ComparableVariable{
                 .name="partner",
-                .value={tools::ComparableResource{partner_uri, ""}}
+                .value=partner_uri
             }
         },
         .diagnostic_text=fmt::format("Invalid stated partner: {}", partner_uri)

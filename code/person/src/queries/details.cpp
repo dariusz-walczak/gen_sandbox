@@ -26,6 +26,24 @@ common::Note create_inferred_partner_note(const std::shared_ptr<common::Person>&
         fmt::format("Partner inferred: {}", partner->get_uri_str()));
 }
 
+common::Note create_invalid_inferred_partner_note(const std::string& partner_uri)
+{
+    return common::Note(
+        common::Note::Type::Info,
+        std::string(k_invalid_inferred_partner_note_id),
+        {common::Variable{"partner", partner_uri}},
+        fmt::format("Invalid inferred partner: {}", partner_uri));
+}
+
+common::Note create_invalid_stated_partner_note(const std::string& partner_uri)
+{
+    return common::Note(
+        common::Note::Type::Warning,
+        std::string(k_invalid_stated_partner_note_id),
+        {common::Variable{"partner", partner_uri}},
+        fmt::format("Invalid stated partner: {}", partner_uri));
+}
+
 common::Note create_multiple_fathers_note(
     const std::vector<std::shared_ptr<common::Person>>& fathers)
 {
@@ -262,8 +280,6 @@ std::vector<common::Person::PartnerRelation> retrieve_person_partners(
                             gx:person1 ?partner ;
                             gx:person2 ?child ;
                             gx:type gx:ParentChild .
-                        ?child a gx:Person .
-
                         FILTER ((?partner != ?proband) &&
                                 (?proband = <)" + proband->get_uri_str() + R"(>))
                     }
@@ -325,9 +341,21 @@ std::vector<common::Person::PartnerRelation> retrieve_person_partners(
         const auto& inferred_it = common::get_binding_value_req(row, "inferred");
         const bool inferred = (inferred_it->second == "true");
 
-        /* Exceptional path (resource not found): Propagate the exception
-         * Normal path (resource found): Continue the execution */
-        auto partner = retrieve_person_base_data_req(uri_it->second, world, model);
+        auto partner = retrieve_person_base_data_opt(uri_it->second, world, model);
+
+        if (!partner)
+        {
+            if (inferred)
+            {
+                notes.emplace_back(create_invalid_inferred_partner_note(uri_it->second));
+            }
+            else
+            {
+                notes.emplace_back(create_invalid_stated_partner_note(uri_it->second));
+            }
+
+            continue;
+        }
 
         retrieve_person_name(*partner, world, model);
 

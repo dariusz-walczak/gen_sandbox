@@ -6,6 +6,9 @@
 namespace test::tools::person
 {
 
+ComparableNote create_inferred_partner_comparable_note(
+    const char* partner_uri, const char* partner_caption=nullptr);
+
 ComparableNote create_invalid_inferred_partner_comparable_note(const char* partner_uri);
 ComparableNote create_invalid_stated_partner_comparable_note(const char* partner_uri);
 
