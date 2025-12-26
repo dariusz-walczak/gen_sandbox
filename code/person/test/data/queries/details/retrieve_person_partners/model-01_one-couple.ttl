@@ -1,7 +1,7 @@
 
 #
 # This dataset defines all simple family variants using given constraints:
-# 1. The proband is always a Non-Person Resource.
+# 1. The proband is always a Person Resource.
 # 2. The partner gender is always the opposite of the proband gender.
 # 3. The proband gender is male in 50% of cases and female in the remaining 50% of cases.
 # 4. The couple can have zero or one child.

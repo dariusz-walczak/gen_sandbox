@@ -1,0 +1,764 @@
+
+#
+# This dataset defines multiple one-proband two-partners test cases using the following
+#  constraints. For the definitions of the terms used see the docs/terms-and-definitions.md
+#  document.
+#
+# Test suite construction rules:
+# 1. The proband is always a Person Resource
+# 2. The proband is a member of two separate couples, each with a different partner.
+# 3. Each couple may have zero or one child.
+# 4. Each couple may be:
+#    a) Stated (gx:Couple relationship present)
+#    b) Inferred (via a common child)
+#    c) A couple without a child must be stated (otherwise there is no evidence of a couple)
+# 5. Proband sex covers both male and female (approximately 50% split)
+# 6. Partner sex is always the opposite of the proband's sex.
+# 7. Child sex is always unspecified.
+# 8. Each partner resource is either Stubbed or a Person Resource.
+# 9. Each child resource is always a Person Resource.
+# 10. Partners are an unordered multiset: swapping the two partners does not create a new variant.
+#
+#
+# +---------+---------------------------+---------------------------+---------+
+# |         | Partner 1                 | Partner 2                 |         |
+# | Variant +-------+----------+--------+-------+----------+--------+ Proband |
+# |         | Child | Resource | Stated | Child | Resource | Stated | Gender  |
+# |         | Count | Status   |        | Count | Status   |        |         |
+# +---------+-------+----------+--------+-------+----------+--------+---------+
+# | V201    |     0 | Stubbed  | Yes    |     0 | Stubbed  | Yes    | Male    |
+# | V202    |     0 | Stubbed  | Yes    |     0 | Person   | Yes    | Female  |
+# | V203    |     0 | Stubbed  | Yes    |     1 | Stubbed  | No     | Male    |
+# | V204    |     0 | Stubbed  | Yes    |     1 | Stubbed  | Yes    | Female  |
+# | V205    |     0 | Stubbed  | Yes    |     1 | Person   | No     | Male    |
+# | V206    |     0 | Stubbed  | Yes    |     1 | Person   | Yes    | Female  |
+# +---------+-------+----------+--------+-------+----------+--------+---------+
+# | V207    |     0 | Person   | Yes    |     0 | Person   | Yes    | Male    |
+# | V208    |     0 | Person   | Yes    |     1 | Stubbed  | No     | Female  |
+# | V209    |     0 | Person   | Yes    |     1 | Stubbed  | Yes    | Male    |
+# | V210    |     0 | Person   | Yes    |     1 | Person   | No     | Female  |
+# | V211    |     0 | Person   | Yes    |     1 | Person   | Yes    | Male    |
+# +---------+-------+----------+--------+-------+----------+--------+---------+
+# | V212    |     1 | Stubbed  | No     |     1 | Stubbed  | No     | Female  |
+# | V213    |     1 | Stubbed  | No     |     1 | Stubbed  | Yes    | Male    |
+# | V214    |     1 | Stubbed  | No     |     1 | Person   | No     | Female  |
+# | V215    |     1 | Stubbed  | No     |     1 | Person   | Yes    | Male    |
+# +---------+-------+----------+--------+-------+----------+--------+---------+
+# | V216    |     1 | Stubbed  | Yes    |     1 | Stubbed  | Yes    | Female  |
+# | V217    |     1 | Stubbed  | Yes    |     1 | Person   | No     | Male    |
+# | V218    |     1 | Stubbed  | Yes    |     1 | Person   | Yes    | Female  |
+# +---------+-------+----------+--------+-------+----------+--------+---------+
+# | V219    |     1 | Person   | No     |     1 | Person   | No     | Male    |
+# | V220    |     1 | Person   | No     |     1 | Person   | Yes    | Female  |
+# +---------+-------+----------+--------+-------+----------+--------+---------+
+# | V221    |     1 | Person   | Yes    |     1 | Person   | Yes    | Male    |
+# +---------+-------+----------+--------+-------+----------+--------+---------+
+#
+# Sta:(Stated=Yes)
+# Inf:(Stated=No)
+#
+#              +-- ex:V2xxP2
+#              |   {partner 1}
+#              |
+# ex:V2xxP4 --[+]
+# {child 1}    |
+#              |
+#              +-- ex:V2xxP1
+#              |   {proband}
+#              |
+#              |
+# ex:V2xxP5 --[+]
+# {child 2}    |
+#              |
+#              +-- ex:V2xxP3
+#                  {partner 2}
+#
+
+@prefix gx: <http://gedcomx.org/> .
+@prefix ex: <http://example.org/> .
+
+######################################################################
+# V201: Partner1=(0/Stubbed/Sta); Partner2=(0/Stubbed/Sta)
+######################################################################
+ex:V201P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+# ex:V201P2 is Stubbed (no triples with ex:V201P2 as subject)
+# ex:V201P3 is Stubbed (no triples with ex:V201P3 as subject)
+
+ex:V201R1 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V201P1 ;
+    gx:person2 ex:V201P2 .
+
+ex:V201R2 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V201P1 ;
+    gx:person2 ex:V201P3 .
+
+######################################################################
+# V202: Partner1=(0/Stubbed/Sta); Partner2=(0/Person/Person/Sta)
+######################################################################
+ex:V202P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+# ex:V202P2 is Stubbed (no triples with ex:V202P2 as subject)
+
+ex:V202P3 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V202R1 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V202P1 ;
+    gx:person2 ex:V202P2 .
+
+ex:V202R2 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V202P1 ;
+    gx:person2 ex:V202P3 .
+
+######################################################################
+# V203: Partner1=(0/Stubbed/Sta); Partner2=(1/Stubbed/Inf)
+######################################################################
+ex:V203P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+# ex:V203P2 is Stubbed (no triples with ex:V203P2 as subject)
+# ex:V203P3 is Stubbed (no triples with ex:V203P3 as subject)
+
+ex:V203R1 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V203P1 ;
+    gx:person2 ex:V203P2 .
+
+ex:V203P4 a gx:Person .
+
+ex:V203R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V203P1 ;
+    gx:person2 ex:V203P4 .
+
+ex:V203R3 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V203P3 ;
+    gx:person2 ex:V203P4 .
+
+######################################################################
+# V204: Partner1=(0/Stubbed/Sta); Partner2=(1/Stubbed/Sta)
+######################################################################
+ex:V204P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+# ex:V204P2 is Stubbed (no triples with ex:V204P2 as subject)
+# ex:V204P3 is Stubbed (no triples with ex:V204P3 as subject)
+
+ex:V204R1 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V204P1 ;
+    gx:person2 ex:V204P2 .
+
+ex:V204R2 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V204P1 ;
+    gx:person2 ex:V204P3 .
+
+ex:V204P4 a gx:Person .
+
+ex:V204R3 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V204P1 ;
+    gx:person2 ex:V204P4 .
+
+ex:V204R4 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V204P3 ;
+    gx:person2 ex:V204P4 .
+
+######################################################################
+# V205: Partner1=(0/Stubbed/Sta); Partner2=(1/Person/Inf)
+######################################################################
+ex:V205P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+# ex:V205P2 is Stubbed (no triples with ex:V205P2 as subject)
+
+ex:V205P3 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:V205R1 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V205P1 ;
+    gx:person2 ex:V205P2 .
+
+ex:V205P4 a gx:Person .
+
+ex:V205R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V205P1 ;
+    gx:person2 ex:V205P4 .
+
+ex:V205R3 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V205P3 ;
+    gx:person2 ex:V205P4 .
+
+######################################################################
+# V206: Partner1=(0/Stubbed/Sta); Partner2=(1/Person/Sta)
+######################################################################
+ex:V206P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+# ex:V206P2 is Stubbed (no triples with ex:V206P2 as subject)
+
+ex:V206P3 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V206R1 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V206P1 ;
+    gx:person2 ex:V206P2 .
+
+ex:V206R2 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V206P1 ;
+    gx:person2 ex:V206P3 .
+
+ex:V206P4 a gx:Person .
+
+ex:V206R3 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V206P1 ;
+    gx:person2 ex:V206P4 .
+
+ex:V206R4 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V206P3 ;
+    gx:person2 ex:V206P4 .
+
+######################################################################
+# V207: Partner1=(0/Person/Sta); Partner2=(0/Person/Sta)
+######################################################################
+ex:V207P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V207P2 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:V207P3 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:V207R1 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V207P1 ;
+    gx:person2 ex:V207P2 .
+
+ex:V207R2 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V207P1 ;
+    gx:person2 ex:V207P3 .
+
+######################################################################
+# V208: Partner1=(0/Person/Sta); Partner2=(1/Stubbed/Inf)
+######################################################################
+ex:V208P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:V208P2 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+# ex:V208P3 is Stubbed (no triples with ex:V208P3 as subject)
+
+ex:V208R1 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V208P1 ;
+    gx:person2 ex:V208P2 .
+
+ex:V208P4 a gx:Person .
+
+ex:V208R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V208P1 ;
+    gx:person2 ex:V208P4 .
+
+ex:V208R3 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V208P3 ;
+    gx:person2 ex:V208P4 .
+
+######################################################################
+# V209: Partner1=(0/Person/Sta); Partner2=(1/Stubbed/Sta)
+######################################################################
+ex:V209P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V209P2 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+# ex:V209P3 is Stubbed (no triples with ex:V209P3 as subject)
+
+ex:V209R1 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V209P1 ;
+    gx:person2 ex:V209P2 .
+
+ex:V209R2 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V209P1 ;
+    gx:person2 ex:V209P3 .
+
+ex:V209P4 a gx:Person .
+
+ex:V209R3 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V209P1 ;
+    gx:person2 ex:V209P4 .
+
+ex:V209R4 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V209P3 ;
+    gx:person2 ex:V209P4 .
+
+######################################################################
+# V210: Partner1=(0/Person/Sta); Partner2=(1/Person/Inf)
+######################################################################
+ex:V210P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:V210P2 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V210P3 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V210R1 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V210P1 ;
+    gx:person2 ex:V210P2 .
+
+ex:V210P4 a gx:Person .
+
+ex:V210R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V210P1 ;
+    gx:person2 ex:V210P4 .
+
+ex:V210R3 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V210P3 ;
+    gx:person2 ex:V210P4 .
+
+######################################################################
+# V211: Partner1=(0/Person/Sta); Partner2=(1/Person/Sta)
+######################################################################
+ex:V211P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V211P2 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:V211P3 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:V211R1 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V211P1 ;
+    gx:person2 ex:V211P2 .
+
+ex:V211R2 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V211P1 ;
+    gx:person2 ex:V211P3 .
+
+ex:V211P4 a gx:Person .
+
+ex:V211R3 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V211P1 ;
+    gx:person2 ex:V211P4 .
+
+ex:V211R4 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V211P3 ;
+    gx:person2 ex:V211P4 .
+
+######################################################################
+# V212: Partner1=(1/Stubbed/Inf); Partner2=(1/Stubbed/Inf)
+######################################################################
+ex:V212P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+# ex:V212P2 is Stubbed (no triples with ex:V212P2 as subject)
+# ex:V212P3 is Stubbed (no triples with ex:V212P3 as subject)
+
+ex:V212P4 a gx:Person .
+
+ex:V212R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V212P1 ;
+    gx:person2 ex:V212P4 .
+
+ex:V212R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V212P2 ;
+    gx:person2 ex:V212P4 .
+
+ex:V212P5 a gx:Person .
+
+ex:V212R3 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V212P1 ;
+    gx:person2 ex:V212P5 .
+
+ex:V212R4 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V212P3 ;
+    gx:person2 ex:V212P5 .
+
+######################################################################
+# V213: Partner1=(1/Stubbed/Inf); Partner2=(1/Stubbed/Sta)
+######################################################################
+ex:V213P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+# ex:V213P2 is Stubbed (no triples with ex:V213P2 as subject)
+# ex:V213P3 is Stubbed (no triples with ex:V213P3 as subject)
+
+ex:V213P4 a gx:Person .
+
+ex:V213R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V213P1 ;
+    gx:person2 ex:V213P4 .
+
+ex:V213R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V213P2 ;
+    gx:person2 ex:V213P4 .
+
+ex:V213R3 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V213P1 ;
+    gx:person2 ex:V213P3 .
+
+ex:V213P5 a gx:Person .
+
+ex:V213R4 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V213P1 ;
+    gx:person2 ex:V213P5 .
+
+ex:V213R5 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V213P3 ;
+    gx:person2 ex:V213P5 .
+
+######################################################################
+# V214: Partner1=(1/Stubbed/Inf); Partner2=(1/Person/Inf)
+######################################################################
+ex:V214P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+# ex:V214P2 is Stubbed (no triples with ex:V214P2 as subject)
+
+ex:V214P3 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V214P4 a gx:Person .
+
+ex:V214R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V214P1 ;
+    gx:person2 ex:V214P4 .
+
+ex:V214R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V214P2 ;
+    gx:person2 ex:V214P4 .
+
+ex:V214P5 a gx:Person .
+
+ex:V214R3 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V214P1 ;
+    gx:person2 ex:V214P5 .
+
+ex:V214R4 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V214P3 ;
+    gx:person2 ex:V214P5 .
+
+######################################################################
+# V215: Partner1=(1/Stubbed/Inf); Partner2=(1/Person/Sta)
+######################################################################
+ex:V215P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+# ex:V215P2 is Stubbed (no triples with ex:V215P2 as subject)
+
+ex:V215P3 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:V215P4 a gx:Person .
+
+ex:V215R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V215P1 ;
+    gx:person2 ex:V215P4 .
+
+ex:V215R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V215P2 ;
+    gx:person2 ex:V215P4 .
+
+ex:V215R3 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V215P1 ;
+    gx:person2 ex:V215P3 .
+
+ex:V215P5 a gx:Person .
+
+ex:V215R4 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V215P1 ;
+    gx:person2 ex:V215P5 .
+
+ex:V215R5 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V215P3 ;
+    gx:person2 ex:V215P5 .
+
+######################################################################
+# V216: Partner1=(1/Stubbed/Sta); Partner2=(1/Stubbed/Sta)
+######################################################################
+ex:V216P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+# ex:V216P2 is Stubbed (no triples with ex:V216P2 as subject)
+# ex:V216P3 is Stubbed (no triples with ex:V216P3 as subject)
+
+ex:V216R1 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V216P1 ;
+    gx:person2 ex:V216P2 .
+
+ex:V216P4 a gx:Person .
+
+ex:V216R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V216P1 ;
+    gx:person2 ex:V216P4 .
+
+ex:V216R3 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V216P2 ;
+    gx:person2 ex:V216P4 .
+
+ex:V216R4 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V216P1 ;
+    gx:person2 ex:V216P3 .
+
+ex:V216P5 a gx:Person .
+
+ex:V216R5 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V216P1 ;
+    gx:person2 ex:V216P5 .
+
+ex:V216R6 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V216P3 ;
+    gx:person2 ex:V216P5 .
+
+######################################################################
+# V217: Partner1=(1/Stubbed/Sta); Partner2=(1/Person/Inf)
+######################################################################
+ex:V217P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+# ex:V217P2 is Stubbed (no triples with ex:V217P2 as subject)
+
+ex:V217P3 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:V217R1 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V217P1 ;
+    gx:person2 ex:V217P2 .
+
+ex:V217P4 a gx:Person .
+
+ex:V217R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V217P1 ;
+    gx:person2 ex:V217P4 .
+
+ex:V217R3 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V217P2 ;
+    gx:person2 ex:V217P4 .
+
+ex:V217P5 a gx:Person .
+
+ex:V217R4 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V217P1 ;
+    gx:person2 ex:V217P5 .
+
+ex:V217R5 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V217P3 ;
+    gx:person2 ex:V217P5 .
+
+######################################################################
+# V218: Partner1=(1/Stubbed/Sta); Partner2=(1/Person/Sta)
+######################################################################
+ex:V218P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+# ex:V218P2 is Stubbed (no triples with ex:V218P2 as subject)
+
+ex:V218P3 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V218R1 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V218P1 ;
+    gx:person2 ex:V218P2 .
+
+ex:V218P4 a gx:Person .
+
+ex:V218R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V218P1 ;
+    gx:person2 ex:V218P4 .
+
+ex:V218R3 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V218P2 ;
+    gx:person2 ex:V218P4 .
+
+ex:V218R4 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V218P1 ;
+    gx:person2 ex:V218P3 .
+
+ex:V218P5 a gx:Person .
+
+ex:V218R5 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V218P1 ;
+    gx:person2 ex:V218P5 .
+
+ex:V218R6 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V218P3 ;
+    gx:person2 ex:V218P5 .
+
+######################################################################
+# V219: Partner1=(1/Person/Inf); Partner2=(1/Person/Inf)
+######################################################################
+ex:V219P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V219P2 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:V219P3 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:V219P4 a gx:Person .
+
+ex:V219R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V219P1 ;
+    gx:person2 ex:V219P4 .
+
+ex:V219R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V219P2 ;
+    gx:person2 ex:V219P4 .
+
+ex:V219P5 a gx:Person .
+
+ex:V219R3 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V219P1 ;
+    gx:person2 ex:V219P5 .
+
+ex:V219R4 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V219P3 ;
+    gx:person2 ex:V219P5 .
+
+######################################################################
+# V220: Partner1=(1/Person/Inf); Partner2=(1/Person/Sta)
+######################################################################
+ex:V220P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:V220P2 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V220P3 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V220P4 a gx:Person .
+
+ex:V220R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V220P1 ;
+    gx:person2 ex:V220P4 .
+
+ex:V220R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V220P2 ;
+    gx:person2 ex:V220P4 .
+
+ex:V220R3 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V220P1 ;
+    gx:person2 ex:V220P3 .
+
+ex:V220P5 a gx:Person .
+
+ex:V220R4 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V220P1 ;
+    gx:person2 ex:V220P5 .
+
+ex:V220R5 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V220P3 ;
+    gx:person2 ex:V220P5 .
+
+######################################################################
+# V221: Partner1=(1/Person/Sta); Partner2=(1/Person/Sta)
+######################################################################
+ex:V221P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V221P2 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:V221P3 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:V221R1 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V221P1 ;
+    gx:person2 ex:V221P2 .
+
+ex:V221P4 a gx:Person .
+
+ex:V221R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V221P1 ;
+    gx:person2 ex:V221P4 .
+
+ex:V221R3 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V221P2 ;
+    gx:person2 ex:V221P4 .
+
+ex:V221R4 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V221P1 ;
+    gx:person2 ex:V221P3 .
+
+ex:V221P5 a gx:Person .
+
+ex:V221R5 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V221P1 ;
+    gx:person2 ex:V221P5 .
+
+ex:V221R6 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V221P3 ;
+    gx:person2 ex:V221P5 .

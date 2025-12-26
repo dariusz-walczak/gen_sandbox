@@ -53,3 +53,35 @@ An IRI `res` is an **Untyped Resource** in a graph `G` iff it is **Described** b
 ```
 (∃ pred, obj : ( res, pred, obj ) ∈ G) ∧ ¬(∃ obj : ( res, rdf:type, obj ) ∈ G)
 ```
+
+## Stated Couple
+
+An unordered pair of IRIs `(person1, person2)` is a **Stated Couple** in a graph `G` iff there exists a `gx:Relationship` resource `rel` in `G` that states a `gx:Couple` relationship between `p1` and `p2` (in any order), i.e.:
+
+```
+∃ rel :
+  ( rel, rdf:type, gx:Relationship ) ∈ G ∧
+  ( rel, gx:type, gx:Couple ) ∈ G ∧
+  (
+    ( rel, gx:person1, person1 ) ∈ G ∧ ( rel, gx:person2, person2 ) ∈ G
+    ∨
+    ( rel, gx:person1, person2 ) ∈ G ∧ ( rel, gx:person2, person1 ) ∈ G
+  )
+```
+
+## Inferred Couple
+
+An unordered pair of IRIs `(person1, person2)` is an **Inferred Couple** in a graph `G` iff there exists at least one child IRI `child` and two `gx:Relationship` resources `rel1`, `rel2` in `G` such that `person1` and `person2` are both parents of `child` via `gx:ParentChild` relationships, i.e.:
+
+```
+∃ child, rel1, rel2 :
+  ( rel1, rdf:type, gx:Relationship ) ∈ G ∧
+  ( rel1, gx:type, gx:ParentChild ) ∈ G ∧
+  ( rel1, gx:person1, person1 ) ∈ G ∧
+  ( rel1, gx:person2, child  ) ∈ G ∧
+
+  ( rel2, rdf:type, gx:Relationship ) ∈ G ∧
+  ( rel2, gx:type, gx:ParentChild ) ∈ G ∧
+  ( rel2, gx:person1, person2 ) ∈ G ∧
+  ( rel2, gx:person2, child  ) ∈ G
+```
