@@ -828,15 +828,7 @@ const std::vector<Param> g_two_couples_cases
             {common::Person("http://example.org/G1P2"), g_inferred}
         },
         .expected_notes={
-            {
-                .type=common::Note::Type::Info,
-                .id=std::string(person::k_inferred_partner_note_id),
-                .vars={
-                    tools::ComparableVariable{
-                        .name="partner",
-                        .value={tools::ComparableResource{"http://example.org/G1P2", ""}}}},
-                .diagnostic_text="Partner inferred: http://example.org/G1P2"
-            }
+            create_inferred_partner_comparable_note("http://example.org/G1P2")
         }
     },
     {
@@ -848,15 +840,7 @@ const std::vector<Param> g_two_couples_cases
             {common::Person("http://example.org/G1P1"), g_inferred}
         },
         .expected_notes={
-            {
-                .type=common::Note::Type::Info,
-                .id=std::string(person::k_inferred_partner_note_id),
-                .vars={
-                    tools::ComparableVariable{
-                        .name="partner",
-                        .value={tools::ComparableResource{"http://example.org/G1P1", ""}}}},
-                .diagnostic_text="Partner inferred: http://example.org/G1P1"
-            }
+            create_inferred_partner_comparable_note("http://example.org/G1P1")
         }
     },
     {
@@ -879,15 +863,7 @@ const std::vector<Param> g_two_couples_cases
             {common::Person("http://example.org/G2P2"), g_inferred}
         },
         .expected_notes={
-            {
-                .type=common::Note::Type::Info,
-                .id=std::string(person::k_inferred_partner_note_id),
-                .vars={
-                    tools::ComparableVariable{
-                        .name="partner",
-                        .value={tools::ComparableResource{"http://example.org/G2P2", ""}}}},
-                .diagnostic_text="Partner inferred: http://example.org/G2P2"
-            }
+            create_inferred_partner_comparable_note("http://example.org/G2P2")
         }
     },
     {
@@ -899,15 +875,7 @@ const std::vector<Param> g_two_couples_cases
             {common::Person("http://example.org/G2P1"), g_inferred}
         },
         .expected_notes={
-            {
-                .type=common::Note::Type::Info,
-                .id=std::string(person::k_inferred_partner_note_id),
-                .vars={
-                    tools::ComparableVariable{
-                        .name="partner",
-                        .value={tools::ComparableResource{"http://example.org/G2P1", ""}}}},
-                .diagnostic_text="Partner inferred: http://example.org/G2P1"
-            }
+            create_inferred_partner_comparable_note("http://example.org/G2P1")
         }
     },
     {
