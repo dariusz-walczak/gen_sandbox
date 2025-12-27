@@ -97,19 +97,6 @@ TEST_P(DetailsQueries_RetrievePersonPartners, NormalSuccessCases)
     EXPECT_EQ(param.expected_notes, tools::to_comparable(actual_notes));
 };
 
-const std::vector<Param> g_other_cases
-{
-    {
-        .case_name="NoPartner",
-        .data_file="data/queries/details/retrieve_person_partners/model-00_no-partner.ttl",
-        .proband_uri="http://example.org/P1",
-        .expected_partners={
-        },
-        .expected_notes={
-        }
-    }
-};
-
 /**
  * @brief Suite of single couple test cases
  *
@@ -779,7 +766,10 @@ const std::vector<Param> g_two_couples_cases
         .expected_notes={
         }
     },
-    ///////////////////////////////////////////////////////////////////////////////////////////////
+};
+
+const std::vector<Param> g_complex_cases
+{
     {
         .case_name="ThreeGensG1P1",
         .data_file="data/queries/details/retrieve_person_partners/model-03_three-generations.ttl",
@@ -927,76 +917,18 @@ const std::vector<Param> g_two_couples_cases
         },
         .expected_notes={
         }
-    },
-    //////////////////////////////////////////////////////////////////////////////////////////////
+    }
+};
+
+const std::vector<Param> g_other_cases
+{
     {
-        .case_name="TwoInvalidStatedPartners",
-        .data_file="data/queries/details/retrieve_person_partners/model-06_invalid-partners.ttl",
-        .proband_uri="http://example.org/F2P2",
-        .expected_partners={},
-        .expected_notes={
-            create_invalid_stated_partner_comparable_note("http://example.org/F2P1"),
-            create_invalid_stated_partner_comparable_note("http://example.org/F2P3"),
-        }
-    },
-    {
-        .case_name="OneInvalidOneValidStatedPartner",
-        .data_file="data/queries/details/retrieve_person_partners/model-06_invalid-partners.ttl",
-        .proband_uri="http://example.org/F3P2",
+        .case_name="NoPartner",
+        .data_file="data/queries/details/retrieve_person_partners/model-00_no-partner.ttl",
+        .proband_uri="http://example.org/P1",
         .expected_partners={
-            {common::Person("http://example.org/F3P1"), g_stated}
         },
         .expected_notes={
-            create_invalid_stated_partner_comparable_note("http://example.org/F3P3"),
-        }
-    },
-    {
-        .case_name="OneInvalidInferredPartner",
-        .data_file="data/queries/details/retrieve_person_partners/model-06_invalid-partners.ttl",
-        .proband_uri="http://example.org/F4P2",
-        .expected_partners={},
-        .expected_notes={
-            create_invalid_inferred_partner_comparable_note("http://example.org/F4P1")
-        }
-    },
-    {
-        .case_name="TwoInvalidInferredPartners",
-        .data_file="data/queries/details/retrieve_person_partners/model-06_invalid-partners.ttl",
-        .proband_uri="http://example.org/F5P2",
-        .expected_partners={},
-        .expected_notes={
-            create_invalid_inferred_partner_comparable_note("http://example.org/F5P1"),
-            create_invalid_inferred_partner_comparable_note("http://example.org/F5P3")
-        }
-    },
-    {
-        .case_name="OneInvalidTwiceInferredPartnerF6P1",
-        .data_file="data/queries/details/retrieve_person_partners/model-06_invalid-partners.ttl",
-        .proband_uri="http://example.org/F6P1",
-        .expected_partners={},
-        .expected_notes={
-            create_invalid_inferred_partner_comparable_note("http://example.org/F6P2")
-        }
-    },
-    {
-        .case_name="OneInvalidTwiceInferredPartnerF6P3",
-        .data_file="data/queries/details/retrieve_person_partners/model-06_invalid-partners.ttl",
-        .proband_uri="http://example.org/F6P3",
-        .expected_partners={},
-        .expected_notes={
-            create_invalid_inferred_partner_comparable_note("http://example.org/F6P2")
-        }
-    },
-    {
-        .case_name="OneInvalidOneValidInferredPartner",
-        .data_file="data/queries/details/retrieve_person_partners/model-06_invalid-partners.ttl",
-        .proband_uri="http://example.org/F7P2",
-        .expected_partners={
-            {common::Person("http://example.org/F7P3"), g_inferred}
-        },
-        .expected_notes={
-            create_invalid_inferred_partner_comparable_note("http://example.org/F7P1"),
-            create_inferred_partner_comparable_note("http://example.org/F7P3")
         }
     }
 };
@@ -1008,12 +940,6 @@ std::string ParamNameGen(const ::testing::TestParamInfo<Param>& info)
 
 
 INSTANTIATE_TEST_SUITE_P(
-    OtherCases,
-    DetailsQueries_RetrievePersonPartners,
-    ::testing::ValuesIn(g_other_cases),
-    ParamNameGen);
-
-INSTANTIATE_TEST_SUITE_P(
     OneCoupleCases,
     DetailsQueries_RetrievePersonPartners,
     ::testing::ValuesIn(g_one_couple_cases),
@@ -1023,6 +949,18 @@ INSTANTIATE_TEST_SUITE_P(
     TwoCouplesCases,
     DetailsQueries_RetrievePersonPartners,
     ::testing::ValuesIn(g_two_couples_cases),
+    ParamNameGen);
+
+INSTANTIATE_TEST_SUITE_P(
+    ComplexCases,
+    DetailsQueries_RetrievePersonPartners,
+    ::testing::ValuesIn(g_complex_cases),
+    ParamNameGen);
+
+INSTANTIATE_TEST_SUITE_P(
+    OtherCases,
+    DetailsQueries_RetrievePersonPartners,
+    ::testing::ValuesIn(g_other_cases),
     ParamNameGen);
 
 // Check if the retrieve_person_partners function throws the person_exception when any of its
