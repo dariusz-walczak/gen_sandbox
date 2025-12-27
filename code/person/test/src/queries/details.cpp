@@ -943,6 +943,13 @@ const std::vector<Param> g_other_cases
         },
         .expected_notes={
         }
+    },
+    {
+        .case_name="SingleParent",
+        .data_file="data/queries/details/retrieve_person_partners/model-08_single-parent.ttl",
+        .proband_uri="http://example.org/P1",
+        .expected_partners={},
+        .expected_notes={}
     }
 };
 
