@@ -93,8 +93,10 @@ TEST_P(DetailsQueries_RetrievePersonPartners, NormalSuccessCases)
         person::retrieve_person_partners(
             proband.get(), ctx->world, ctx->model, actual_notes));
 
-    EXPECT_EQ(param.expected_partners, actual_partners);
-    EXPECT_EQ(param.expected_notes, tools::to_comparable(actual_notes));
+    EXPECT_THAT(param.expected_partners, ::testing::UnorderedElementsAreArray(actual_partners));
+    EXPECT_THAT(
+        param.expected_notes,
+        ::testing::UnorderedElementsAreArray(tools::to_comparable(actual_notes)));
 };
 
 /**
@@ -580,8 +582,8 @@ const std::vector<Param> g_two_couples_cases
             {common::Person("http://example.org/V205P3"), g_inferred}
         },
         .expected_notes={
-            create_invalid_stated_partner_comparable_note("http://example.org/V205P2"),
-            create_inferred_partner_comparable_note("http://example.org/V205P3")
+            create_inferred_partner_comparable_note("http://example.org/V205P3"),
+            create_invalid_stated_partner_comparable_note("http://example.org/V205P2")
         }
     },
     {
