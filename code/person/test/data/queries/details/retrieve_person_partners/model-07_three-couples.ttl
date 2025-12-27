@@ -1,0 +1,74 @@
+@prefix gx: <http://gedcomx.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix ex: <http://example.org/> .
+
+#                              +-- ex:P2      {partner; inferred; stubbed}
+#                              |
+#                              |
+#                     ex:P5 --[I]             {child; typed}
+#                              |
+#                              |
+#                 +------------+-- ex:P1      {proband; typed; female}
+#                 |            |
+#                 |            |
+#                 |            |
+#                 |   ex:P6 --[I]              {child; typed}
+#                 |            |
+#                 |            |
+#                 |            +-- ex:P3       {partner; typed; male}
+#                 |
+#                 |
+#        ex:P7 --[S]-----------+               {child; typed}
+#                              |
+#                              |
+#                              +-- ex:P4       {partner; stated; stubbed}
+#
+
+ex:P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+#ex:P2 {stubbed}
+
+ex:P3 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+#ex:P4 {stubbed}
+
+ex:P5 a gx:Person .
+ex:P6 a gx:Person .
+ex:P7 a gx:Person .
+
+ex:R1 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:P1 ;
+    gx:person2 ex:P4 .
+
+ex:R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:P1 ;
+    gx:person2 ex:P5 .
+
+ex:R3 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:P2 ;
+    gx:person2 ex:P5 .
+
+ex:R4 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:P1 ;
+    gx:person2 ex:P6 .
+
+ex:R5 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:P3 ;
+    gx:person2 ex:P6 .
+
+ex:R6 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:P1 ;
+    gx:person2 ex:P7 .
+
+ex:R7 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:P4 ;
+    gx:person2 ex:P7 .

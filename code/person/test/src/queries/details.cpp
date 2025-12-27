@@ -917,6 +917,19 @@ const std::vector<Param> g_complex_cases
         },
         .expected_notes={
         }
+    },
+    {
+        .case_name="ThreePartners",
+        .data_file="data/queries/details/retrieve_person_partners/model-07_three-couples.ttl",
+        .proband_uri="http://example.org/P1",
+        .expected_partners={
+            {common::Person("http://example.org/P3"), g_inferred},
+        },
+        .expected_notes={
+            create_invalid_inferred_partner_comparable_note("http://example.org/P2"),
+            create_inferred_partner_comparable_note("http://example.org/P3"),
+            create_invalid_stated_partner_comparable_note("http://example.org/P4")
+        }
     }
 };
 
