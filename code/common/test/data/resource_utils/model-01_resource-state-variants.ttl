@@ -1,0 +1,102 @@
+
+# +---------++------------+-----------++-----------+-----------+-----------++----------+
+# | Variant || Referenced | Described || Described | Described | Described || Comment  |
+# |         ||            |           || Typed     | Mistyped  | Untyped   ||          |
+# +---------++------------+-----------++-----------+-----------+-----------++----------+
+# | V101    || No         | No        || No        | No        | No        || Unknown  |
+# | V102    || No         | Yes       || No        | No        | Yes       || Untyped  |
+# | V103    || No         | Yes       || No        | Yes       | No        || Mistyped |
+# | V104    || No         | Yes       || Yes       | No        | No        || Typed    |
+# +---------++------------+-----------++-----------+-----------+-----------++----------+
+# | V105    || Yes        | No        || No        | No        | No        || Stubbed  |
+# | V106    || Yes        | Yes       || No        | No        | Yes       || Untyped  |
+# | V107    || Yes        | Yes       || No        | Yes       | No        || Mistyped |
+# | V108    || Yes        | Yes       || Yes       | No        | No        || Typed    |
+# +---------++------------+-----------++-----------+-----------+-----------++----------+
+#
+# Note:
+#     Variants V103 and V104 (described) define the (?person gx:birthDate ?date) triple in addition
+#     to the (?person rdf:type ?type) triple, while variants V107 and V108 include the rdf:type
+#     triple only.
+
+@prefix gx: <http://gedcomx.org/> .
+@prefix ex: <http://example.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+###################################################################################################
+# V101: referenced=no, described=no
+###################################################################################################
+
+# ex:V101P1 is not referenced and not described, i.e. doesn't appear in the dataset at all
+
+###################################################################################################
+# V102: referenced=no, described=yes (untyped)
+###################################################################################################
+
+ex:V102P1 gx:birthDate "1966-03-17"^^xsd:date .
+
+###################################################################################################
+# V103: referenced=no, described=yes (mistyped)
+###################################################################################################
+
+ex:V103P1 a gx:Relationship ;
+    gx:birthDate "1917-11-02"^^xsd:date .
+
+###################################################################################################
+# V104: referenced=no, described=yes (typed)
+###################################################################################################
+
+ex:V104P1 a gx:Person ;
+    gx:birthDate "1991-05-09"^^xsd:date .
+
+###################################################################################################
+# V105: referenced=yes, described=no
+###################################################################################################
+
+# ex:V105P1 is not described but is referenced in the V105R1
+
+ex:V105P2 a gx:Person .
+
+ex:V105R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V105P1 ;
+    gx:person2 ex:V105P2 .
+
+###################################################################################################
+# V106: referenced=yes, described=yes (untyped)
+###################################################################################################
+
+ex:V106P1 gx:birthDate "1936-10-23"^^xsd:date .
+
+ex:V106P2 a gx:Person .
+
+ex:V106R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V106P1 ;
+    gx:person2 ex:V106P2 .
+
+###################################################################################################
+# V107: referenced=yes, described=yes (mistyped)
+###################################################################################################
+
+ex:V107P1 a gx:Relationship .
+
+ex:V107P2 a gx:Person .
+
+ex:V107R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V107P1 ;
+    gx:person2 ex:V107P2 .
+
+###################################################################################################
+# V108: referenced=yes, described=yes (typed)
+###################################################################################################
+
+ex:V108P1 a gx:Person .
+
+ex:V108P2 a gx:Person .
+
+ex:V108R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V108P1 ;
+    gx:person2 ex:V108P2 .

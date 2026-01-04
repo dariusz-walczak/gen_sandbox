@@ -6,7 +6,9 @@
 #include "common/resource_utils.hpp"
 #include "common/person.hpp"
 
+#include "test/tools/application.hpp"
 #include "test/tools/assertions.hpp"
+#include "test/tools/redland.hpp"
 
 //  The extract_uri_str_seq function tests
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
@@ -171,3 +173,97 @@ INSTANTIATE_TEST_SUITE_P(
     ParamNameGen);
 
 } // namespace test::suite_extract_uri_str_seq
+
+//  The retrieve_resource_described_flag function tests
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
+
+namespace test::suite_retrieve_resource_described_flag
+{
+
+struct Param
+{
+    const char* case_name;
+    const char* data_file;
+    const char* proband_uri;
+    const bool expected_flag;
+};
+
+std::string ParamNameGen(const ::testing::TestParamInfo<Param>& info)
+{
+    return { info.param.case_name };
+}
+
+class Resource_RetrieveResourceDescribedFlag_ValidInput : public ::testing::TestWithParam<Param> {};
+
+TEST_P(Resource_RetrieveResourceDescribedFlag_ValidInput, NormalSuccessCases)
+{
+    const Param& param = GetParam();
+    tools::scoped_redland_ctx ctx = tools::initialize_redland_ctx();
+    tools::load_rdf(ctx->world, ctx->model, tools::get_program_path() / param.data_file);
+
+    const auto resource = std::make_shared<common::Resource>(param.proband_uri);
+
+    const bool actual_flag =
+        common::retrieve_resource_described_flag(resource.get(), ctx->world, ctx->model);
+
+    EXPECT_EQ(actual_flag, param.expected_flag);
+}
+
+const std::vector<Param> g_normal_success_cases_params{
+    {
+        .case_name="NotReferencedNotDescribed",
+        .data_file="data/resource_utils/model-01_resource-state-variants.ttl",
+        .proband_uri="http://example.org/V101P1",
+        .expected_flag=false
+    },
+    {
+        .case_name="NotReferencedUntyped",
+        .data_file="data/resource_utils/model-01_resource-state-variants.ttl",
+        .proband_uri="http://example.org/V102P1",
+        .expected_flag=true
+    },
+    {
+        .case_name="NotReferencedMistyped",
+        .data_file="data/resource_utils/model-01_resource-state-variants.ttl",
+        .proband_uri="http://example.org/V103P1",
+        .expected_flag=true
+    },
+    {
+        .case_name="NotReferencedTyped",
+        .data_file="data/resource_utils/model-01_resource-state-variants.ttl",
+        .proband_uri="http://example.org/V104P1",
+        .expected_flag=true
+    },
+    {
+        .case_name="ReferencedNotDescribed",
+        .data_file="data/resource_utils/model-01_resource-state-variants.ttl",
+        .proband_uri="http://example.org/V105P1",
+        .expected_flag=false
+    },
+    {
+        .case_name="ReferencedUntyped",
+        .data_file="data/resource_utils/model-01_resource-state-variants.ttl",
+        .proband_uri="http://example.org/V106P1",
+        .expected_flag=true
+    },
+    {
+        .case_name="ReferencedMistyped",
+        .data_file="data/resource_utils/model-01_resource-state-variants.ttl",
+        .proband_uri="http://example.org/V107P1",
+        .expected_flag=true
+    },
+    {
+        .case_name="ReferencedTyped",
+        .data_file="data/resource_utils/model-01_resource-state-variants.ttl",
+        .proband_uri="http://example.org/V108P1",
+        .expected_flag=true
+    }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    Resource_RetrieveResourceDescribedFlag_ValidInput,
+    ::testing::ValuesIn(g_normal_success_cases_params),
+    ParamNameGen);
+
+} // namespace test::suite_retrieve_resource_described_flag
