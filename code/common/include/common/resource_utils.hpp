@@ -8,6 +8,9 @@
 namespace common
 {
 
+bool retrieve_resource_described_flag(
+    const common::Resource* resource, librdf_world* world, librdf_model* model);
+
 template<typename T>
 struct is_shared_resource : std::false_type {};
 
