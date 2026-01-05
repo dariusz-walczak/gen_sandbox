@@ -33,12 +33,12 @@ void collect_dependent_resources(
 
     for (const auto& person : persons)
     {
-        if (ask_resource_referenced(world, model, person))
+        if (ask_resource_described(person, world, model))
         {
             data_file_deps[*person].insert(data_file_path);
 
             spdlog::debug(
-                "{}: {} is referenced in {}",
+                "{}: {} is described in {}",
                 __func__, person->get_unique_id(), data_file_path);
         }
     }

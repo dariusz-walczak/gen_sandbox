@@ -174,10 +174,10 @@ INSTANTIATE_TEST_SUITE_P(
 
 } // namespace test::suite_extract_uri_str_seq
 
-//  The retrieve_resource_described_flag function tests
+//  The ask_resource_described function tests
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
 
-namespace test::suite_retrieve_resource_described_flag
+namespace test::suite_ask_resource_described
 {
 
 struct Param
@@ -204,7 +204,7 @@ TEST_P(Resource_RetrieveResourceDescribedFlag_ValidInput, NormalSuccessCases)
     const auto resource = std::make_shared<common::Resource>(param.proband_uri);
 
     const bool actual_flag =
-        common::retrieve_resource_described_flag(resource.get(), ctx->world, ctx->model);
+        common::ask_resource_described(resource.get(), ctx->world, ctx->model);
 
     EXPECT_EQ(actual_flag, param.expected_flag);
 }
@@ -266,4 +266,4 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::ValuesIn(g_normal_success_cases_params),
     ParamNameGen);
 
-} // namespace test::suite_retrieve_resource_described_flag
+} // namespace test::suite_ask_resource_described

@@ -1,10 +1,11 @@
 #include "common/resource_utils.hpp"
 
+#include <fmt/format.h>
 
 namespace common
 {
 
-bool retrieve_resource_described_flag(
+bool ask_resource_described(
     const common::Resource* resource, librdf_world* world, librdf_model* model)
 {
     if (!resource)
@@ -15,6 +16,12 @@ bool retrieve_resource_described_flag(
                 "Precondition failure: resource={} must satisfy !nullptr", fmt::ptr(resource)));
     }
 
+    return ask_resource_described(resource->get_uri_str(), world, model);
+}
+
+bool ask_resource_described(
+    const std::string_view resource_uri, librdf_world* world, librdf_model* model)
+{
     if (!world)
     {
         throw common_exception(
@@ -39,24 +46,24 @@ bool retrieve_resource_described_flag(
      *     https://librdf.org/rasqal/. The `ASK` query also results in simpler C++ code (no need to
      *     construct `common::data_table`). */
 
-    const std::string query = R"(
-        ASK
-        {
-            <)" + resource->get_uri_str() + R"(> ?p ?o
-        }
-    )";
-
     const char* query_id = "retrieve resource described flag";
+    constexpr std::string_view query_tmpl = R"(
+        ASK
+        {{
+            <{res}> ?p ?o
+        }}
+    )";
+    const std::string query = fmt::format(query_tmpl, fmt::arg("res", resource_uri));
 
     spdlog::debug("{}: The '{}' query: {}", __func__, query_id, query);
 
-    common::exec_query_result res = common::exec_query(world, model, query, query_id);
+    common::exec_query_result query_result = common::exec_query(world, model, query, query_id);
 
-    bool response = common::extract_boolean_result(res->results);
+    bool ask_result = common::extract_boolean_result(query_result->results);
 
-    spdlog::debug("{}: The ask query result is '{}'", __func__, response ? "true" : "false");
+    spdlog::debug("{}: The ask query result is '{}'", __func__, ask_result ? "true" : "false");
 
-    return response;
+    return ask_result;
 }
 
 } // namespace common

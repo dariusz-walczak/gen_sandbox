@@ -65,24 +65,4 @@ common::data_table retrieve_related_persons(librdf_world* world, librdf_model* m
     return std::get<1>(data_tuple);
 }
 
-bool ask_resource_referenced(
-    librdf_world* world, librdf_model* model, const std::string& resource_uri)
-{
-    spdlog::trace("{}: Entry checkpoint", __func__);
-
-    const std::string query = R"(
-        ASK WHERE {
-            <)" + resource_uri + R"(> ?predicate ?object
-        })";
-
-    spdlog::debug("{}: The query: {}", __func__, query);
-
-    common::exec_query_result result = common::exec_query(world, model, query, __func__);
-    bool response = common::extract_boolean_result(result->results);
-
-    spdlog::debug("{}: The ask query result is '{}'", __func__, response ? "true" : "false");
-
-    return response;
-}
-
 } // namespace person
