@@ -189,6 +189,7 @@ struct Param
     const bool expected_described_flag;
     const bool expected_referenced_flag;
     const bool expected_untyped_flag;
+    const bool expected_mistyped_flag;
 };
 
 std::string ParamNameGen(const ::testing::TestParamInfo<Param>& info)
@@ -212,10 +213,14 @@ TEST_P(Resource_AskResourceDescribedReferenced_ValidInput, NormalSuccessCases)
         common::ask_resource_referenced(resource.get(), ctx->world, ctx->model);
     const bool actual_untyped_flag =
         common::ask_resource_untyped(resource.get(), ctx->world, ctx->model);
+    const bool actual_mistyped_flag =
+        common::ask_resource_mistyped(
+            resource.get(), common::k_person_type_uri, ctx->world, ctx->model);
 
     EXPECT_EQ(actual_described_flag, param.expected_described_flag);
     EXPECT_EQ(actual_referenced_flag, param.expected_referenced_flag);
     EXPECT_EQ(actual_untyped_flag, param.expected_untyped_flag);
+    EXPECT_EQ(actual_mistyped_flag, param.expected_mistyped_flag);
 }
 
 const std::vector<Param> g_normal_success_cases_params{
@@ -225,7 +230,8 @@ const std::vector<Param> g_normal_success_cases_params{
         .proband_uri="http://example.org/V101P1",
         .expected_described_flag=false,
         .expected_referenced_flag=false,
-        .expected_untyped_flag=false
+        .expected_untyped_flag=false,
+        .expected_mistyped_flag=false
     },
     {
         .case_name="NotReferencedUntyped",
@@ -233,7 +239,8 @@ const std::vector<Param> g_normal_success_cases_params{
         .proband_uri="http://example.org/V102P1",
         .expected_described_flag=true,
         .expected_referenced_flag=false,
-        .expected_untyped_flag=true
+        .expected_untyped_flag=true,
+        .expected_mistyped_flag=false
     },
     {
         .case_name="NotReferencedMistyped",
@@ -241,7 +248,8 @@ const std::vector<Param> g_normal_success_cases_params{
         .proband_uri="http://example.org/V103P1",
         .expected_described_flag=true,
         .expected_referenced_flag=false,
-        .expected_untyped_flag=false
+        .expected_untyped_flag=false,
+        .expected_mistyped_flag=true
     },
     {
         .case_name="NotReferencedTyped",
@@ -249,7 +257,8 @@ const std::vector<Param> g_normal_success_cases_params{
         .proband_uri="http://example.org/V104P1",
         .expected_described_flag=true,
         .expected_referenced_flag=false,
-        .expected_untyped_flag=false
+        .expected_untyped_flag=false,
+        .expected_mistyped_flag=false
     },
     {
         .case_name="ReferencedNotDescribed",
@@ -257,7 +266,8 @@ const std::vector<Param> g_normal_success_cases_params{
         .proband_uri="http://example.org/V105P1",
         .expected_described_flag=false,
         .expected_referenced_flag=true,
-        .expected_untyped_flag=false
+        .expected_untyped_flag=false,
+        .expected_mistyped_flag=false
     },
     {
         .case_name="ReferencedUntyped",
@@ -265,7 +275,8 @@ const std::vector<Param> g_normal_success_cases_params{
         .proband_uri="http://example.org/V106P1",
         .expected_described_flag=true,
         .expected_referenced_flag=true,
-        .expected_untyped_flag=true
+        .expected_untyped_flag=true,
+        .expected_mistyped_flag=false
     },
     {
         .case_name="ReferencedMistyped",
@@ -273,7 +284,8 @@ const std::vector<Param> g_normal_success_cases_params{
         .proband_uri="http://example.org/V107P1",
         .expected_described_flag=true,
         .expected_referenced_flag=true,
-        .expected_untyped_flag=false
+        .expected_untyped_flag=false,
+        .expected_mistyped_flag=true
     },
     {
         .case_name="ReferencedTyped",
@@ -281,7 +293,8 @@ const std::vector<Param> g_normal_success_cases_params{
         .proband_uri="http://example.org/V108P1",
         .expected_described_flag=true,
         .expected_referenced_flag=true,
-        .expected_untyped_flag=false
+        .expected_untyped_flag=false,
+        .expected_mistyped_flag=false
     }
 };
 
