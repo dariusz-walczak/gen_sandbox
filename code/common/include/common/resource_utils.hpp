@@ -22,6 +22,13 @@ bool ask_resource_referenced(
     const std::string_view resource_uri, librdf_world* world, librdf_model* model);
 
 
+bool ask_resource_untyped(
+    const common::Resource* resource, librdf_world* world, librdf_model* model);
+
+bool ask_resource_untyped(
+    const std::string_view resource_uri, librdf_world* world, librdf_model* model);
+
+
 template<typename T>
 struct is_shared_resource : std::false_type {};
 
