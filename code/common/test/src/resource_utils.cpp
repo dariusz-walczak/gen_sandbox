@@ -188,6 +188,7 @@ struct Param
 
     const bool expected_described_flag;
     const bool expected_referenced_flag;
+    const bool expected_untyped_flag;
 };
 
 std::string ParamNameGen(const ::testing::TestParamInfo<Param>& info)
@@ -209,9 +210,12 @@ TEST_P(Resource_AskResourceDescribedReferenced_ValidInput, NormalSuccessCases)
         common::ask_resource_described(resource.get(), ctx->world, ctx->model);
     const bool actual_referenced_flag =
         common::ask_resource_referenced(resource.get(), ctx->world, ctx->model);
+    const bool actual_untyped_flag =
+        common::ask_resource_untyped(resource.get(), ctx->world, ctx->model);
 
     EXPECT_EQ(actual_described_flag, param.expected_described_flag);
     EXPECT_EQ(actual_referenced_flag, param.expected_referenced_flag);
+    EXPECT_EQ(actual_untyped_flag, param.expected_untyped_flag);
 }
 
 const std::vector<Param> g_normal_success_cases_params{
@@ -220,56 +224,64 @@ const std::vector<Param> g_normal_success_cases_params{
         .data_file="data/resource_utils/model-01_resource-state-variants.ttl",
         .proband_uri="http://example.org/V101P1",
         .expected_described_flag=false,
-        .expected_referenced_flag=false
+        .expected_referenced_flag=false,
+        .expected_untyped_flag=false
     },
     {
         .case_name="NotReferencedUntyped",
         .data_file="data/resource_utils/model-01_resource-state-variants.ttl",
         .proband_uri="http://example.org/V102P1",
         .expected_described_flag=true,
-        .expected_referenced_flag=false
+        .expected_referenced_flag=false,
+        .expected_untyped_flag=true
     },
     {
         .case_name="NotReferencedMistyped",
         .data_file="data/resource_utils/model-01_resource-state-variants.ttl",
         .proband_uri="http://example.org/V103P1",
         .expected_described_flag=true,
-        .expected_referenced_flag=false
+        .expected_referenced_flag=false,
+        .expected_untyped_flag=false
     },
     {
         .case_name="NotReferencedTyped",
         .data_file="data/resource_utils/model-01_resource-state-variants.ttl",
         .proband_uri="http://example.org/V104P1",
         .expected_described_flag=true,
-        .expected_referenced_flag=false
+        .expected_referenced_flag=false,
+        .expected_untyped_flag=false
     },
     {
         .case_name="ReferencedNotDescribed",
         .data_file="data/resource_utils/model-01_resource-state-variants.ttl",
         .proband_uri="http://example.org/V105P1",
         .expected_described_flag=false,
-        .expected_referenced_flag=true
+        .expected_referenced_flag=true,
+        .expected_untyped_flag=false
     },
     {
         .case_name="ReferencedUntyped",
         .data_file="data/resource_utils/model-01_resource-state-variants.ttl",
         .proband_uri="http://example.org/V106P1",
         .expected_described_flag=true,
-        .expected_referenced_flag=true
+        .expected_referenced_flag=true,
+        .expected_untyped_flag=true
     },
     {
         .case_name="ReferencedMistyped",
         .data_file="data/resource_utils/model-01_resource-state-variants.ttl",
         .proband_uri="http://example.org/V107P1",
         .expected_described_flag=true,
-        .expected_referenced_flag=true
+        .expected_referenced_flag=true,
+        .expected_untyped_flag=false
     },
     {
         .case_name="ReferencedTyped",
         .data_file="data/resource_utils/model-01_resource-state-variants.ttl",
         .proband_uri="http://example.org/V108P1",
         .expected_described_flag=true,
-        .expected_referenced_flag=true
+        .expected_referenced_flag=true,
+        .expected_untyped_flag=false
     }
 };
 

@@ -46,7 +46,7 @@ bool ask_resource_described(
      *     https://librdf.org/rasqal/. The `ASK` query also results in simpler C++ code (no need to
      *     construct `common::data_table`). */
 
-    const char* query_id = "retrieve resource described flag";
+    const char* query_id = "ask resource described";
     constexpr std::string_view query_tmpl = R"(
         ASK
         {{
@@ -99,11 +99,66 @@ bool ask_resource_referenced(
                 "Precondition failure: model={} must satisfy !nullptr", fmt::ptr(model)));
     }
 
-    const char* query_id = "retrieve resource referenced flag";
+    const char* query_id = "ask resource referenced";
     constexpr std::string_view query_tmpl = R"(
         ASK
         {{
             ?s ?p <{res}>
+        }}
+    )";
+    const std::string query = fmt::format(query_tmpl, fmt::arg("res", resource_uri));
+
+    spdlog::debug("{}: The '{}' query: {}", __func__, query_id, query);
+
+    common::exec_query_result query_result = common::exec_query(world, model, query, query_id);
+
+    bool ask_result = common::extract_boolean_result(query_result->results);
+
+    spdlog::debug("{}: The ask query result is '{}'", __func__, ask_result ? "true" : "false");
+
+    return ask_result;
+}
+
+bool ask_resource_untyped(
+    const common::Resource* resource, librdf_world* world, librdf_model* model)
+{
+    if (!resource)
+    {
+        throw common_exception(
+            common_exception::error_code::input_contract_error,
+            fmt::format(
+                "Precondition failure: resource={} must satisfy !nullptr", fmt::ptr(resource)));
+    }
+
+    return ask_resource_untyped(resource->get_uri_str(), world, model);
+}
+
+bool ask_resource_untyped(
+    const std::string_view resource_uri, librdf_world* world, librdf_model* model)
+{
+    if (!world)
+    {
+        throw common_exception(
+            common_exception::error_code::input_contract_error,
+            fmt::format(
+                "Precondition failure: world={} must satisfy !nullptr", fmt::ptr(world)));
+    }
+
+    if (!model)
+    {
+        throw common_exception(
+            common_exception::error_code::input_contract_error,
+            fmt::format(
+                "Precondition failure: model={} must satisfy !nullptr", fmt::ptr(model)));
+    }
+
+    const char* query_id = "ask resource untyped";
+    constexpr std::string_view query_tmpl = R"(
+        ASK
+        {{
+            <{res}> ?p ?o .
+            OPTIONAL {{ <{res}> a ?type }}
+            FILTER(!BOUND(?type))
         }}
     )";
     const std::string query = fmt::format(query_tmpl, fmt::arg("res", resource_uri));
