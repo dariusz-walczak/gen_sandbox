@@ -6,6 +6,7 @@
 
 #include "common/file_system_utils.hpp"
 #include "common/person.hpp"
+#include "common/resource_utils.hpp"
 #include "common/redland_utils.hpp"
 #include "person/error.hpp"
 #include "person/command/common.hpp"
@@ -33,7 +34,7 @@ void collect_dependent_resources(
 
     for (const auto& person : persons)
     {
-        if (ask_resource_described(person, world, model))
+        if (common::ask_resource_described(person.get(), world, model))
         {
             data_file_deps[*person].insert(data_file_path);
 
