@@ -22,6 +22,7 @@ inline constexpr std::string_view k_invalid_gender_note_id = "INVALID_GENDER";
 inline constexpr std::string_view k_unspecified_gender_note_id = "UNSPECIFIED_GENDER";
 inline constexpr std::string_view k_gender_uri_male = "http://gedcomx.org/Male";
 inline constexpr std::string_view k_gender_uri_female = "http://gedcomx.org/Female";
+inline constexpr std::string_view k_person_type_uri = "http://gedcomx.org/Person";
 
 enum class Gender : std::uint8_t
 {

@@ -29,6 +29,15 @@ bool ask_resource_untyped(
     const std::string_view resource_uri, librdf_world* world, librdf_model* model);
 
 
+bool ask_resource_mistyped(
+    const common::Resource* resource, const std::string_view expected_type_uri,
+    librdf_world* world, librdf_model* model);
+
+bool ask_resource_mistyped(
+    const std::string_view resource_uri, const std::string_view expected_type_uri,
+    librdf_world* world, librdf_model* model);
+
+
 template<typename T>
 struct is_shared_resource : std::false_type {};
 
