@@ -1,4 +1,6 @@
-## Described Resource
+# Terms and Definitions
+
+## Described Resource {#described_resource}
 
 An IRI `res` is a **Described Resource** in a graph `G` iff there exists at least one RDF triple in `G` with `res` in the subject position, i.e.:
 
@@ -6,7 +8,7 @@ An IRI `res` is a **Described Resource** in a graph `G` iff there exists at leas
 ∃ pred, obj : ( res, pred, obj ) ∈ G
 ```
 
-## Non-Person Resource
+## Non-Person Resource {#non-person_resource}
 
 An IRI `res` is a **Non-Person Resource** in a graph `G` iff it is **Typed** in `G` and it is not typed as `gx:Person` in `G`, i.e.:
 
@@ -14,7 +16,7 @@ An IRI `res` is a **Non-Person Resource** in a graph `G` iff it is **Typed** in 
 (∃ obj : ( res, rdf:type, obj ) ∈ G) ∧ ¬( (res, rdf:type, gx:Person) ∈ G )
 ```
 
-## Person Resource
+## Person Resource {#person_resource}
 
 An IRI `res` is a **Person Resource** in a graph `G` iff it is typed as `gx:Person` in `G`, i.e.:
 
@@ -22,7 +24,7 @@ An IRI `res` is a **Person Resource** in a graph `G` iff it is typed as `gx:Pers
 ( res, rdf:type, gx:Person ) ∈ G
 ```
 
-## Referenced Resource
+## Referenced Resource {#referenced_resource}
 
 An IRI `res` is a **Referenced Resource** in a graph `G` iff there exists at least one RDF triple in `G` with `res` in the object position, i.e.:
 
@@ -30,7 +32,7 @@ An IRI `res` is a **Referenced Resource** in a graph `G` iff there exists at lea
 ∃ subj, pred : ( subj, pred, res ) ∈ G
 ```
 
-## Stubbed Resource
+## Stubbed Resource {#stubbed_resource}
 
 An IRI `res` is a **Stubbed Resource** in a graph `G` iff it is **Referenced** but not **Described** in `G`, i.e.:
 
@@ -38,7 +40,7 @@ An IRI `res` is a **Stubbed Resource** in a graph `G` iff it is **Referenced** b
 (∃ subj, pred : ( subj, pred, res ) ∈ G) ∧ ¬(∃ pred, obj : ( res, pred, obj ) ∈ G)
 ```
 
-## Typed Resource
+## Typed Resource {#typed_resource}
 
 An IRI `res` is a **Typed Resource** in a graph `G` iff there exists at least one RDF triple in `G` with `res` in the subject position and the `rdf:type` in the predicate position, i.e.:
 
@@ -46,7 +48,24 @@ An IRI `res` is a **Typed Resource** in a graph `G` iff there exists at least on
 ∃ obj : ( res, rdf:type, obj ) ∈ G
 ```
 
-## Untyped Resource
+## Unknown Gender
+
+A **Person Resource** `person` has an **Unknown Gender** in a graph `G` iff `person` has no `gx:gender` value in `G`, or its `gx:gender` value has no `gx:type` in `G`, i.e.:
+
+```
+( person, rdf:type, gx:Person ) ∈ G ∧
+(
+  ¬∃ gender : ( person, gx:gender, gender ) ∈ G
+  ∨
+  (
+    ∃ gender : ( person, gx:gender, gender ) ∈ G
+    ∧
+    ¬∃ type : ( gender, gx:type, type ) ∈ G
+  )
+)
+```
+
+## Untyped Resource {#untyped_resource}
 
 An IRI `res` is an **Untyped Resource** in a graph `G` iff it is **Described** but not **Typed** in `G`, i.e.:
 
@@ -54,9 +73,9 @@ An IRI `res` is an **Untyped Resource** in a graph `G` iff it is **Described** b
 (∃ pred, obj : ( res, pred, obj ) ∈ G) ∧ ¬(∃ obj : ( res, rdf:type, obj ) ∈ G)
 ```
 
-## Stated Couple
+## Stated Couple {#stated_couple}
 
-An unordered pair of IRIs `(person1, person2)` is a **Stated Couple** in a graph `G` iff there exists a `gx:Relationship` resource `rel` in `G` that states a `gx:Couple` relationship between `p1` and `p2` (in any order), i.e.:
+An unordered pair of IRIs `(person1, person2)` is a **Stated Couple** in a graph `G` iff there exists a `gx:Relationship` resource `rel` in `G` that states a `gx:Couple` relationship between `person1` and `person2` (in any order), i.e.:
 
 ```
 ∃ rel :
@@ -69,7 +88,7 @@ An unordered pair of IRIs `(person1, person2)` is a **Stated Couple** in a graph
   )
 ```
 
-## Inferred Couple
+## Inferred Couple {#inferred_couple}
 
 An unordered pair of IRIs `(person1, person2)` is an **Inferred Couple** in a graph `G` iff there exists at least one child IRI `child` and two `gx:Relationship` resources `rel1`, `rel2` in `G` such that `person1` and `person2` are both parents of `child` via `gx:ParentChild` relationships, i.e.:
 
