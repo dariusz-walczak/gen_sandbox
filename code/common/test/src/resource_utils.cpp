@@ -8,6 +8,7 @@
 
 #include "test/tools/application.hpp"
 #include "test/tools/assertions.hpp"
+#include "test/tools/gtest.hpp"
 #include "test/tools/redland.hpp"
 
 //  The extract_uri_str_seq function tests
@@ -22,11 +23,6 @@ struct Param
     std::vector<std::shared_ptr<common::Resource>> resources;
     std::vector<std::string> expected_uris;
 };
-
-std::string ParamNameGen(const ::testing::TestParamInfo<Param>& info)
-{
-    return { info.param.case_name };
-}
 
 class Resource_ExtractUriStrSeq_ValidInput : public ::testing::TestWithParam<Param> {};
 
@@ -90,7 +86,7 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     Resource_ExtractUriStrSeq_ValidInput,
     ::testing::ValuesIn(g_normal_success_cases_params),
-    ParamNameGen);
+    tools::ParamNameGen<Param>);
 
 TEST_F(Resource_ExtractUriStrSeq_ValidInput, ResourceSetSuccessCase)
 {
@@ -170,7 +166,7 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     Resource_ExtractUriStrSeq_InvalidInput,
     ::testing::ValuesIn(g_null_resource_cases_params),
-    ParamNameGen);
+    tools::ParamNameGen<Param>);
 
 } // namespace test::suite_extract_uri_str_seq
 
@@ -197,11 +193,6 @@ struct Param
     const bool expected_mistyped_flag;
     const bool expected_typed_flag;
 };
-
-std::string ParamNameGen(const ::testing::TestParamInfo<Param>& info)
-{
-    return { info.param.case_name };
-}
 
 class Resource_AskResourceState : public ::testing::TestWithParam<Param> {};
 
@@ -320,10 +311,10 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     Resource_AskResourceState,
     ::testing::ValuesIn(g_normal_success_cases_params),
-    ParamNameGen);
+    tools::ParamNameGen<Param>);
 
-// Check if the retrieve_person_partners function throws the person_exception when any of its
-//  arguments is null
+/** @brief Check if functions from the ask resource state family signal input contract error when
+ *      any of their pointer arguments are null. */
 TEST_F(Resource_AskResourceState, InputContractViolations)
 {
     tools::scoped_redland_ctx ctx = tools::initialize_redland_ctx();
