@@ -59,9 +59,9 @@ bool ask_resource_described(
 
     common::exec_query_result query_result = common::exec_query(world, model, query, query_id);
 
-    bool ask_result = common::extract_boolean_result(query_result->results);
+    const bool ask_result = common::extract_boolean_result(query_result->results);
 
-    spdlog::debug("{}: The ask query result is '{}'", __func__, ask_result ? "true" : "false");
+    spdlog::debug("{}: The ask query result is '{}'", __func__, ask_result);
 
     return ask_result;
 }
@@ -128,9 +128,9 @@ bool ask_resource_mistyped(
 
     common::exec_query_result query_result = common::exec_query(world, model, query, query_id);
 
-    bool ask_result = common::extract_boolean_result(query_result->results);
+    const bool ask_result = common::extract_boolean_result(query_result->results);
 
-    spdlog::debug("{}: The ask query result is '{}'", __func__, ask_result ? "true" : "false");
+    spdlog::debug("{}: The ask query result is '{}'", __func__, ask_result);
 
     return ask_result;
 }
@@ -181,9 +181,9 @@ bool ask_resource_referenced(
 
     common::exec_query_result query_result = common::exec_query(world, model, query, query_id);
 
-    bool ask_result = common::extract_boolean_result(query_result->results);
+    const bool ask_result = common::extract_boolean_result(query_result->results);
 
-    spdlog::debug("{}: The ask query result is '{}'", __func__, ask_result ? "true" : "false");
+    spdlog::debug("{}: The ask query result is '{}'", __func__, ask_result);
 
     return ask_result;
 }
@@ -239,9 +239,9 @@ bool ask_resource_typed(
 
     common::exec_query_result query_result = common::exec_query(world, model, query, query_id);
 
-    bool ask_result = common::extract_boolean_result(query_result->results);
+    const bool ask_result = common::extract_boolean_result(query_result->results);
 
-    spdlog::debug("{}: The ask query result is '{}'", __func__, ask_result ? "true" : "false");
+    spdlog::debug("{}: The ask query result is '{}'", __func__, ask_result);
 
     return ask_result;
 }
@@ -294,9 +294,9 @@ bool ask_resource_untyped(
 
     common::exec_query_result query_result = common::exec_query(world, model, query, query_id);
 
-    bool ask_result = common::extract_boolean_result(query_result->results);
+    const bool ask_result = common::extract_boolean_result(query_result->results);
 
-    spdlog::debug("{}: The ask query result is '{}'", __func__, ask_result ? "true" : "false");
+    spdlog::debug("{}: The ask query result is '{}'", __func__, ask_result);
 
     return ask_result;
 }
