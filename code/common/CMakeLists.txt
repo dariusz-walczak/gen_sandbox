@@ -21,6 +21,7 @@ add_library(
   src/file_system_utils.cpp
   src/note.cpp
   src/person.cpp
+  src/person_utils.cpp
   src/redland_utils.cpp
   src/resource.cpp
   src/resource_utils.cpp
