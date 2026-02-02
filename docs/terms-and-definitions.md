@@ -15,6 +15,9 @@ An IRI `res` is a **Non-Person Resource** in a graph `G` iff it is **Typed** in 
 ```
 (∃ obj : ( res, rdf:type, obj ) ∈ G) ∧ ¬( (res, rdf:type, gx:Person) ∈ G )
 ```
+## Person {#person}
+
+See: @ref person_resource
 
 ## Person Resource {#person_resource}
 
