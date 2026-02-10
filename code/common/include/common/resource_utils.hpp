@@ -24,10 +24,10 @@ namespace common
  *
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::input_contract_error "input_contract_error")
- *      when any of the input parameters are null
+ *      if any input parameter is null
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::redland_query_error "redland_query_error")
- *      on the SPARQL query execution error
+ *      on SPARQL query execution error
  */
 bool ask_resource_described(
     const common::Resource* resource, librdf_world* world, librdf_model* model);
@@ -51,7 +51,7 @@ bool ask_resource_described(
  *      when the @p world or @p model parameters are null
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::redland_query_error "redland_query_error")
- *      on the SPARQL query execution error
+ *      on SPARQL query execution error
  */
 bool ask_resource_described(
     const std::string_view resource_uri, librdf_world* world, librdf_model* model);
@@ -72,10 +72,10 @@ bool ask_resource_described(
  *
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::input_contract_error "input_contract_error")
- *      when any of the input parameters are null
+ *      if any input parameter is null
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::redland_query_error "redland_query_error")
- *      on the SPARQL query execution error
+ *      on SPARQL query execution error
  */
 bool ask_resource_referenced(
     const common::Resource* resource, librdf_world* world, librdf_model* model);
@@ -99,7 +99,7 @@ bool ask_resource_referenced(
  *      when the @p world or @p model parameters are null
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::redland_query_error "redland_query_error")
- *      on the SPARQL query execution error
+ *      on SPARQL query execution error
  */
 bool ask_resource_referenced(
     const std::string_view resource_uri, librdf_world* world, librdf_model* model);
@@ -118,10 +118,10 @@ bool ask_resource_referenced(
  *
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::input_contract_error "input_contract_error")
- *      when any of the input parameters are null
+ *      if any input parameter is null
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::redland_query_error "redland_query_error")
- *      on the SPARQL query execution error
+ *      on SPARQL query execution error
  */
 bool ask_resource_untyped(
     const common::Resource* resource, librdf_world* world, librdf_model* model);
@@ -140,10 +140,10 @@ bool ask_resource_untyped(
  *
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::input_contract_error "input_contract_error")
- *      when any of the input parameters are null
+ *      if any input parameter is null
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::redland_query_error "redland_query_error")
- *      on the SPARQL query execution error
+ *      on SPARQL query execution error
  */
 bool ask_resource_untyped(
     const std::string_view resource_uri, librdf_world* world, librdf_model* model);
@@ -167,7 +167,7 @@ bool ask_resource_untyped(
  *      when any of the @p resource, @p world, or @p model parameters are null
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::redland_query_error "redland_query_error")
- *      on the SPARQL query execution error
+ *      on SPARQL query execution error
  */
 bool ask_resource_mistyped(
     const common::Resource* resource, const std::string_view expected_type_uri,
@@ -192,7 +192,7 @@ bool ask_resource_mistyped(
  *      when any of the @p world, or @p model parameters are null
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::redland_query_error "redland_query_error")
- *      on the SPARQL query execution error
+ *      on SPARQL query execution error
  */
 bool ask_resource_mistyped(
     const std::string_view resource_uri, const std::string_view expected_type_uri,
@@ -213,7 +213,7 @@ bool ask_resource_mistyped(
  *      when any of the @p resource, @p world, or @p model parameters are null
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::redland_query_error "redland_query_error")
- *      on the SPARQL query execution error
+ *      on SPARQL query execution error
  */
 bool ask_resource_typed(
     const common::Resource* resource, const std::string_view expected_type_uri,
@@ -234,7 +234,7 @@ bool ask_resource_typed(
  *      when any of the @p world, or @p model parameters are null
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::redland_query_error "redland_query_error")
- *      on the SPARQL query execution error
+ *      on SPARQL query execution error
  */
 bool ask_resource_typed(
     const std::string_view resource_uri, const std::string_view expected_type_uri,
