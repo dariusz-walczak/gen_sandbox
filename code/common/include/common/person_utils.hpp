@@ -18,10 +18,10 @@ namespace common
  *
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::input_contract_error "input_contract_error")
- *      when any of the input parameters are null
+ *      if any input parameter is null
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::redland_query_error "redland_query_error")
- *      on the SPARQL query execution error
+ *      on SPARQL query execution error
  */
 bool ask_person_gender_unknown(
     const common::Person* person, librdf_world* world, librdf_model* model);
@@ -37,10 +37,10 @@ bool ask_person_gender_unknown(
  *
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::input_contract_error "input_contract_error")
- *      when any of the input parameters are null
+ *      if any input parameter is null
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::redland_query_error "redland_query_error")
- *      on the SPARQL query execution error
+ *      on SPARQL query execution error
  */
 bool ask_person_gender_unknown(
     const std::string_view person_uri, librdf_world* world, librdf_model* model);
