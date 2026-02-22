@@ -1,0 +1,157 @@
+
+#
+# This dataset defines the remaining retrieve_person_parents test cases (beyond 1A, 1B and 3.2),
+# grouped under the V30x variant family.
+#
+# Test suite construction assumptions:
+# 1. Each variant uses its own proband and its own resources (no cross-variant sharing).
+# 2. The proband is always a Person Resource (typed as gx:Person).
+# 3. A stated parent-child relationship is represented as:
+#      (?rel a gx:Relationship ; gx:type gx:ParentChild ; gx:person1 ?parent ; gx:person2 ?proband)
+#    where gx:person1 is the parent role and gx:person2 is the child role.
+# 4. The function is expected to return ALL parents in-role, regardless of resource state and
+#    gender-state, with duplicates removed and order unspecified.
+#
+# Variants and expected result sets:
+# - V301: >2 parents, all valid, all same gender (ensure no gender-based collapsing / truncation)
+#         proband ex:V301P0 -> { ex:V301P1, ex:V301P2, ex:V301P3 }
+# - V302: >2 parents, mix valid + non-valid (ensure no filtering and no truncation)
+#         proband ex:V302P0 -> { ex:V302P1, ex:V302P2, ex:V302P3, ex:V302P4, ex:V302P5 }
+# - V303: Leakage (relationship-type filtering): relationships involving the proband but NOT parent-child
+#         must not contribute any parents
+#         proband ex:V303P0 -> { ex:V303P1, ex:V303P2 }
+# - V304: Role-direction: swapped roles must not contribute any parents
+#         proband ex:V304P0 -> { ex:V304P1 }
+# - V305: Empty result: proband exists but has no parent-child relationships
+#         proband ex:V305P0 -> { }
+# - V306: Duplicate removal: same parent referenced by multiple parent-child relationships returned once
+#         proband ex:V306P0 -> { ex:V306P1, ex:V306P2 }
+#
+# See docs/terms-and-definitions.md and docs/person-gender.md for terms definitions.
+#
+
+@prefix gx:  <http://gedcomx.org/> .
+@prefix ex:  <http://example.org/> .
+
+######################################################################
+# V301: Three parents, all valid, all same gender
+######################################################################
+
+ex:V301P0 a gx:Person .
+
+ex:V301P1 a gx:Person ; gx:gender ex:V301G1 .
+ex:V301G1 a gx:Gender ; gx:type gx:Male .
+
+ex:V301P2 a gx:Person ; gx:gender ex:V301G2 .
+ex:V301G2 a gx:Gender ; gx:type gx:Male .
+
+ex:V301P3 a gx:Person ; gx:gender ex:V301G3 .
+ex:V301G3 a gx:Gender ; gx:type gx:Male .
+
+ex:V301R1 a gx:Relationship ; gx:type gx:ParentChild ; gx:person1 ex:V301P1 ; gx:person2 ex:V301P0 .
+ex:V301R2 a gx:Relationship ; gx:type gx:ParentChild ; gx:person1 ex:V301P2 ; gx:person2 ex:V301P0 .
+ex:V301R3 a gx:Relationship ; gx:type gx:ParentChild ; gx:person1 ex:V301P3 ; gx:person2 ex:V301P0 .
+
+######################################################################
+# V302: Five parents, mix of valid and non-valid (total > 2)
+######################################################################
+
+ex:V302P0 a gx:Person .
+
+# Three valid parents, all same gender (Male)
+ex:V302P1 a gx:Person ; gx:gender ex:V302G1 .
+ex:V302G1 a gx:Gender ; gx:type gx:Male .
+
+ex:V302P2 a gx:Person ; gx:gender ex:V302G2 .
+ex:V302G2 a gx:Gender ; gx:type gx:Male .
+
+ex:V302P3 a gx:Person ; gx:gender ex:V302G3 .
+ex:V302G3 a gx:Gender ; gx:type gx:Male .
+
+# Non-valid parent 4: stubbed (referenced only, no triples with ex:V302P4 as subject)
+
+# Non-valid parent 5: mistyped (Non-Person Resource)
+ex:V302P5 a gx:Relationship ; gx:gender ex:V302G5 .
+ex:V302G5 a gx:Gender ; gx:type gx:Male .
+
+ex:V302R1 a gx:Relationship ; gx:type gx:ParentChild ; gx:person1 ex:V302P1 ; gx:person2 ex:V302P0 .
+ex:V302R2 a gx:Relationship ; gx:type gx:ParentChild ; gx:person1 ex:V302P2 ; gx:person2 ex:V302P0 .
+ex:V302R3 a gx:Relationship ; gx:type gx:ParentChild ; gx:person1 ex:V302P3 ; gx:person2 ex:V302P0 .
+ex:V302R4 a gx:Relationship ; gx:type gx:ParentChild ; gx:person1 ex:V302P4 ; gx:person2 ex:V302P0 .
+ex:V302R5 a gx:Relationship ; gx:type gx:ParentChild ; gx:person1 ex:V302P5 ; gx:person2 ex:V302P0 .
+
+######################################################################
+# V303: Leakage test (relationship-type filtering)
+######################################################################
+
+ex:V303P0 a gx:Person .
+
+# Real parents (should be returned)
+ex:V303P1 a gx:Person ; gx:gender ex:V303G1 .
+ex:V303G1 a gx:Gender ; gx:type gx:Female .
+
+ex:V303P2 a gx:Person ; gx:gender ex:V303G2 .
+ex:V303G2 a gx:Gender ; gx:type gx:Male .
+
+# Noise candidates (must NOT be returned, because the relationships are not parent-child)
+ex:V303P3 a gx:Person ; gx:gender ex:V303G3 .
+ex:V303G3 a gx:Gender ; gx:type gx:Male .
+
+ex:V303P4 a gx:Person ; gx:gender ex:V303G4 .
+ex:V303G4 a gx:Gender ; gx:type gx:Female .
+
+# Correct parent-child relationships
+ex:V303R1 a gx:Relationship ; gx:type gx:ParentChild ; gx:person1 ex:V303P1 ; gx:person2 ex:V303P0 .
+ex:V303R2 a gx:Relationship ; gx:type gx:ParentChild ; gx:person1 ex:V303P2 ; gx:person2 ex:V303P0 .
+
+# Non-parent-child relationships involving the proband (should not contribute)
+ex:V303R3 a gx:Relationship ; gx:type ex:NotParentChild ; gx:person1 ex:V303P3 ; gx:person2 ex:V303P0 .
+ex:V303R4 a gx:Relationship ; gx:person1 ex:V303P4 ; gx:person2 ex:V303P0 .  # gx:type intentionally missing
+
+######################################################################
+# V304: Role-direction test (swapped roles must not contribute)
+######################################################################
+
+ex:V304P0 a gx:Person .
+
+# Real parent (should be returned)
+ex:V304P1 a gx:Person ; gx:gender ex:V304G1 .
+ex:V304G1 a gx:Gender ; gx:type gx:Male .
+
+# Candidate that must NOT be returned if roles are interpreted correctly
+ex:V304P2 a gx:Person ; gx:gender ex:V304G2 .
+ex:V304G2 a gx:Gender ; gx:type gx:Female .
+
+# Correct direction (parent in person1, proband in person2)
+ex:V304R1 a gx:Relationship ; gx:type gx:ParentChild ; gx:person1 ex:V304P1 ; gx:person2 ex:V304P0 .
+
+# Swapped direction (proband in person1, other person in person2)
+ex:V304R2 a gx:Relationship ; gx:type gx:ParentChild ; gx:person1 ex:V304P0 ; gx:person2 ex:V304P2 .
+
+######################################################################
+# V305: Empty result
+######################################################################
+
+ex:V305P0 a gx:Person .
+# No parent-child relationships for ex:V305P0.
+
+######################################################################
+# V306: Duplicate removal
+######################################################################
+
+ex:V306P0 a gx:Person .
+
+# Parent referenced twice (must appear once in result)
+ex:V306P1 a gx:Person ; gx:gender ex:V306G1 .
+ex:V306G1 a gx:Gender ; gx:type gx:Male .
+
+# Another parent referenced once
+ex:V306P2 a gx:Person ; gx:gender ex:V306G2 .
+ex:V306G2 a gx:Gender ; gx:type gx:Female .
+
+# Two parent-child relationships referencing the same parent ex:V306P1
+ex:V306R1 a gx:Relationship ; gx:type gx:ParentChild ; gx:person1 ex:V306P1 ; gx:person2 ex:V306P0 .
+ex:V306R2 a gx:Relationship ; gx:type gx:ParentChild ; gx:person1 ex:V306P1 ; gx:person2 ex:V306P0 .
+
+# One relationship for the other parent
+ex:V306R3 a gx:Relationship ; gx:type gx:ParentChild ; gx:person1 ex:V306P2 ; gx:person2 ex:V306P0 .

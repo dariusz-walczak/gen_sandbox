@@ -1,0 +1,95 @@
+
+#
+# This dataset defines test data representing all gender-states of proband's parents.
+#
+# Test case construction assumptions:
+# 1. The proband is always a Person Resource (typed as gx:Person).
+# 2. Each parent is connected to the proband by a separate stated parent-child relationship:
+# 3. All parents are typed as gx:Person to isolate the impact of gender representation.
+# 4. The set of parents covers the following gender states (see docs/person-gender.md):
+#      - Valid Male
+#      - Valid Female
+#      - Invalid (known gender type not in {gx:Male, gx:Female})
+#      - Unknown1: missing (person gx:gender gender)
+#      - Unknown2: (person gx:gender gender) present, but gender node has neither rdf:type gx:Gender
+#                  nor gx:type
+#      - Unknown3: (person gx:gender gender) present and (gender rdf:type gx:Gender) present, but
+#                  missing (gender gx:type type)
+#      - Unknown4: (person gx:gender gender) present and (gender gx:type gx:Male) present, but
+#                  missing (gender rdf:type gx:Gender)
+# 5. Expected result for proband ex:V102P0 is the set:
+#      { ex:V102P1, ex:V102P2, ex:V102P3, ex:V102P4, ex:V102P5, ex:V102P6, ex:V102P7 }
+#
+
+@prefix gx:  <http://gedcomx.org/> .
+@prefix ex:  <http://example.org/> .
+
+######################################################################
+# V102: Gender-state inclusion (7 parents, 1 proband)
+######################################################################
+
+# Proband (child role)
+ex:V102P0 a gx:Person .
+
+# Parent 1: Valid Male
+ex:V102P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+# Parent 2: Valid Female
+ex:V102P2 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+# Parent 3: Invalid (known but not {gx:Male, gx:Female})
+ex:V102P3 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type ex:NonStandardGender ] .
+
+# Parent 4: Unknown1 (missing gx:gender)
+ex:V102P4 a gx:Person .
+
+# Parent 5: Unknown2 (gx:gender present, but gender node has no rdf:type gx:Gender and no gx:type)
+ex:V102P5 a gx:Person ;
+    gx:gender [] .
+
+# Parent 6: Unknown3 (gx:gender present, gender rdf:type present, but missing gx:type)
+ex:V102P6 a gx:Person ;
+    gx:gender [ a gx:Gender ] .
+
+# Parent 7: Unknown4 (gx:gender present, gx:type present, but missing gender rdf:type gx:Gender)
+ex:V102P7 a gx:Person ;
+    gx:gender [ gx:type gx:Male ] .
+
+# Stated parent-child relationships
+ex:V102R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V102P1 ;
+    gx:person2 ex:V102P0 .
+
+ex:V102R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V102P2 ;
+    gx:person2 ex:V102P0 .
+
+ex:V102R3 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V102P3 ;
+    gx:person2 ex:V102P0 .
+
+ex:V102R4 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V102P4 ;
+    gx:person2 ex:V102P0 .
+
+ex:V102R5 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V102P5 ;
+    gx:person2 ex:V102P0 .
+
+ex:V102R6 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V102P6 ;
+    gx:person2 ex:V102P0 .
+
+ex:V102R7 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V102P7 ;
+    gx:person2 ex:V102P0 .

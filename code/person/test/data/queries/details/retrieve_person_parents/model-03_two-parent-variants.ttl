@@ -1,0 +1,124 @@
+
+#
+# This dataset defines test data representing a subset of high-value two parents per proband cases.
+#
+# Test case construction assumptions:
+# 1. The proband is always a Person Resource (typed as gx:Person).
+# 2. Each parent is connected to the proband by a separate stated parent-child relationship.
+# 3. Valid parent means: a resource typed as gx:Person AND with a valid gender. Any other parent is
+#    Invalid.
+#
+# Variants and expected result sets:
+# - V201: two valid parents
+#         proband ex:V201P0 -> { ex:V201P1, ex:V201P2 }
+# - V202: one valid + one worst-case non-valid (stubbed, no gender triples)
+#         proband ex:V202P0 -> { ex:V202P1, ex:V202P2 }
+# - V203: one valid + one mistyped (Non-Person Resource)
+#         proband ex:V203P0 -> { ex:V203P1, ex:V203P2 }
+# - V204: none valid (different non-valid mechanisms: missing gx:gender vs missing rdf:type)
+#         proband ex:V204P0 -> { ex:V204P1, ex:V204P2 }
+#
+
+@prefix gx:  <http://gedcomx.org/> .
+@prefix ex:  <http://example.org/> .
+
+######################################################################
+# V201: Two parents, both valid
+######################################################################
+
+ex:V201P0 a gx:Person .
+
+ex:V201P1 a gx:Person ;
+    gx:gender ex:V201G1 .
+ex:V201G1 a gx:Gender ;
+    gx:type gx:Male .
+
+ex:V201P2 a gx:Person ;
+    gx:gender ex:V201G2 .
+ex:V201G2 a gx:Gender ;
+    gx:type gx:Female .
+
+ex:V201R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V201P1 ;
+    gx:person2 ex:V201P0 .
+
+ex:V201R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V201P2 ;
+    gx:person2 ex:V201P0 .
+
+######################################################################
+# V202: Two parents, one valid + one worst-case non-valid (stubbed)
+######################################################################
+
+ex:V202P0 a gx:Person .
+
+ex:V202P1 a gx:Person ;
+    gx:gender ex:V202G1 .
+ex:V202G1 a gx:Gender ;
+    gx:type gx:Male .
+
+# ex:V202P2 is stubbed: referenced only (no triples with ex:V202P2 as subject)
+
+ex:V202R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V202P1 ;
+    gx:person2 ex:V202P0 .
+
+ex:V202R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V202P2 ;
+    gx:person2 ex:V202P0 .
+
+######################################################################
+# V203: Two parents, one valid + one mistyped (Non-Person Resource)
+######################################################################
+
+ex:V203P0 a gx:Person .
+
+ex:V203P1 a gx:Person ;
+    gx:gender ex:V203G1 .
+ex:V203G1 a gx:Gender ;
+    gx:type gx:Female .
+
+# Mistyped parent: typed as a Non-Person Resource (here: gx:Relationship)
+ex:V203P2 a gx:Relationship ;
+    gx:gender ex:V203G2 .
+ex:V203G2 a gx:Gender ;
+    gx:type gx:Male .
+
+ex:V203R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V203P1 ;
+    gx:person2 ex:V203P0 .
+
+ex:V203R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V203P2 ;
+    gx:person2 ex:V203P0 .
+
+######################################################################
+# V204: Two parents, none valid (different non-valid mechanisms)
+######################################################################
+
+ex:V204P0 a gx:Person .
+
+# Parent 1: typed Person but Unknown1 gender (missing gx:gender)
+ex:V204P1 a gx:Person .
+
+# Parent 2: untyped (no rdf:type) but otherwise has a valid gender structure
+ex:V204P2
+    gx:gender ex:V204G2 .
+ex:V204G2 a gx:Gender ;
+    gx:type gx:Male .
+
+ex:V204R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V204P1 ;
+    gx:person2 ex:V204P0 .
+
+ex:V204R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V204P2 ;
+    gx:person2 ex:V204P0 .
