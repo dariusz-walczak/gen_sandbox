@@ -1,0 +1,66 @@
+
+#
+# This dataset defines test data representing all resource-states of proband's parents.
+#
+# Test case construction assumptions:
+# 1. The proband is always a Person Resource (typed as gx:Person).
+# 2. Each parent is connected to the proband by a separate stated parent-child relationship:
+# 3. The set of parents covers the following resource states:
+#      - Stubbed  : referenced only (no triples with the parent IRI as subject)
+#      - Untyped  : described but not typed (no rdf:type triple)
+#      - Mistyped : typed as a Non-Person Resource (here: gx:Relationship)
+#      - Typed    : typed as gx:Person
+# 4. The described parents (untyped/mistyped/
+#    typed) all have a valid (male) Person Gender. The stubbed parent has no gender triples.
+# 5. Expected result for proband ex:V101P0 is the set:
+#      { ex:V101P1, ex:V101P2, ex:V101P3, ex:V101P4 }
+#
+# See docs/terms-and-definitions.md for terms definitions.
+#
+
+@prefix gx:  <http://gedcomx.org/> .
+@prefix ex:  <http://example.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+######################################################################
+# V101: Parent resource-state inclusion (4 parents, 1 proband)
+######################################################################
+
+# Proband (child role)
+ex:V101P0 a gx:Person .
+
+# Parent 1: Stubbed (no triples with ex:V101P1 as subject)
+
+# Parent 2: Untyped (described, not typed)
+ex:V101P2
+    gx:birthDate "1966-03-17"^^xsd:date ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+# Parent 3: Mistyped (Non-Person Resource)
+ex:V101P3 a gx:Relationship ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+# Parent 4: Typed (Person Resource)
+ex:V101P4 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+# Stated parent-child relationships
+ex:V101R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V101P1 ;
+    gx:person2 ex:V101P0 .
+
+ex:V101R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V101P2 ;
+    gx:person2 ex:V101P0 .
+
+ex:V101R3 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V101P3 ;
+    gx:person2 ex:V101P0 .
+
+ex:V101R4 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V101P4 ;
+    gx:person2 ex:V101P0 .

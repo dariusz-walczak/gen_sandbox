@@ -5,6 +5,7 @@
 #include <fmt/format.h>
 
 #include "common/data_table.hpp"
+#include "common/resource.hpp"
 #include "common/resource_utils.hpp"
 #include "common/string.hpp"
 #include "common/spdlog_utils.hpp"
@@ -232,6 +233,77 @@ std::shared_ptr<common::Person> retrieve_person_mother(
 
     return parent;
 }
+
+
+std::vector<std::shared_ptr<common::Resource>> retrieve_person_parents(
+    const common::Person* proband, librdf_world* world, librdf_model* model)
+{
+    if (!proband)
+    {
+        throw person_exception(
+            person_exception::error_code::input_contract_error,
+            fmt::format(
+                "Precondition failure: proband={} must satisfy !nullptr", fmt::ptr(proband)));
+    }
+
+    if (!world)
+    {
+        throw person_exception(
+            person_exception::error_code::input_contract_error,
+            fmt::format(
+                "Precondition failure: world={} must satisfy !nullptr", fmt::ptr(world)));
+    }
+
+    if (!model)
+    {
+        throw person_exception(
+            person_exception::error_code::input_contract_error,
+            fmt::format(
+                "Precondition failure: model={} must satisfy !nullptr", fmt::ptr(model)));
+    }
+
+    const char* query_id = "retrieve person parents";
+    constexpr std::string_view query_tmpl = R"(
+        PREFIX gx: <http://gedcomx.org/>
+
+        SELECT DISTINCT ?parent
+        WHERE
+        {{
+            ?rel a gx:Relationship ;
+                gx:person1 ?parent ;
+                gx:person2 ?proband ;
+                gx:type gx:ParentChild .
+
+            FILTER (?proband = <{proband}>)
+        }})";
+
+    const std::string query = fmt::format(query_tmpl, fmt::arg("proband", proband->get_uri_str()));
+
+    spdlog::debug("{}: The '{}' query: {}", __func__, query_id, query);
+
+    common::exec_query_result res = common::exec_query(world, model, query, __func__);
+    const common::extract_data_table_result data_tuple = common::extract_data_table(res->results);
+    const common::data_table& data_table = std::get<1>(data_tuple);
+
+    if (data_table.empty())
+    {
+        spdlog::debug(
+            "{}: No parents of proband {} were found", __func__, proband->get_uri_str());
+
+        return {};
+    }
+
+    std::vector<std::shared_ptr<common::Resource>> persons;
+    persons.reserve(data_table.size());
+
+    for (const common::data_row& row : data_table)
+    {
+        persons.emplace_back(common::extract_resource<common::Resource>(row, "parent"));
+    }
+
+    return persons;
+}
+
 
 std::vector<common::Person::PartnerRelation> retrieve_person_partners(
     const common::Person* proband, librdf_world* world, librdf_model* model,
