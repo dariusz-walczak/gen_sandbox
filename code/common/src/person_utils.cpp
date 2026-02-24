@@ -6,7 +6,7 @@ namespace common
 {
 
 bool ask_person_gender_unknown(
-    const common::Person* person, librdf_world* world, librdf_model* model)
+    const common::Resource* person, librdf_world* world, librdf_model* model)
 {
     if (!person)
     {
