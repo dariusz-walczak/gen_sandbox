@@ -24,7 +24,7 @@ namespace common
  *      on SPARQL query execution error
  */
 bool ask_person_gender_unknown(
-    const common::Person* person, librdf_world* world, librdf_model* model);
+    const common::Resource* person, librdf_world* world, librdf_model* model);
 
 /** @brief Ask if @ref person_gender is @ref unknown_person_gender "Unknown"
  *
