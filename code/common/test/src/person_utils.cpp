@@ -52,8 +52,11 @@ TEST_P(PersonUtils_AskPersonGenderState, NormalSuccessCases)
 
     const bool actual_gender_unknown_flag =
         common::ask_person_gender_unknown(person.get(), ctx->world, ctx->model);
+    const bool actual_gender_invalid_flag =
+        common::ask_person_gender_invalid(person.get(), ctx->world, ctx->model);
 
     EXPECT_EQ(actual_gender_unknown_flag, param.expected_gender_unknown_flag);
+    EXPECT_EQ(actual_gender_invalid_flag, param.expected_gender_invalid_flag);
 }
 
 const std::vector<Param> g_normal_success_cases_params{

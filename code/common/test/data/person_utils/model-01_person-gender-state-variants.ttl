@@ -81,7 +81,7 @@ ex:V106P1 a gx:Person ;
 ex:V107P1 a gx:Person ;
     gx:gender [
         a gx:Gender ;
-        gx:type ex:Male ] .
+        gx:type gx:Male ] .
 
 ###################################################################################################
 # V108: person=Valid, gender=Valid Female
@@ -90,4 +90,4 @@ ex:V107P1 a gx:Person ;
 ex:V108P1 a gx:Person ;
     gx:gender [
         a gx:Gender ;
-        gx:type ex:Female ] .
+        gx:type gx:Female ] .
