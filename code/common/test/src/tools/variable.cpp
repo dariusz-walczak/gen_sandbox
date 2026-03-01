@@ -110,14 +110,12 @@ ComparableVariable to_comparable(const common::Variable& variable)
     return ComparableVariable{variable.name, to_comparable(variable.value)};
 }
 
-std::string to_string(const ComparableVariable& variable, std::uint8_t depth_head, std::uint8_t depth_tail)
+std::string to_string(const ComparableVariable& variable)
 {
-    const std::string indent_head = construct_indent(depth_head);
-    const std::string indent_tail = construct_indent(depth_tail);
     std::ostringstream oss;
-    oss << indent_head << "ComparableVariable{\n"
-        << indent_tail << "name=" << ::testing::PrintToString(variable.name) << ",\n"
-        << indent_tail << "value=" << to_string(variable.value, 0, depth_tail+1) << "}";
+    oss << "ComparableVariable{"
+        << "name=" << ::testing::PrintToString(variable.name) << ", "
+        << "value=" << to_string(variable.value, 0, 1) << "}";
     return oss.str();
 }
 
@@ -143,7 +141,7 @@ std::string to_string(
 
     std::ostringstream oss;
 
-    oss << indent_head << "ComparableVariableSet{";
+    oss << indent_head << "ComparableVariableSet{\n";
 
     if (!vars.empty())
     {
