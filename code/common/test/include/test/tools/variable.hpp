@@ -53,7 +53,7 @@ inline void PrintTo(const ComparableVariable::Value& value, std::ostream* os)
 [[nodiscard]] ComparableVariable to_comparable(const common::Variable& variable);
 
 [[nodiscard]] std::string to_string(
-    const ComparableVariable& variable, std::uint8_t depth_head=0, std::uint8_t depth_tail=1);
+    const ComparableVariable& variable);
 
 inline void PrintTo(const ComparableVariable& variable, std::ostream* os)
 {
