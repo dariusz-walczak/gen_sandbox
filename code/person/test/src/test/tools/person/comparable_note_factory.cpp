@@ -58,4 +58,81 @@ ComparableNote create_invalid_stated_partner_comparable_note(const char* partner
     };
 }
 
+ComparableNote create_stubbed_parent_comparable_note(const tools::ComparableResource& parent)
+{
+    return {
+        .type=common::Note::Type::Info,
+        .id=std::string(::person::k_stubbed_parent_note_id),
+        .vars={
+            tools::ComparableVariable{
+                .name="parent",
+                .value=parent
+            }
+        },
+        .diagnostic_text=fmt::format("Stubbed parent: {}", parent.id)
+    };
+}
+
+ComparableNote create_untyped_parent_comparable_note(const tools::ComparableResource& parent)
+{
+    return {
+        .type=common::Note::Type::Warning,
+        .id=std::string(::person::k_untyped_parent_note_id),
+        .vars={
+            tools::ComparableVariable{
+                .name="parent",
+                .value=parent
+            }
+        },
+        .diagnostic_text=fmt::format("Untyped parent: {}", parent.id)
+    };
+}
+
+ComparableNote create_mistyped_parent_comparable_note(const tools::ComparableResource& parent)
+{
+    return {
+        .type=common::Note::Type::Warning,
+        .id=std::string(::person::k_mistyped_parent_note_id),
+        .vars={
+            tools::ComparableVariable{
+                .name="parent",
+                .value=parent
+            }
+        },
+        .diagnostic_text=fmt::format("Mistyped parent: {}", parent.id)
+    };
+}
+
+ComparableNote create_unknown_parent_gender_comparable_note(
+    const tools::ComparableResource& parent)
+{
+    return {
+        .type=common::Note::Type::Warning,
+        .id=std::string(::person::k_unknown_parent_gender_note_id),
+        .vars={
+            tools::ComparableVariable{
+                .name="parent",
+                .value=parent
+            }
+        },
+        .diagnostic_text=fmt::format("Unknown parent gender: {}", parent.id)
+    };
+}
+
+ComparableNote create_invalid_parent_gender_comparable_note(
+    const tools::ComparableResource& parent)
+{
+    return {
+        .type=common::Note::Type::Error,
+        .id=std::string(::person::k_invalid_parent_gender_note_id),
+        .vars={
+            tools::ComparableVariable{
+                .name="parent",
+                .value=parent
+            }
+        },
+        .diagnostic_text=fmt::format("Invalid parent gender: {}", parent.id)
+    };
+}
+
 } // namespace test::tools::person

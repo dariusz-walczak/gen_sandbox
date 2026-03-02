@@ -14,6 +14,7 @@ add_library(
   src/queries/common.cpp
   src/queries/deps.cpp
   src/queries/details.cpp
+  src/queries/details_retrieve_invalid_person_notes.cpp
 )
 
 target_include_directories(
