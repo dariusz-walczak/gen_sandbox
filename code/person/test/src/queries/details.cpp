@@ -59,6 +59,7 @@ std::vector<ComparablePartnerRelation> adapt(
 }
 
 } // anonymous namespace
+} // namespace test
 
 //  The retrieve_person_partners function tests
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
@@ -93,10 +94,10 @@ TEST_P(DetailsQueries_RetrievePersonPartners, NormalSuccessCases)
         person::retrieve_person_partners(
             proband.get(), ctx->world, ctx->model, actual_notes));
 
-    EXPECT_THAT(param.expected_partners, ::testing::UnorderedElementsAreArray(actual_partners));
+    EXPECT_THAT(actual_partners, ::testing::UnorderedElementsAreArray(param.expected_partners));
     EXPECT_THAT(
-        param.expected_notes,
-        ::testing::UnorderedElementsAreArray(tools::to_comparable(actual_notes)));
+        tools::to_comparable(actual_notes),
+        ::testing::UnorderedElementsAreArray(param.expected_notes));
 };
 
 /**
@@ -955,35 +956,29 @@ const std::vector<Param> g_other_cases
     }
 };
 
-std::string ParamNameGen(const ::testing::TestParamInfo<Param>& info)
-{
-    return { info.param.case_name };
-}
-
-
 INSTANTIATE_TEST_SUITE_P(
     OneCoupleCases,
     DetailsQueries_RetrievePersonPartners,
     ::testing::ValuesIn(g_one_couple_cases),
-    ParamNameGen);
+    tools::ParamNameGen<Param>);
 
 INSTANTIATE_TEST_SUITE_P(
     TwoCouplesCases,
     DetailsQueries_RetrievePersonPartners,
     ::testing::ValuesIn(g_two_couples_cases),
-    ParamNameGen);
+    tools::ParamNameGen<Param>);
 
 INSTANTIATE_TEST_SUITE_P(
     ComplexCases,
     DetailsQueries_RetrievePersonPartners,
     ::testing::ValuesIn(g_complex_cases),
-    ParamNameGen);
+    tools::ParamNameGen<Param>);
 
 INSTANTIATE_TEST_SUITE_P(
     OtherCases,
     DetailsQueries_RetrievePersonPartners,
     ::testing::ValuesIn(g_other_cases),
-    ParamNameGen);
+    tools::ParamNameGen<Param>);
 
 // Check if the retrieve_person_partners function throws the person_exception when any of its
 //  arguments is null
@@ -1011,7 +1006,7 @@ TEST_F(DetailsQueries_RetrievePersonPartners, InputContractViolations)
 //  The retrieve_person_father and retrieve_person_mother functions tests
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
 
-namespace suite2
+namespace test::suite_retrieve_person_parent
 {
 
 struct Param
@@ -1467,6 +1462,259 @@ TEST_F(DetailsQueries_RetrievePersonParents, InputContractViolations)
         person::person_exception, person::person_exception::error_code::input_contract_error);
 }
 
-} // namespace suite2
+} // namespace test::suite_retrieve_person_parent
 
-} // namespace test
+//  The retrieve_person_partners function tests
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
+
+namespace test::suite_retrieve_person_invalid_parent_notes
+{
+
+using namespace tools::person;
+
+struct Param
+{
+    const char* case_name;
+    const char* data_file;
+    const char* proband_uri;
+
+    std::vector<tools::ComparableNote> expected_notes;
+};
+
+class DetailsQueries_RetrievePersonInvalidParentNotes : public ::testing::TestWithParam<Param> {};
+
+TEST_P(DetailsQueries_RetrievePersonInvalidParentNotes, NormalSuccessCases)
+{
+    const Param& param = GetParam();
+    tools::scoped_redland_ctx ctx = tools::initialize_redland_ctx();
+    tools::load_rdf(ctx->world, ctx->model, tools::get_program_path() / param.data_file);
+
+    const auto proband = std::make_shared<common::Person>(param.proband_uri);
+    std::vector<common::Note> actual_notes;
+
+    person::retrieve_person_invalid_parent_notes(
+        proband.get(), ctx->world, ctx->model, actual_notes);
+
+    EXPECT_THAT(
+        tools::to_comparable(actual_notes),
+        ::testing::UnorderedElementsAreArray(param.expected_notes));
+};
+
+const std::vector<Param> g_params {
+    {
+        .case_name="UnknownParent",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-01_single-parent.ttl"),
+        .proband_uri="http://example.org/V101P1",
+        .expected_notes={}
+    },
+    {
+        .case_name="StubbedParent",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-01_single-parent.ttl"),
+        .proband_uri="http://example.org/V102P1",
+        .expected_notes={
+            create_stubbed_parent_comparable_note({"http://example.org/V102P2", ""})
+        }
+    },
+    {
+        .case_name="UntypedParentUnknown1",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-01_single-parent.ttl"),
+        .proband_uri="http://example.org/V103P1",
+        .expected_notes={
+            create_untyped_parent_comparable_note({"http://example.org/V103P2", ""}),
+            create_unknown_parent_gender_comparable_note({"http://example.org/V103P2", ""})
+        }
+    },
+    {
+        .case_name="UntypedParentUnknown2",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-01_single-parent.ttl"),
+        .proband_uri="http://example.org/V104P1",
+        .expected_notes={
+            create_untyped_parent_comparable_note({"http://example.org/V104P2", ""}),
+            create_unknown_parent_gender_comparable_note({"http://example.org/V104P2", ""})
+        }
+    },
+    {
+        .case_name="UntypedParentUnknown3",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-01_single-parent.ttl"),
+        .proband_uri="http://example.org/V105P1",
+        .expected_notes={
+            create_untyped_parent_comparable_note({"http://example.org/V105P2", ""}),
+            create_unknown_parent_gender_comparable_note({"http://example.org/V105P2", ""})
+        }
+    },
+    {
+        .case_name="UntypedParentUnknown4",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-01_single-parent.ttl"),
+        .proband_uri="http://example.org/V106P1",
+        .expected_notes={
+            create_untyped_parent_comparable_note({"http://example.org/V106P2", ""}),
+            create_unknown_parent_gender_comparable_note({"http://example.org/V106P2", ""})
+        }
+    },
+    {
+        .case_name="UntypedParentInvalid",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-01_single-parent.ttl"),
+        .proband_uri="http://example.org/V107P1",
+        .expected_notes={
+            create_untyped_parent_comparable_note({"http://example.org/V107P2", ""}),
+            create_invalid_parent_gender_comparable_note({"http://example.org/V107P2", ""})
+        }
+    },
+    {
+        .case_name="UntypedParentValid",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-01_single-parent.ttl"),
+        .proband_uri="http://example.org/V108P1",
+        .expected_notes={
+            create_untyped_parent_comparable_note({"http://example.org/V108P2", ""}),
+        }
+    },
+    {
+        .case_name="MistypedParentUnknown1",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-01_single-parent.ttl"),
+        .proband_uri="http://example.org/V109P1",
+        .expected_notes={
+            create_mistyped_parent_comparable_note({"http://example.org/V109P2", ""}),
+            create_unknown_parent_gender_comparable_note({"http://example.org/V109P2", ""})
+        }
+    },
+    {
+        .case_name="MistypedParentUnknown2",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-01_single-parent.ttl"),
+        .proband_uri="http://example.org/V110P1",
+        .expected_notes={
+            create_mistyped_parent_comparable_note({"http://example.org/V110P2", ""}),
+            create_unknown_parent_gender_comparable_note({"http://example.org/V110P2", ""})
+        }
+    },
+    {
+        .case_name="MistypedParentUnknown3",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-01_single-parent.ttl"),
+        .proband_uri="http://example.org/V111P1",
+        .expected_notes={
+            create_mistyped_parent_comparable_note({"http://example.org/V111P2", ""}),
+            create_unknown_parent_gender_comparable_note({"http://example.org/V111P2", ""})
+        }
+    },
+    {
+        .case_name="MistypedParentUnknown4",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-01_single-parent.ttl"),
+        .proband_uri="http://example.org/V112P1",
+        .expected_notes={
+            create_mistyped_parent_comparable_note({"http://example.org/V112P2", ""}),
+            create_unknown_parent_gender_comparable_note({"http://example.org/V112P2", ""})
+        }
+    },
+    {
+        .case_name="MistypedParentInvalid",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-01_single-parent.ttl"),
+        .proband_uri="http://example.org/V113P1",
+        .expected_notes={
+            create_mistyped_parent_comparable_note({"http://example.org/V113P2", ""}),
+            create_invalid_parent_gender_comparable_note({"http://example.org/V113P2", ""})
+        }
+    },
+    {
+        .case_name="MistypedParentValid",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-01_single-parent.ttl"),
+        .proband_uri="http://example.org/V114P1",
+        .expected_notes={
+            create_mistyped_parent_comparable_note({"http://example.org/V114P2", ""}),
+        }
+    },
+    {
+        .case_name="TypedParentUnknown1",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-01_single-parent.ttl"),
+        .proband_uri="http://example.org/V115P1",
+        .expected_notes={
+            create_unknown_parent_gender_comparable_note({"http://example.org/V115P2", ""})
+        }
+    },
+    {
+        .case_name="TypedParentUnknown2",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-01_single-parent.ttl"),
+        .proband_uri="http://example.org/V116P1",
+        .expected_notes={
+            create_unknown_parent_gender_comparable_note({"http://example.org/V116P2", ""})
+        }
+    },
+    {
+        .case_name="TypedParentUnknown3",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-01_single-parent.ttl"),
+        .proband_uri="http://example.org/V117P1",
+        .expected_notes={
+            create_unknown_parent_gender_comparable_note({"http://example.org/V117P2", ""})
+        }
+    },
+    {
+        .case_name="TypedParentUnknown4",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-01_single-parent.ttl"),
+        .proband_uri="http://example.org/V118P1",
+        .expected_notes={
+            create_unknown_parent_gender_comparable_note({"http://example.org/V118P2", ""})
+        }
+    },
+    {
+        .case_name="TypedParentInvalid",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-01_single-parent.ttl"),
+        .proband_uri="http://example.org/V119P1",
+        .expected_notes={
+            create_invalid_parent_gender_comparable_note({"http://example.org/V119P2", ""})
+        }
+    },
+    {
+        .case_name="TypedParentValid",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-01_single-parent.ttl"),
+        .proband_uri="http://example.org/V120P1",
+        .expected_notes={}
+    }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    DetailsQueries_RetrievePersonInvalidParentNotes,
+    ::testing::ValuesIn(g_params),
+    tools::ParamNameGen<Param>);
+
+} // namespace test::suite_retrieve_person_invalid_parent_notes
+
+// TODO: MODEL-03: unknown/invalid parent gender with parent names (captions)

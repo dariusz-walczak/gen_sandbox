@@ -1,0 +1,349 @@
+
+# Retrieve Person Invalid Parent Notes: Test Suite #01 (Single Parent)
+#
+# Test suite contruction rules:
+# 1. The proband is always a Person Resource (gx:Person) with a valid gender specification.
+# 2. The proband participates in exactly one (zero in the case of the V101) gx:ParentChild
+#    relationship with the parent.
+# 3. The parent state is Unknown, Stubbed, Untyped, Mistyped, or Typed.
+# 4. The parent gender status is Unknown1, Unknown2, Unknown3, Unknown4, Invalid, or Valid
+#
+# Parent Gender Status Table:
+#
+# +-----------------------------+----------+----------+----------+----------+----------+----------+
+# |                             | Gender Status                                                   |
+# | Triple                      +----------+----------+----------+----------+----------+----------+
+# |                             | Unknown1 | Unknown2 | Unknown3 | Unknown4 | Invalid  | Valid    |
+# +-----------------------------+----------+----------+----------+----------+----------+----------+
+# | (?parent gx:gender ?gender) |  missing | exists   | exists   | exists   | exists   | exists   |
+# | (?gender a gx:Gender)       |  missing | missing  | exists   | missing  | exists   | exists   |
+# | (?gender gx:type ?type)     |  missing | missing  | missing  | exists   | exists   | exists   |
+# +-----------------------------+----------+----------+----------+----------+----------+----------+
+#
+# Variant Summary Table:
+#
+# +---------+----------+----------+----------------------------------------+
+# | Variant | Parent   | Parent   | Expected Validity Notes                |
+# |         | State    | Gender   |                                        |
+# +---------+----------+----------+----------------------------------------+
+# | V101    | Unknown  | N/A      | -                                      |
+# | V102    | Stubbed  | N/A      | stubbed_parent                         |
+# | V103    | Untyped  | Unknown1 | untyped_parent, unknown_parent_gender  |
+# | V104    | Untyped  | Unknown2 | untyped_parent, unknown_parent_gender  |
+# | V105    | Untyped  | Unknown3 | untyped_parent, unknown_parent_gender  |
+# | V106    | Untyped  | Unknown4 | untyped_parent, unknown_parent_gender  |
+# | V107    | Untyped  | Invalid  | untyped_parent, invalid_parent_gender  |
+# | V108    | Untyped  | Valid    | untyped_parent                         |
+# | V109    | Mistyped | Unknown1 | mistyped_parent, unknown_parent_gender |
+# | V110    | Mistyped | Unknown2 | mistyped_parent, unknown_parent_gender |
+# | V111    | Mistyped | Unknown3 | mistyped_parent, unknown_parent_gender |
+# | V112    | Mistyped | Unknown4 | mistyped_parent, unknown_parent_gender |
+# | V113    | Mistyped | Invalid  | mistyped_parent, invalid_parent_gender |
+# | V114    | Mistyped | Valid    | mistyped_parent                        |
+# | V115    | Typed    | Unknown1 | unknown_parent_gender                  |
+# | V116    | Typed    | Unknown2 | unknown_parent_gender                  |
+# | V117    | Typed    | Unknown3 | unknown_parent_gender                  |
+# | V118    | Typed    | Unknown4 | unknown_parent_gender                  |
+# | V119    | Typed    | Invalid  | invalid_parent_gender                  |
+# | V120    | Typed    | Valid    | -                                      |
+# +---------+----------+----------+----------------------------------------+
+#
+
+@prefix gx:  <http://gedcomx.org/> .
+@prefix ex:  <http://example.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+
+######################################################################
+# V101: Parent=Unknown; Gender=N/A
+######################################################################
+ex:V101P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+# No gx:ParentChild relationships -> both parents are Unknown
+
+
+######################################################################
+# V102: Parent=Stubbed; Gender=N/A
+######################################################################
+ex:V102P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+# ex:V102P2 is Stubbed (referenced only in the ParentChild relationship)
+
+ex:V102R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V102P2 ;
+    gx:person2 ex:V102P1 .
+
+
+######################################################################
+# V103: Parent=Untyped; Gender=Unknown1
+######################################################################
+ex:V103P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+# Untyped needs at least one triple besides the relationship; Unknown1 forbids gx:gender,
+# therefore we use gx:birthDate as the "some triples exist" evidence.
+ex:V103P2 gx:birthDate "1900-01-01"^^xsd:date .
+
+ex:V103R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V103P2 ;
+    gx:person2 ex:V103P1 .
+
+
+######################################################################
+# V104: Parent=Untyped; Gender=Unknown2
+######################################################################
+ex:V104P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V104P2
+    gx:gender [] .
+
+ex:V104R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V104P2 ;
+    gx:person2 ex:V104P1 .
+
+
+######################################################################
+# V105: Parent=Untyped; Gender=Unknown3
+######################################################################
+ex:V105P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V105P2
+    gx:gender [ a gx:Gender ] .
+
+ex:V105R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V105P2 ;
+    gx:person2 ex:V105P1 .
+
+
+######################################################################
+# V106: Parent=Untyped; Gender=Unknown4
+######################################################################
+ex:V106P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+# gx:type exists, but the gender node is not typed as gx:Gender
+ex:V106P2
+    gx:gender [ gx:type gx:Male ] .
+
+ex:V106R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V106P2 ;
+    gx:person2 ex:V106P1 .
+
+
+######################################################################
+# V107: Parent=Untyped; Gender=Invalid
+######################################################################
+ex:V107P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V107P2
+    gx:gender [ a gx:Gender ; gx:type ex:OtherGender ] .
+
+ex:V107R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V107P2 ;
+    gx:person2 ex:V107P1 .
+
+
+######################################################################
+# V108: Parent=Untyped; Gender=Valid
+######################################################################
+ex:V108P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V108P2
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V108R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V108P2 ;
+    gx:person2 ex:V108P1 .
+
+
+######################################################################
+# V109: Parent=Mistyped; Gender=Unknown1
+######################################################################
+ex:V109P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V109P2 a gx:Relationship .
+
+ex:V109R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V109P2 ;
+    gx:person2 ex:V109P1 .
+
+
+######################################################################
+# V110: Parent=Mistyped; Gender=Unknown2
+######################################################################
+ex:V110P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V110P2 a gx:Relationship ;
+    gx:gender [] .
+
+ex:V110R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V110P2 ;
+    gx:person2 ex:V110P1 .
+
+
+######################################################################
+# V111: Parent=Mistyped; Gender=Unknown3
+######################################################################
+ex:V111P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V111P2 a gx:Relationship ;
+    gx:gender [ a gx:Gender ] .
+
+ex:V111R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V111P2 ;
+    gx:person2 ex:V111P1 .
+
+
+######################################################################
+# V112: Parent=Mistyped; Gender=Unknown4
+######################################################################
+ex:V112P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+# gx:type exists, but the gender node is not typed as gx:Gender
+ex:V112P2 a gx:Relationship ;
+    gx:gender [ gx:type gx:Male ] .
+
+ex:V112R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V112P2 ;
+    gx:person2 ex:V112P1 .
+
+
+######################################################################
+# V113: Parent=Mistyped; Gender=Invalid
+######################################################################
+ex:V113P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V113P2 a gx:Relationship ;
+    gx:gender [ a gx:Gender ; gx:type ex:OtherGender ] .
+
+ex:V113R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V113P2 ;
+    gx:person2 ex:V113P1 .
+
+
+######################################################################
+# V114: Parent=Mistyped; Gender=Valid
+######################################################################
+ex:V114P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V114P2 a gx:Relationship ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V114R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V114P2 ;
+    gx:person2 ex:V114P1 .
+
+
+######################################################################
+# V115: Parent=Typed; Gender=Unknown1
+######################################################################
+ex:V115P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V115P2 a gx:Person .
+
+ex:V115R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V115P2 ;
+    gx:person2 ex:V115P1 .
+
+
+######################################################################
+# V116: Parent=Typed; Gender=Unknown2
+######################################################################
+ex:V116P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V116P2 a gx:Person ;
+    gx:gender [] .
+
+ex:V116R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V116P2 ;
+    gx:person2 ex:V116P1 .
+
+
+######################################################################
+# V117: Parent=Typed; Gender=Unknown3
+######################################################################
+ex:V117P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V117P2 a gx:Person ;
+    gx:gender [ a gx:Gender ] .
+
+ex:V117R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V117P2 ;
+    gx:person2 ex:V117P1 .
+
+
+######################################################################
+# V118: Parent=Typed; Gender=Unknown4
+######################################################################
+ex:V118P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+# gx:type exists, but the gender node is not typed as gx:Gender
+ex:V118P2 a gx:Person ;
+    gx:gender [ gx:type gx:Male ] .
+
+ex:V118R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V118P2 ;
+    gx:person2 ex:V118P1 .
+
+
+######################################################################
+# V119: Parent=Typed; Gender=Invalid
+######################################################################
+ex:V119P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V119P2 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type ex:OtherGender ] .
+
+ex:V119R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V119P2 ;
+    gx:person2 ex:V119P1 .
+
+
+######################################################################
+# V120: Parent=Typed; Gender=Valid
+######################################################################
+ex:V120P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V120P2 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V120R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V120P2 ;
+    gx:person2 ex:V120P1 .
