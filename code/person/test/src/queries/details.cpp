@@ -1706,7 +1706,322 @@ const std::vector<Param> g_params {
             "model-01_single-parent.ttl"),
         .proband_uri="http://example.org/V120P1",
         .expected_notes={}
-    }
+    },
+    {
+        .case_name="MotherStubbedFatherStubbed",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-02_both-parents.ttl"),
+        .proband_uri="http://example.org/V201P1",
+        .expected_notes={
+            create_stubbed_parent_comparable_note({"http://example.org/V201P2", ""}),
+            create_stubbed_parent_comparable_note({"http://example.org/V201P3", ""})
+        }
+    },
+    {
+        .case_name="MotherStubbedFatherUntypedUnknown",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-02_both-parents.ttl"),
+        .proband_uri="http://example.org/V202P1",
+        .expected_notes={
+            create_stubbed_parent_comparable_note({"http://example.org/V202P2", ""}),
+            create_untyped_parent_comparable_note({"http://example.org/V202P3", ""}),
+            create_unknown_parent_gender_comparable_note({"http://example.org/V202P3", ""})
+        }
+    },
+    {
+        .case_name="MotherStubbedFatherUntypedInvalid",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-02_both-parents.ttl"),
+        .proband_uri="http://example.org/V203P1",
+        .expected_notes={
+            create_stubbed_parent_comparable_note({"http://example.org/V203P2", ""}),
+            create_untyped_parent_comparable_note({"http://example.org/V203P3", ""}),
+            create_invalid_parent_gender_comparable_note({"http://example.org/V203P3", ""})
+        }
+    },
+    {
+        .case_name="MotherStubbedFatherUntypedValid",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-02_both-parents.ttl"),
+        .proband_uri="http://example.org/V204P1",
+        .expected_notes={
+            create_stubbed_parent_comparable_note({"http://example.org/V204P2", ""}),
+            create_untyped_parent_comparable_note({"http://example.org/V204P3", ""})
+        }
+    },
+    {
+        .case_name="MotherStubbedFatherTypedUnknown",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-02_both-parents.ttl"),
+        .proband_uri="http://example.org/V205P1",
+        .expected_notes={
+            create_stubbed_parent_comparable_note({"http://example.org/V205P2", ""}),
+            create_unknown_parent_gender_comparable_note({"http://example.org/V205P3", ""})
+        }
+    },
+    {
+        .case_name="MotherStubbedFatherTypedInvalid",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-02_both-parents.ttl"),
+        .proband_uri="http://example.org/V206P1",
+        .expected_notes={
+            create_stubbed_parent_comparable_note({"http://example.org/V206P2", ""}),
+            create_invalid_parent_gender_comparable_note({"http://example.org/V206P3", ""})
+        }
+    },
+    {
+        .case_name="MotherStubbedFatherTypedValid",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-02_both-parents.ttl"),
+        .proband_uri="http://example.org/V207P1",
+        .expected_notes={
+            create_stubbed_parent_comparable_note({"http://example.org/V207P2", ""})
+        }
+    },
+    {
+        .case_name="MotherUntypedUnknownFatherUntypedUnknown",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-02_both-parents.ttl"),
+        .proband_uri="http://example.org/V208P1",
+        .expected_notes={
+            create_untyped_parent_comparable_note({"http://example.org/V208P2", ""}),
+            create_unknown_parent_gender_comparable_note({"http://example.org/V208P2", ""}),
+            create_untyped_parent_comparable_note({"http://example.org/V208P3", ""}),
+            create_unknown_parent_gender_comparable_note({"http://example.org/V208P3", ""})
+        }
+    },
+    {
+        .case_name="MotherUntypedUnknownFatherUntypedInvalid",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-02_both-parents.ttl"),
+        .proband_uri="http://example.org/V209P1",
+        .expected_notes={
+            create_untyped_parent_comparable_note({"http://example.org/V209P2", ""}),
+            create_unknown_parent_gender_comparable_note({"http://example.org/V209P2", ""}),
+            create_untyped_parent_comparable_note({"http://example.org/V209P3", ""}),
+            create_invalid_parent_gender_comparable_note({"http://example.org/V209P3", ""})
+        }
+    },
+    {
+        .case_name="MotherUntypedUnknownFatherUntypedValid",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-02_both-parents.ttl"),
+        .proband_uri="http://example.org/V210P1",
+        .expected_notes={
+            create_untyped_parent_comparable_note({"http://example.org/V210P2", ""}),
+            create_unknown_parent_gender_comparable_note({"http://example.org/V210P2", ""}),
+            create_untyped_parent_comparable_note({"http://example.org/V210P3", ""})
+        }
+    },
+    {
+        .case_name="MotherUntypedUnknownFatherTypedUnknown",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-02_both-parents.ttl"),
+        .proband_uri="http://example.org/V211P1",
+        .expected_notes={
+            create_untyped_parent_comparable_note({"http://example.org/V211P2", ""}),
+            create_unknown_parent_gender_comparable_note({"http://example.org/V211P2", ""}),
+            create_unknown_parent_gender_comparable_note({"http://example.org/V211P3", ""})
+        }
+    },
+    {
+        .case_name="MotherUntypedUnknownFatherTypedInvalid",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-02_both-parents.ttl"),
+        .proband_uri="http://example.org/V212P1",
+        .expected_notes={
+            create_untyped_parent_comparable_note({"http://example.org/V212P2", ""}),
+            create_unknown_parent_gender_comparable_note({"http://example.org/V212P2", ""}),
+            create_invalid_parent_gender_comparable_note({"http://example.org/V212P3", ""})
+        }
+    },
+    {
+        .case_name="MotherUntypedUnknownFatherTypedValid",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-02_both-parents.ttl"),
+        .proband_uri="http://example.org/V213P1",
+        .expected_notes={
+            create_untyped_parent_comparable_note({"http://example.org/V213P2", ""}),
+            create_unknown_parent_gender_comparable_note({"http://example.org/V213P2", ""})
+        }
+    },
+    {
+        .case_name="MotherUntypedInvalidFatherUntypedInvalid",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-02_both-parents.ttl"),
+        .proband_uri="http://example.org/V214P1",
+        .expected_notes={
+            create_untyped_parent_comparable_note({"http://example.org/V214P2", ""}),
+            create_invalid_parent_gender_comparable_note({"http://example.org/V214P2", ""}),
+            create_untyped_parent_comparable_note({"http://example.org/V214P3", ""}),
+            create_invalid_parent_gender_comparable_note({"http://example.org/V214P3", ""})
+        }
+    },
+    {
+        .case_name="MotherUntypedInvalidFatherUntypedValid",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-02_both-parents.ttl"),
+        .proband_uri="http://example.org/V215P1",
+        .expected_notes={
+            create_untyped_parent_comparable_note({"http://example.org/V215P2", ""}),
+            create_invalid_parent_gender_comparable_note({"http://example.org/V215P2", ""}),
+            create_untyped_parent_comparable_note({"http://example.org/V215P3", ""})
+        }
+    },
+    {
+        .case_name="MotherUntypedInvalidFatherTypedUnknown",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-02_both-parents.ttl"),
+        .proband_uri="http://example.org/V216P1",
+        .expected_notes={
+            create_untyped_parent_comparable_note({"http://example.org/V216P2", ""}),
+            create_invalid_parent_gender_comparable_note({"http://example.org/V216P2", ""}),
+            create_unknown_parent_gender_comparable_note({"http://example.org/V216P3", ""})
+        }
+    },
+    {
+        .case_name="MotherUntypedInvalidFatherTypedInvalid",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-02_both-parents.ttl"),
+        .proband_uri="http://example.org/V217P1",
+        .expected_notes={
+            create_untyped_parent_comparable_note({"http://example.org/V217P2", ""}),
+            create_invalid_parent_gender_comparable_note({"http://example.org/V217P2", ""}),
+            create_invalid_parent_gender_comparable_note({"http://example.org/V217P3", ""})
+        }
+    },
+    {
+        .case_name="MotherUntypedInvalidFatherTypedValid",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-02_both-parents.ttl"),
+        .proband_uri="http://example.org/V218P1",
+        .expected_notes={
+            create_untyped_parent_comparable_note({"http://example.org/V218P2", ""}),
+            create_invalid_parent_gender_comparable_note({"http://example.org/V218P2", ""})
+        }
+    },
+    {
+        .case_name="MotherUntypedValidFatherUntypedValid",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-02_both-parents.ttl"),
+        .proband_uri="http://example.org/V219P1",
+        .expected_notes={
+            create_untyped_parent_comparable_note({"http://example.org/V219P2", ""}),
+            create_untyped_parent_comparable_note({"http://example.org/V219P3", ""})
+        }
+    },
+    {
+        .case_name="MotherUntypedValidFatherTypedUnknown",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-02_both-parents.ttl"),
+        .proband_uri="http://example.org/V220P1",
+        .expected_notes={
+            create_untyped_parent_comparable_note({"http://example.org/V220P2", ""}),
+            create_unknown_parent_gender_comparable_note({"http://example.org/V220P3", ""})
+        }
+    },
+    {
+        .case_name="MotherUntypedValidFatherTypedInvalid",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-02_both-parents.ttl"),
+        .proband_uri="http://example.org/V221P1",
+        .expected_notes={
+            create_untyped_parent_comparable_note({"http://example.org/V221P2", ""}),
+            create_invalid_parent_gender_comparable_note({"http://example.org/V221P3", ""})
+        }
+    },
+    {
+        .case_name="MotherUntypedValidFatherTypedValid",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-02_both-parents.ttl"),
+        .proband_uri="http://example.org/V222P1",
+        .expected_notes={
+            create_untyped_parent_comparable_note({"http://example.org/V222P2", ""}),
+        }
+    },
+    {
+        .case_name="MotherTypedUnknownFatherTypedUnknown",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-02_both-parents.ttl"),
+        .proband_uri="http://example.org/V223P1",
+        .expected_notes={
+            create_unknown_parent_gender_comparable_note({"http://example.org/V223P2", ""}),
+            create_unknown_parent_gender_comparable_note({"http://example.org/V223P3", ""})
+        }
+    },
+    {
+        .case_name="MotherTypedUnknownFatherTypedInvalid",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-02_both-parents.ttl"),
+        .proband_uri="http://example.org/V224P1",
+        .expected_notes={
+            create_unknown_parent_gender_comparable_note({"http://example.org/V224P2", ""}),
+            create_invalid_parent_gender_comparable_note({"http://example.org/V224P3", ""})
+        }
+    },
+    {
+        .case_name="MotherTypedUnknownFatherTypedValid",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-02_both-parents.ttl"),
+        .proband_uri="http://example.org/V225P1",
+        .expected_notes={
+            create_unknown_parent_gender_comparable_note({"http://example.org/V225P2", ""})
+        }
+    },
+    {
+        .case_name="MotherTypedInvalidFatherTypedInvalid",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-02_both-parents.ttl"),
+        .proband_uri="http://example.org/V226P1",
+        .expected_notes={
+            create_invalid_parent_gender_comparable_note({"http://example.org/V226P2", ""}),
+            create_invalid_parent_gender_comparable_note({"http://example.org/V226P3", ""})
+        }
+    },
+    {
+        .case_name="MotherTypedInvalidFatherTypedValid",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-02_both-parents.ttl"),
+        .proband_uri="http://example.org/V227P1",
+        .expected_notes={
+            create_invalid_parent_gender_comparable_note({"http://example.org/V227P2", ""})
+        }
+    },
+    {
+        .case_name="MotherTypedValidFatherTypedValid",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-02_both-parents.ttl"),
+        .proband_uri="http://example.org/V228P1",
+        .expected_notes={}
+    },
 };
 
 INSTANTIATE_TEST_SUITE_P(

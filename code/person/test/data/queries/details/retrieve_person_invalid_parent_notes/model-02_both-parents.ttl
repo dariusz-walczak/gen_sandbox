@@ -1,0 +1,702 @@
+
+# Retrieve Person Invalid Parent Notes: Test Suite #01 (Single Parent)
+#
+# Test suite contruction rules:
+#
+# 1. The proband is always a Person Resource (gx:Person) with a valid gender specification.
+# 2. The proband participates in exactly two gx:ParentChild relationships with both parents
+#    (parent1 and parent2).
+# 3. A parent state is Stubbed, Untyped, or Typed.
+# 4. A parent gender is Unknown1, Invalid, or Valid
+#
+# For the definition of Unknown, Invalid, and Valid gender see model-01_single-parent.ttl file.
+#
+# Variant Summary Table:
+#
+# +---------+----------+----------+----------+----------+
+# |         | Parent 1            | Parent 2            |
+# +---------+----------+----------+----------+----------+
+# | Variant | State    | Gender   | State    | Gender   |
+# +---------+----------+----------+----------+----------+
+# | V201    | Stubbed  | N/A      | Stubbed  | N/A      | stubbed(1), stubbed(2)
+# | V202    | Stubbed  | N/A      | Untyped  | Unknown1 | stubbed(1), untyped(2), unknown(2)
+# | V203    | Stubbed  | N/A      | Untyped  | Invalid  | stubbed(1), untyped(2), invalid(2)
+# | V204    | Stubbed  | N/A      | Untyped  | Valid    | stubbed(1), untyped(2)
+# | V205    | Stubbed  | N/A      | Typed    | Unknown1 | stubbed(1), unknown(2)
+# | V206    | Stubbed  | N/A      | Typed    | Invalid  | stubbed(1), invalid(2)
+# | V207    | Stubbed  | N/A      | Typed    | Valid    | stubbed(1),
+# +---------+----------+----------+----------+----------+
+# | ----    | Untyped  | Unknown1 | Stubbed  | N/A      | untyped(1), unknown(1), stubbed(2)
+# | V208    | Untyped  | Unknown1 | Untyped  | Unknown1 | untyped(1), unknown(1), untyped(2), unknown(2)
+# | V209    | Untyped  | Unknown1 | Untyped  | Invalid  | untyped(1), unknown(1), untyped(2), invalid(2)
+# | V210    | Untyped  | Unknown1 | Untyped  | Valid    | untyped(1), unknown(1), untyped(2)
+# | V211    | Untyped  | Unknown1 | Typed    | Unknown1 | untyped(1), unknown(1), unknown(2)
+# | V212    | Untyped  | Unknown1 | Typed    | Invalid  | untyped(1), unknown(1), invalid(2)
+# | V213    | Untyped  | Unknown1 | Typed    | Valid    | untyped(1), unknown(1),
+# +---------+----------+----------+----------+----------+
+# | ----    | Untyped  | Invalid  | Stubbed  | N/A      | untyped(1), invalid(1), stubbed(2)
+# | ----    | Untyped  | Invalid  | Untyped  | Unknown1 | untyped(1), invalid(1), untyped(2), unknown(2)
+# | V214    | Untyped  | Invalid  | Untyped  | Invalid  | untyped(1), invalid(1), untyped(2), invalid(2)
+# | V215    | Untyped  | Invalid  | Untyped  | Valid    | untyped(1), invalid(1), untyped(2)
+# | V216    | Untyped  | Invalid  | Typed    | Unknown1 | untyped(1), invalid(1), unknown(2)
+# | V217    | Untyped  | Invalid  | Typed    | Invalid  | untyped(1), invalid(1), invalid(2)
+# | V218    | Untyped  | Invalid  | Typed    | Valid    | untyped(1), invalid(1),
+# +---------+----------+----------+----------+----------+
+# | ----    | Untyped  | Valid    | Stubbed  | N/A      | untyped(1), stubbed(2)
+# | ----    | Untyped  | Valid    | Untyped  | Unknown1 | untyped(1), untyped(2), unknown(2)
+# | ----    | Untyped  | Valid    | Untyped  | Invalid  | untyped(1), untyped(2), invalid(2)
+# | V219    | Untyped  | Valid    | Untyped  | Valid    | untyped(1), untyped(2)
+# | V220    | Untyped  | Valid    | Typed    | Unknown1 | untyped(1), unknown(2)
+# | V221    | Untyped  | Valid    | Typed    | Invalid  | untyped(1), invalid(2)
+# | V222    | Untyped  | Valid    | Typed    | Valid    | untyped(1),
+# +---------+----------+----------+----------+----------+
+# | ----    | Typed    | Unknown1 | Stubbed  | N/A      | unknown(1), stubbed(2)
+# | ----    | Typed    | Unknown1 | Untyped  | Unknown1 | unknown(1), untyped(2), unknown(2)
+# | ----    | Typed    | Unknown1 | Untyped  | Invalid  | unknown(1), untyped(2), invalid(2)
+# | ----    | Typed    | Unknown1 | Untyped  | Valid    | unknown(1), untyped(2)
+# | V223    | Typed    | Unknown1 | Typed    | Unknown1 | unknown(1), unknown(2)
+# | V224    | Typed    | Unknown1 | Typed    | Invalid  | unknown(1), invalid(2)
+# | V225    | Typed    | Unknown1 | Typed    | Valid    | unknown(1),
+# +---------+----------+----------+----------+----------+
+# | ----    | Typed    | Invalid  | Stubbed  | N/A      | invalid(1), stubbed(2)
+# | ----    | Typed    | Invalid  | Untyped  | Unknown1 | invalid(1), untyped(2), unknown(2)
+# | ----    | Typed    | Invalid  | Untyped  | Invalid  | invalid(1), untyped(2), invalid(2)
+# | ----    | Typed    | Invalid  | Untyped  | Valid    | invalid(1), untyped(2)
+# | ----    | Typed    | Invalid  | Typed    | Unknown1 | invalid(1), unknown(2)
+# | V226    | Typed    | Invalid  | Typed    | Invalid  | invalid(1), invalid(2)
+# | V227    | Typed    | Invalid  | Typed    | Valid    | invalid(1),
+# +---------+----------+----------+----------+----------+
+# | ----    | Typed    | Valid    | Stubbed  | N/A      | stubbed(2)
+# | ----    | Typed    | Valid    | Untyped  | Unknown1 | untyped(2), unknown(2)
+# | ----    | Typed    | Valid    | Untyped  | Invalid  | untyped(2), invalid(2)
+# | ----    | Typed    | Valid    | Untyped  | Valid    | untyped(2)
+# | ----    | Typed    | Valid    | Typed    | Unknown1 | unknown(2)
+# | ----    | Typed    | Valid    | Typed    | Invalid  | invalid(2)
+# | V228    | Typed    | Valid    | Typed    | Valid    |
+# +---------+----------+----------+----------+----------+
+#
+# Validity Notes Legend
+# * stubbed(X) - Stubbed Parent X
+# * untyped(X) - Untyped Parent X
+# * unknown(X) - Unknown Gender of Parent X
+# * invalid(X) - Invalid Gender of Parent X
+
+@prefix gx:  <http://gedcomx.org/> .
+@prefix ex:  <http://example.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+######################################################################
+# V201: Parent1=Stubbed; Gender=N/A; Parent2=Stubbed; Gender=N/A
+######################################################################
+ex:V201P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+# ex:V201P2 is Stubbed (referenced only in the ParentChild relationship)
+ex:V201R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V201P2 ;
+    gx:person2 ex:V201P1 .
+
+# ex:V201P3 is Stubbed (referenced only in the ParentChild relationship)
+ex:V201R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V201P3 ;
+    gx:person2 ex:V201P1 .
+
+######################################################################
+# V202: Parent1=Stubbed; Gender=N/A; Parent2=Untyped; Gender=Unknown1
+######################################################################
+ex:V202P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+# ex:V202P2 is Stubbed (referenced only in the ParentChild relationship)
+ex:V202R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V202P2 ;
+    gx:person2 ex:V202P1 .
+
+# ex:V202P3 is Untyped (has some properties but no rdf:type)
+ex:V202P3 gx:birthDate "1900-01-01"^^xsd:date .
+
+ex:V202R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V202P3 ;
+    gx:person2 ex:V202P1 .
+
+######################################################################
+# V203: Parent1=Stubbed; Gender=N/A; Parent2=Untyped; Gender=Invalid
+######################################################################
+ex:V203P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+# ex:V203P2 is Stubbed (referenced only in the ParentChild relationship)
+ex:V203R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V203P2 ;
+    gx:person2 ex:V203P1 .
+
+# ex:V203P3 is Untyped with Invalid Gender
+ex:V203P3 gx:gender [ a gx:Gender ; gx:type ex:OtherGender ] .
+
+ex:V203R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V203P3 ;
+    gx:person2 ex:V203P1 .
+
+######################################################################
+# V204: Parent1=Stubbed; Gender=N/A; Parent2=Untyped; Gender=Valid
+######################################################################
+ex:V204P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+# ex:V204P2 is Stubbed (referenced only in the ParentChild relationship)
+ex:V204R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V204P2 ;
+    gx:person2 ex:V204P1 .
+
+# ex:V204P3 is Untyped with Valid Gender
+ex:V204P3 gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V204R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V204P3 ;
+    gx:person2 ex:V204P1 .
+
+######################################################################
+# V205: Parent1=Stubbed; Gender=N/A; Parent2=Typed; Gender=Unknown1
+######################################################################
+ex:V205P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+# ex:V205P2 is Stubbed (referenced only in the ParentChild relationship)
+ex:V205R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V205P2 ;
+    gx:person2 ex:V205P1 .
+
+# ex:V205P3 is Typed with Unknown1 Gender
+ex:V205P3 a gx:Person .
+
+ex:V205R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V205P3 ;
+    gx:person2 ex:V205P1 .
+
+######################################################################
+# V206: Parent1=Stubbed; Gender=N/A; Parent2=Typed; Gender=Invalid
+######################################################################
+ex:V206P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+# ex:V206P2 is Stubbed (referenced only in the ParentChild relationship)
+ex:V206R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V206P2 ;
+    gx:person2 ex:V206P1 .
+
+# ex:V206P3 is Typed with Invalid Gender
+ex:V206P3 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type ex:OtherGender ] .
+
+ex:V206R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V206P3 ;
+    gx:person2 ex:V206P1 .
+
+######################################################################
+# V207: Parent1=Stubbed; Gender=N/A; Parent2=Typed; Gender=Valid
+######################################################################
+ex:V207P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+# ex:V207P2 is Stubbed (referenced only in the ParentChild relationship)
+ex:V207R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V207P2 ;
+    gx:person2 ex:V207P1 .
+
+# ex:V207P3 is Typed with Valid Gender
+ex:V207P3 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V207R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V207P3 ;
+    gx:person2 ex:V207P1 .
+
+######################################################################
+# V208: Parent1=Untyped; Gender=Unknown1; Parent2=Untyped; Gender=Unknown1
+######################################################################
+ex:V208P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+# ex:V208P2 is Untyped with Unknown1 Gender
+ex:V208P2 gx:birthDate "1900-01-01"^^xsd:date .
+
+ex:V208R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V208P2 ;
+    gx:person2 ex:V208P1 .
+
+# ex:V208P3 is Untyped with Unknown1 Gender
+ex:V208P3 gx:birthDate "1900-01-01"^^xsd:date .
+
+ex:V208R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V208P3 ;
+    gx:person2 ex:V208P1 .
+
+######################################################################
+# V209: Parent1=Untyped; Gender=Unknown1; Parent2=Untyped; Gender=Invalid
+######################################################################
+ex:V209P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+# ex:V209P2 is Untyped with Unknown1 Gender
+ex:V209P2 gx:birthDate "1900-01-01"^^xsd:date .
+
+ex:V209R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V209P2 ;
+    gx:person2 ex:V209P1 .
+
+# ex:V209P3 is Untyped with Invalid Gender
+ex:V209P3 gx:gender [ a gx:Gender ; gx:type ex:OtherGender ] .
+
+ex:V209R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V209P3 ;
+    gx:person2 ex:V209P1 .
+
+######################################################################
+# V210: Parent1=Untyped; Gender=Unknown1; Parent2=Untyped; Gender=Valid
+######################################################################
+ex:V210P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+# ex:V210P2 is Untyped with Unknown1 Gender
+ex:V210P2 gx:birthDate "1900-01-01"^^xsd:date .
+
+ex:V210R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V210P2 ;
+    gx:person2 ex:V210P1 .
+
+# ex:V210P3 is Untyped with Valid Gender
+ex:V210P3 gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V210R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V210P3 ;
+    gx:person2 ex:V210P1 .
+
+######################################################################
+# V211: Parent1=Untyped; Gender=Unknown1; Parent2=Typed; Gender=Unknown1
+######################################################################
+ex:V211P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+# ex:V211P2 is Untyped with Unknown1 Gender
+ex:V211P2 gx:birthDate "1900-01-01"^^xsd:date .
+
+ex:V211R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V211P2 ;
+    gx:person2 ex:V211P1 .
+
+# ex:V211P3 is Typed with Unknown1 Gender
+ex:V211P3 a gx:Person .
+
+ex:V211R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V211P3 ;
+    gx:person2 ex:V211P1 .
+
+######################################################################
+# V212: Parent1=Untyped; Gender=Unknown1; Parent2=Typed; Gender=Invalid
+######################################################################
+ex:V212P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+# ex:V212P2 is Untyped with Unknown1 Gender
+ex:V212P2 gx:birthDate "1900-01-01"^^xsd:date .
+
+ex:V212R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V212P2 ;
+    gx:person2 ex:V212P1 .
+
+# ex:V212P3 is Typed with Invalid Gender
+ex:V212P3 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type ex:OtherGender ] .
+
+ex:V212R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V212P3 ;
+    gx:person2 ex:V212P1 .
+
+######################################################################
+# V213: Parent1=Untyped; Gender=Unknown1; Parent2=Typed; Gender=Valid
+######################################################################
+ex:V213P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+# ex:V213P2 is Untyped with Unknown1 Gender
+ex:V213P2 gx:birthDate "1900-01-01"^^xsd:date .
+
+ex:V213R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V213P2 ;
+    gx:person2 ex:V213P1 .
+
+# ex:V213P3 is Typed with Valid Gender
+ex:V213P3 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V213R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V213P3 ;
+    gx:person2 ex:V213P1 .
+
+######################################################################
+# V214: Parent1=Untyped; Gender=Invalid; Parent2=Untyped; Gender=Invalid
+######################################################################
+ex:V214P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+# ex:V214P2 is Untyped with Invalid Gender
+ex:V214P2 gx:gender [ a gx:Gender ; gx:type ex:OtherGender ] .
+
+ex:V214R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V214P2 ;
+    gx:person2 ex:V214P1 .
+
+# ex:V214P3 is Untyped with Invalid Gender
+ex:V214P3 gx:gender [ a gx:Gender ; gx:type ex:OtherGender ] .
+
+ex:V214R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V214P3 ;
+    gx:person2 ex:V214P1 .
+
+######################################################################
+# V215: Parent1=Untyped; Gender=Invalid; Parent2=Untyped; Gender=Valid
+######################################################################
+ex:V215P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+# ex:V215P2 is Untyped with Invalid Gender
+ex:V215P2 gx:gender [ a gx:Gender ; gx:type ex:OtherGender ] .
+
+ex:V215R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V215P2 ;
+    gx:person2 ex:V215P1 .
+
+# ex:V215P3 is Untyped with Valid Gender
+ex:V215P3 gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V215R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V215P3 ;
+    gx:person2 ex:V215P1 .
+
+######################################################################
+# V216: Parent1=Untyped; Gender=Invalid; Parent2=Typed; Gender=Unknown1
+######################################################################
+ex:V216P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+# ex:V216P2 is Untyped with Invalid Gender
+ex:V216P2 gx:gender [ a gx:Gender ; gx:type ex:OtherGender ] .
+
+ex:V216R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V216P2 ;
+    gx:person2 ex:V216P1 .
+
+# ex:V216P3 is Typed with Unknown1 Gender
+ex:V216P3 a gx:Person .
+
+ex:V216R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V216P3 ;
+    gx:person2 ex:V216P1 .
+
+######################################################################
+# V217: Parent1=Untyped; Gender=Invalid; Parent2=Typed; Gender=Invalid
+######################################################################
+ex:V217P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+# ex:V217P2 is Untyped with Invalid Gender
+ex:V217P2 gx:gender [ a gx:Gender ; gx:type ex:OtherGender ] .
+
+ex:V217R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V217P2 ;
+    gx:person2 ex:V217P1 .
+
+# ex:V217P3 is Typed with Invalid Gender
+ex:V217P3 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type ex:OtherGender ] .
+
+ex:V217R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V217P3 ;
+    gx:person2 ex:V217P1 .
+
+######################################################################
+# V218: Parent1=Untyped; Gender=Invalid; Parent2=Typed; Gender=Valid
+######################################################################
+ex:V218P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+# ex:V218P2 is Untyped with Invalid Gender
+ex:V218P2 gx:gender [ a gx:Gender ; gx:type ex:OtherGender ] .
+
+ex:V218R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V218P2 ;
+    gx:person2 ex:V218P1 .
+
+# ex:V218P3 is Typed with Valid Gender
+ex:V218P3 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V218R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V218P3 ;
+    gx:person2 ex:V218P1 .
+
+######################################################################
+# V219: Parent1=Untyped; Gender=Valid; Parent2=Untyped; Gender=Valid
+######################################################################
+ex:V219P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+# ex:V219P2 is Untyped with Valid Gender
+ex:V219P2 gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V219R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V219P2 ;
+    gx:person2 ex:V219P1 .
+
+# ex:V219P3 is Untyped with Valid Gender
+ex:V219P3 gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V219R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V219P3 ;
+    gx:person2 ex:V219P1 .
+
+######################################################################
+# V220: Parent1=Untyped; Gender=Valid; Parent2=Typed; Gender=Unknown1
+######################################################################
+ex:V220P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+# ex:V220P2 is Untyped with Valid Gender
+ex:V220P2 gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V220R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V220P2 ;
+    gx:person2 ex:V220P1 .
+
+# ex:V220P3 is Typed with Unknown1 Gender
+ex:V220P3 a gx:Person .
+
+ex:V220R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V220P3 ;
+    gx:person2 ex:V220P1 .
+
+######################################################################
+# V221: Parent1=Untyped; Gender=Valid; Parent2=Typed; Gender=Invalid
+######################################################################
+ex:V221P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+# ex:V221P2 is Untyped with Valid Gender
+ex:V221P2 gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V221R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V221P2 ;
+    gx:person2 ex:V221P1 .
+
+# ex:V221P3 is Typed with Invalid Gender
+ex:V221P3 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type ex:OtherGender ] .
+
+ex:V221R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V221P3 ;
+    gx:person2 ex:V221P1 .
+
+######################################################################
+# V222: Parent1=Untyped; Gender=Valid; Parent2=Typed; Gender=Valid
+######################################################################
+ex:V222P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+# ex:V222P2 is Untyped with Valid Gender
+ex:V222P2 gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V222R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V222P2 ;
+    gx:person2 ex:V222P1 .
+
+# ex:V222P3 is Typed with Valid Gender
+ex:V222P3 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V222R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V222P3 ;
+    gx:person2 ex:V222P1 .
+
+######################################################################
+# V223: Parent1=Typed; Gender=Unknown1; Parent2=Typed; Gender=Unknown1
+######################################################################
+ex:V223P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+# ex:V223P2 is Typed with Unknown1 Gender
+ex:V223P2 a gx:Person .
+
+ex:V223R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V223P2 ;
+    gx:person2 ex:V223P1 .
+
+# ex:V223P3 is Typed with Unknown1 Gender
+ex:V223P3 a gx:Person .
+
+ex:V223R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V223P3 ;
+    gx:person2 ex:V223P1 .
+
+######################################################################
+# V224: Parent1=Typed; Gender=Unknown1; Parent2=Typed; Gender=Invalid
+######################################################################
+ex:V224P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+# ex:V224P2 is Typed with Unknown1 Gender
+ex:V224P2 a gx:Person .
+
+ex:V224R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V224P2 ;
+    gx:person2 ex:V224P1 .
+
+# ex:V224P3 is Typed with Invalid Gender
+ex:V224P3 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type ex:OtherGender ] .
+
+ex:V224R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V224P3 ;
+    gx:person2 ex:V224P1 .
+
+######################################################################
+# V225: Parent1=Typed; Gender=Unknown1; Parent2=Typed; Gender=Valid
+######################################################################
+ex:V225P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+# ex:V225P2 is Typed with Unknown1 Gender
+ex:V225P2 a gx:Person .
+
+ex:V225R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V225P2 ;
+    gx:person2 ex:V225P1 .
+
+# ex:V225P3 is Typed with Valid Gender
+ex:V225P3 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V225R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V225P3 ;
+    gx:person2 ex:V225P1 .
+
+######################################################################
+# V226: Parent1=Typed; Gender=Invalid; Parent2=Typed; Gender=Invalid
+######################################################################
+ex:V226P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+# ex:V226P2 is Typed with Invalid Gender
+ex:V226P2 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type ex:OtherGender ] .
+
+ex:V226R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V226P2 ;
+    gx:person2 ex:V226P1 .
+
+# ex:V226P3 is Typed with Invalid Gender
+ex:V226P3 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type ex:OtherGender ] .
+
+ex:V226R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V226P3 ;
+    gx:person2 ex:V226P1 .
+
+######################################################################
+# V227: Parent1=Typed; Gender=Invalid; Parent2=Typed; Gender=Valid
+######################################################################
+ex:V227P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+# ex:V227P2 is Typed with Invalid Gender
+ex:V227P2 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type ex:OtherGender ] .
+
+ex:V227R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V227P2 ;
+    gx:person2 ex:V227P1 .
+
+# ex:V227P3 is Typed with Valid Gender
+ex:V227P3 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V227R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V227P3 ;
+    gx:person2 ex:V227P1 .
+
+######################################################################
+# V228: Parent1=Typed; Gender=Valid; Parent2=Typed; Gender=Valid
+######################################################################
+ex:V228P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+# ex:V228P2 is Typed with Valid Gender
+ex:V228P2 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:V228R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V228P2 ;
+    gx:person2 ex:V228P1 .
+
+# ex:V228P3 is Typed with Valid Gender
+ex:V228P3 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V228R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V228P3 ;
+    gx:person2 ex:V228P1 .
