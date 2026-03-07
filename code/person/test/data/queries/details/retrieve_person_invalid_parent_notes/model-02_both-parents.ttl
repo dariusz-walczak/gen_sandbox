@@ -13,67 +13,67 @@
 #
 # Variant Summary Table:
 #
-# +---------+----------+----------+----------+----------+
-# |         | Parent 1            | Parent 2            |
-# +---------+----------+----------+----------+----------+
-# | Variant | State    | Gender   | State    | Gender   |
-# +---------+----------+----------+----------+----------+
-# | V201    | Stubbed  | N/A      | Stubbed  | N/A      | stubbed(1), stubbed(2)
-# | V202    | Stubbed  | N/A      | Untyped  | Unknown1 | stubbed(1), untyped(2), unknown(2)
-# | V203    | Stubbed  | N/A      | Untyped  | Invalid  | stubbed(1), untyped(2), invalid(2)
-# | V204    | Stubbed  | N/A      | Untyped  | Valid    | stubbed(1), untyped(2)
-# | V205    | Stubbed  | N/A      | Typed    | Unknown1 | stubbed(1), unknown(2)
-# | V206    | Stubbed  | N/A      | Typed    | Invalid  | stubbed(1), invalid(2)
-# | V207    | Stubbed  | N/A      | Typed    | Valid    | stubbed(1),
-# +---------+----------+----------+----------+----------+
-# | ----    | Untyped  | Unknown1 | Stubbed  | N/A      | untyped(1), unknown(1), stubbed(2)
-# | V208    | Untyped  | Unknown1 | Untyped  | Unknown1 | untyped(1), unknown(1), untyped(2), unknown(2)
-# | V209    | Untyped  | Unknown1 | Untyped  | Invalid  | untyped(1), unknown(1), untyped(2), invalid(2)
-# | V210    | Untyped  | Unknown1 | Untyped  | Valid    | untyped(1), unknown(1), untyped(2)
-# | V211    | Untyped  | Unknown1 | Typed    | Unknown1 | untyped(1), unknown(1), unknown(2)
-# | V212    | Untyped  | Unknown1 | Typed    | Invalid  | untyped(1), unknown(1), invalid(2)
-# | V213    | Untyped  | Unknown1 | Typed    | Valid    | untyped(1), unknown(1),
-# +---------+----------+----------+----------+----------+
-# | ----    | Untyped  | Invalid  | Stubbed  | N/A      | untyped(1), invalid(1), stubbed(2)
-# | ----    | Untyped  | Invalid  | Untyped  | Unknown1 | untyped(1), invalid(1), untyped(2), unknown(2)
-# | V214    | Untyped  | Invalid  | Untyped  | Invalid  | untyped(1), invalid(1), untyped(2), invalid(2)
-# | V215    | Untyped  | Invalid  | Untyped  | Valid    | untyped(1), invalid(1), untyped(2)
-# | V216    | Untyped  | Invalid  | Typed    | Unknown1 | untyped(1), invalid(1), unknown(2)
-# | V217    | Untyped  | Invalid  | Typed    | Invalid  | untyped(1), invalid(1), invalid(2)
-# | V218    | Untyped  | Invalid  | Typed    | Valid    | untyped(1), invalid(1),
-# +---------+----------+----------+----------+----------+
-# | ----    | Untyped  | Valid    | Stubbed  | N/A      | untyped(1), stubbed(2)
-# | ----    | Untyped  | Valid    | Untyped  | Unknown1 | untyped(1), untyped(2), unknown(2)
-# | ----    | Untyped  | Valid    | Untyped  | Invalid  | untyped(1), untyped(2), invalid(2)
-# | V219    | Untyped  | Valid    | Untyped  | Valid    | untyped(1), untyped(2)
-# | V220    | Untyped  | Valid    | Typed    | Unknown1 | untyped(1), unknown(2)
-# | V221    | Untyped  | Valid    | Typed    | Invalid  | untyped(1), invalid(2)
-# | V222    | Untyped  | Valid    | Typed    | Valid    | untyped(1),
-# +---------+----------+----------+----------+----------+
-# | ----    | Typed    | Unknown1 | Stubbed  | N/A      | unknown(1), stubbed(2)
-# | ----    | Typed    | Unknown1 | Untyped  | Unknown1 | unknown(1), untyped(2), unknown(2)
-# | ----    | Typed    | Unknown1 | Untyped  | Invalid  | unknown(1), untyped(2), invalid(2)
-# | ----    | Typed    | Unknown1 | Untyped  | Valid    | unknown(1), untyped(2)
-# | V223    | Typed    | Unknown1 | Typed    | Unknown1 | unknown(1), unknown(2)
-# | V224    | Typed    | Unknown1 | Typed    | Invalid  | unknown(1), invalid(2)
-# | V225    | Typed    | Unknown1 | Typed    | Valid    | unknown(1),
-# +---------+----------+----------+----------+----------+
-# | ----    | Typed    | Invalid  | Stubbed  | N/A      | invalid(1), stubbed(2)
-# | ----    | Typed    | Invalid  | Untyped  | Unknown1 | invalid(1), untyped(2), unknown(2)
-# | ----    | Typed    | Invalid  | Untyped  | Invalid  | invalid(1), untyped(2), invalid(2)
-# | ----    | Typed    | Invalid  | Untyped  | Valid    | invalid(1), untyped(2)
-# | ----    | Typed    | Invalid  | Typed    | Unknown1 | invalid(1), unknown(2)
-# | V226    | Typed    | Invalid  | Typed    | Invalid  | invalid(1), invalid(2)
-# | V227    | Typed    | Invalid  | Typed    | Valid    | invalid(1),
-# +---------+----------+----------+----------+----------+
-# | ----    | Typed    | Valid    | Stubbed  | N/A      | stubbed(2)
-# | ----    | Typed    | Valid    | Untyped  | Unknown1 | untyped(2), unknown(2)
-# | ----    | Typed    | Valid    | Untyped  | Invalid  | untyped(2), invalid(2)
-# | ----    | Typed    | Valid    | Untyped  | Valid    | untyped(2)
-# | ----    | Typed    | Valid    | Typed    | Unknown1 | unknown(2)
-# | ----    | Typed    | Valid    | Typed    | Invalid  | invalid(2)
-# | V228    | Typed    | Valid    | Typed    | Valid    |
-# +---------+----------+----------+----------+----------+
+# +---------+----------+----------+----------+----------+------------------------------------------------+
+# |         | Parent 1            | Parent 2            |                                                |
+# +---------+----------+----------+----------+----------+------------------------------------------------+
+# | Variant | State    | Gender   | State    | Gender   |                                                |
+# +---------+----------+----------+----------+----------+------------------------------------------------+
+# | V201    | Stubbed  | N/A      | Stubbed  | N/A      | stubbed(1), stubbed(2)                         |
+# | V202    | Stubbed  | N/A      | Untyped  | Unknown1 | stubbed(1), untyped(2), unknown(2)             |
+# | V203    | Stubbed  | N/A      | Untyped  | Invalid  | stubbed(1), untyped(2), invalid(2)             |
+# | V204    | Stubbed  | N/A      | Untyped  | Valid    | stubbed(1), untyped(2)                         |
+# | V205    | Stubbed  | N/A      | Typed    | Unknown1 | stubbed(1), unknown(2)                         |
+# | V206    | Stubbed  | N/A      | Typed    | Invalid  | stubbed(1), invalid(2)                         |
+# | V207    | Stubbed  | N/A      | Typed    | Valid    | stubbed(1),                                    |
+# +---------+----------+----------+----------+----------+------------------------------------------------+
+# | ----    | Untyped  | Unknown1 | Stubbed  | N/A      | untyped(1), unknown(1), stubbed(2)             |
+# | V208    | Untyped  | Unknown1 | Untyped  | Unknown1 | untyped(1), unknown(1), untyped(2), unknown(2) |
+# | V209    | Untyped  | Unknown1 | Untyped  | Invalid  | untyped(1), unknown(1), untyped(2), invalid(2) |
+# | V210    | Untyped  | Unknown1 | Untyped  | Valid    | untyped(1), unknown(1), untyped(2)             |
+# | V211    | Untyped  | Unknown1 | Typed    | Unknown1 | untyped(1), unknown(1), unknown(2)             |
+# | V212    | Untyped  | Unknown1 | Typed    | Invalid  | untyped(1), unknown(1), invalid(2)             |
+# | V213    | Untyped  | Unknown1 | Typed    | Valid    | untyped(1), unknown(1),                        |
+# +---------+----------+----------+----------+----------+------------------------------------------------|
+# | ----    | Untyped  | Invalid  | Stubbed  | N/A      | untyped(1), invalid(1), stubbed(2)             |
+# | ----    | Untyped  | Invalid  | Untyped  | Unknown1 | untyped(1), invalid(1), untyped(2), unknown(2) |
+# | V214    | Untyped  | Invalid  | Untyped  | Invalid  | untyped(1), invalid(1), untyped(2), invalid(2) |
+# | V215    | Untyped  | Invalid  | Untyped  | Valid    | untyped(1), invalid(1), untyped(2)             |
+# | V216    | Untyped  | Invalid  | Typed    | Unknown1 | untyped(1), invalid(1), unknown(2)             |
+# | V217    | Untyped  | Invalid  | Typed    | Invalid  | untyped(1), invalid(1), invalid(2)             |
+# | V218    | Untyped  | Invalid  | Typed    | Valid    | untyped(1), invalid(1),                        |
+# +---------+----------+----------+----------+----------+------------------------------------------------+
+# | ----    | Untyped  | Valid    | Stubbed  | N/A      | untyped(1), stubbed(2)                         |
+# | ----    | Untyped  | Valid    | Untyped  | Unknown1 | untyped(1), untyped(2), unknown(2)             |
+# | ----    | Untyped  | Valid    | Untyped  | Invalid  | untyped(1), untyped(2), invalid(2)             |
+# | V219    | Untyped  | Valid    | Untyped  | Valid    | untyped(1), untyped(2)                         |
+# | V220    | Untyped  | Valid    | Typed    | Unknown1 | untyped(1), unknown(2)                         |
+# | V221    | Untyped  | Valid    | Typed    | Invalid  | untyped(1), invalid(2)                         |
+# | V222    | Untyped  | Valid    | Typed    | Valid    | untyped(1),                                    |
+# +---------+----------+----------+----------+----------+------------------------------------------------+
+# | ----    | Typed    | Unknown1 | Stubbed  | N/A      | unknown(1), stubbed(2)                         |
+# | ----    | Typed    | Unknown1 | Untyped  | Unknown1 | unknown(1), untyped(2), unknown(2)             |
+# | ----    | Typed    | Unknown1 | Untyped  | Invalid  | unknown(1), untyped(2), invalid(2)             |
+# | ----    | Typed    | Unknown1 | Untyped  | Valid    | unknown(1), untyped(2)                         |
+# | V223    | Typed    | Unknown1 | Typed    | Unknown1 | unknown(1), unknown(2)                         |
+# | V224    | Typed    | Unknown1 | Typed    | Invalid  | unknown(1), invalid(2)                         |
+# | V225    | Typed    | Unknown1 | Typed    | Valid    | unknown(1),                                    |
+# +---------+----------+----------+----------+----------+------------------------------------------------+
+# | ----    | Typed    | Invalid  | Stubbed  | N/A      | invalid(1), stubbed(2)                         |
+# | ----    | Typed    | Invalid  | Untyped  | Unknown1 | invalid(1), untyped(2), unknown(2)             |
+# | ----    | Typed    | Invalid  | Untyped  | Invalid  | invalid(1), untyped(2), invalid(2)             |
+# | ----    | Typed    | Invalid  | Untyped  | Valid    | invalid(1), untyped(2)                         |
+# | ----    | Typed    | Invalid  | Typed    | Unknown1 | invalid(1), unknown(2)                         |
+# | V226    | Typed    | Invalid  | Typed    | Invalid  | invalid(1), invalid(2)                         |
+# | V227    | Typed    | Invalid  | Typed    | Valid    | invalid(1),                                    |
+# +---------+----------+----------+----------+----------+------------------------------------------------+
+# | ----    | Typed    | Valid    | Stubbed  | N/A      | stubbed(2)                                     |
+# | ----    | Typed    | Valid    | Untyped  | Unknown1 | untyped(2), unknown(2)                         |
+# | ----    | Typed    | Valid    | Untyped  | Invalid  | untyped(2), invalid(2)                         |
+# | ----    | Typed    | Valid    | Untyped  | Valid    | untyped(2)                                     |
+# | ----    | Typed    | Valid    | Typed    | Unknown1 | unknown(2)                                     |
+# | ----    | Typed    | Valid    | Typed    | Invalid  | invalid(2)                                     |
+# | V228    | Typed    | Valid    | Typed    | Valid    |                                                |
+# +---------+----------+----------+----------+----------+------------------------------------------------+
 #
 # Validity Notes Legend
 # * stubbed(X) - Stubbed Parent X
