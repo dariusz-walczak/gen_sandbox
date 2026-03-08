@@ -346,7 +346,7 @@ retrieve_result retrieve_person_preferred_name(
             FILTER (?person = <)" + person.get_uri_str() + R"(>)
         })";
 
-    spdlog::debug("retrieve_person_preferred_name: The query: {}", query);
+    spdlog::debug("{}: The query: {}", __func__, query);
 
     common::exec_query_result res = common::exec_query(world, model, query, __func__);
     const common::extract_data_table_result data_tuple = common::extract_data_table(res->results);
@@ -354,8 +354,8 @@ retrieve_result retrieve_person_preferred_name(
 
     if (data_table.empty()) {
         spdlog::debug(
-            "retrieve_person_preferred_name: Properly formed preferred names of person {} were not"
-            " found", person.get_uri_str());
+            "{}: Properly formed preferred names of person {} were not found",
+            __func__, person.get_uri_str());
         return retrieve_result::NotFound;
     }
 

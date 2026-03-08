@@ -2022,6 +2022,58 @@ const std::vector<Param> g_params {
         .proband_uri="http://example.org/V228P1",
         .expected_notes={}
     },
+    {
+        .case_name="ThreeParents",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-03_other-cases.ttl"),
+        .proband_uri="http://example.org/V301P1",
+        .expected_notes={
+            create_untyped_parent_comparable_note({"http://example.org/V301P2", ""}),
+            create_untyped_parent_comparable_note({"http://example.org/V301P3", ""}),
+            create_mistyped_parent_comparable_note({"http://example.org/V301P4", ""}),
+        }
+    },
+    {
+        .case_name="NoParents",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-03_other-cases.ttl"),
+        .proband_uri="http://example.org/V302P1",
+        .expected_notes={}
+    },
+    {
+        .case_name="FourParents",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-03_other-cases.ttl"),
+        .proband_uri="http://example.org/V303P1",
+        .expected_notes={
+            create_unknown_parent_gender_comparable_note({"http://example.org/V303P4", ""}),
+            create_unknown_parent_gender_comparable_note({"http://example.org/V303P5", ""}),
+        }
+    },
+    {
+        .case_name="BadRelationshipType",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-03_other-cases.ttl"),
+        .proband_uri="http://example.org/V304P1",
+        .expected_notes={}
+    },
+    {
+        .case_name="NamedParents",
+        .data_file=(
+            "data/queries/details/retrieve_person_invalid_parent_notes/"
+            "model-03_other-cases.ttl"),
+        .proband_uri="http://example.org/V305P1",
+        .expected_notes={
+            create_invalid_parent_gender_comparable_note(
+                {"http://example.org/V305P2", "Johansson, Alma"}),
+            create_unknown_parent_gender_comparable_note(
+                {"http://example.org/V305P3", "Andersson, Lars"})
+        }
+    },
 };
 
 INSTANTIATE_TEST_SUITE_P(

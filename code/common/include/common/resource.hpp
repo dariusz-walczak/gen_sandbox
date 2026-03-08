@@ -27,6 +27,7 @@ struct Resource
 public:
     Resource() = default;
     Resource(const std::string& uri) { set_uri(uri); }
+    Resource(const boost::urls::url_view_base& uri) : m_uri(uri) {}
     virtual ~Resource() = default;
 
     void set_uri(const std::string& uri);

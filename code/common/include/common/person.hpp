@@ -56,6 +56,7 @@ public:
     };
 
     Person(const std::string& uri) : Resource(uri) {}
+    Person(const boost::urls::url_view_base& uri) : Resource(uri) {}
 
     [[nodiscard]] std::string get_given_names() const;
     [[nodiscard]] std::string get_last_names() const;
