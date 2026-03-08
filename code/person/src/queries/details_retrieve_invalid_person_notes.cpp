@@ -171,19 +171,23 @@ void retrieve_invalid_person_notes(
                 " observed {} flags being true", resource_state_flag_sum));
     }
 
+    std::shared_ptr<common::Person> named_proband =
+        std::make_shared<common::Person>(proband->get_uri());
+    retrieve_person_name(*named_proband, world, model);
+
     if (stubbed_resource_flag)
     {
-        notes.emplace_back(create_stubbed_person_note(proband, spec));
+        notes.emplace_back(create_stubbed_person_note(named_proband, spec));
     }
 
     if (untyped_resource_flag)
     {
-        notes.emplace_back(create_untyped_person_note(proband, spec));
+        notes.emplace_back(create_untyped_person_note(named_proband, spec));
     }
 
     if (mistyped_person_flag)
     {
-        notes.emplace_back(create_mistyped_person_note(proband, spec));
+        notes.emplace_back(create_mistyped_person_note(named_proband, spec));
     }
 
     /** @note The `retrieve_invalid_person_notes` function shall not generate any of the gender
@@ -192,11 +196,11 @@ void retrieve_invalid_person_notes(
     {
         if (gender_unknown_flag)
         {
-            notes.emplace_back(create_gender_unknown_note(proband, spec));
+            notes.emplace_back(create_gender_unknown_note(named_proband, spec));
         }
         else if (gender_invalid_flag)
         {
-            notes.emplace_back(create_gender_invalid_note(proband, spec));
+            notes.emplace_back(create_gender_invalid_note(named_proband, spec));
         }
     }
 }

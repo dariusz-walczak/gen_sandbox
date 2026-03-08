@@ -1,5 +1,5 @@
 
-# Retrieve Person Invalid Parent Notes: Test Suite #01 (Single Parent)
+# Retrieve Person Invalid Parent Notes: Test Suite #02 (Both Parents)
 #
 # Test suite contruction rules:
 #

@@ -1,0 +1,160 @@
+
+# Retrieve Person Invalid Parent Notes: Test Suite #03 (Other Cases)
+#
+# Variant Summary Table:
+#
+# +---------+-------------------------------------------------------+
+# | Variant | Description                                           |
+# +---------+-------------------------------------------------------+
+# | V301    | Three Parents (Two Mothers, One Father)               |
+# | V302    | No Parents At All                                     |
+# | V303    | Two Pairs of Parents (One Valid, One Unknown Gender)  |
+# | V304    | Two Stubbed Parents with Incorrect Relationship Types |
+# | V305    | Two Named Parents with Invalid/Unknown Gender         |
+# +---------+-------------------------------------------------------+
+
+@prefix gx:  <http://gedcomx.org/> .
+@prefix ex:  <http://example.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+######################################################################
+# V301: Three Parents (Two Mothers, One Father, All Untyped)
+######################################################################
+ex:V301P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+# ex:V301P2 is the first mother (Untyped, Valid Gender)
+ex:V301P2 gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:V301R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V301P2 ;
+    gx:person2 ex:V301P1 .
+
+# ex:V301P3 is the second mother (Untyped, Valid Gender)
+ex:V301P3 gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:V301R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V301P3 ;
+    gx:person2 ex:V301P1 .
+
+# ex:V301P4 is the father (Mistyped, Valid Gender)
+ex:V301P4 a gx:Relationship ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V301R3 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V301P4 ;
+    gx:person2 ex:V301P1 .
+
+######################################################################
+# V302: No Parents At All
+######################################################################
+ex:V302P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+######################################################################
+# V303: Two Pairs of Parents (One Pair Valid, Another Unknown Gender)
+######################################################################
+ex:V303P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+# ex:V303P2 is the first mother (Typed, Valid)
+ex:V303P2 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+ex:V303R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V303P2 ;
+    gx:person2 ex:V303P1 .
+
+# ex:V303P3 is the first father (Typed, Valid)
+ex:V303P3 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+ex:V303R2 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V303P3 ;
+    gx:person2 ex:V303P1 .
+
+# ex:V303P4 is the second mother (Typed, Unknown Gender)
+ex:V303P4 a gx:Person .
+
+ex:V303R3 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V303P4 ;
+    gx:person2 ex:V303P1 .
+
+# ex:V303P5 is the second father (Typed, Unknown Gender)
+ex:V303P5 a gx:Person .
+
+ex:V303R4 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V303P5 ;
+    gx:person2 ex:V303P1 .
+
+######################################################################
+# V304: Parents with Incorrect Relationship Types (Stubbed Parents)
+######################################################################
+ex:V304P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Male ] .
+
+# ex:V304P2 is the mother (Stubbed, Incorrect Relationship Type)
+ex:V304R1 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V304P2 ;
+    gx:person2 ex:V304P1 .
+
+# ex:V304P3 is the father (Stubbed, Incorrect Relationship Type)
+ex:V304R2 a gx:Relationship ;
+    gx:type gx:Couple ;
+    gx:person1 ex:V304P3 ;
+    gx:person2 ex:V304P1 .
+
+######################################################################
+# V305: Named Parents with Invalid/Unknown Gender
+######################################################################
+
+ex:V305P1 a gx:Person ;
+    gx:gender [ a gx:Gender ; gx:type gx:Female ] .
+
+# ex:V305P2 is the mother (Typed, Named, Invalid Gender)
+ex:V305P2 a gx:Person ;
+    gx:name [
+        gx:type gx:BirthName ;
+        gx:preferred "true"^^xsd:boolean ;
+        gx:nameForm [
+            gx:lang "pl" ;
+            gx:part [
+                gx:type gx:Given ;
+                gx:value "Alma" ] ;
+            gx:part [
+                gx:type gx:Surname ;
+            gx:value "Johansson" ] ] ] ;
+    gx:gender [ a gx:Gender ; gx:type gx:OtherGender ] .
+
+ex:V305R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V305P2 ;
+    gx:person2 ex:V305P1 .
+
+# ex:V305P3 is the "father" (Typed, Named, Unknown Gender)
+ex:V305P3 a gx:Person ;
+    gx:name [
+        gx:type gx:BirthName ;
+        gx:preferred "true"^^xsd:boolean ;
+        gx:nameForm [
+            gx:lang "pl" ;
+            gx:part [
+                gx:type gx:Given ;
+                gx:value "Lars" ] ;
+            gx:part [
+                gx:type gx:Surname ;
+            gx:value "Andersson" ] ] ] ;
+    gx:gender [ a gx:Gender ] .
+
+ex:V305R1 a gx:Relationship ;
+    gx:type gx:ParentChild ;
+    gx:person1 ex:V305P3 ;
+    gx:person2 ex:V305P1 .
