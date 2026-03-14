@@ -22,7 +22,7 @@ struct Resource;
  * @param[in] resources The input sequence to be checked
  *
  * @throws common::common_exception (input_contract_error) when at least one of the input sequence
- *     elements is a null pointer */
+ *     elements is a @c nullptr */
 template<class Sequence>
 requires requires
 {

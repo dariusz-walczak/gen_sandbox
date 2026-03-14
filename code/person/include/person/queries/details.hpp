@@ -40,7 +40,7 @@ inline constexpr std::string_view k_invalid_proband_gender_note_id = "INVALID_PR
  *
  *  @throws person_exception
  *      (@ref person::person_exception::error_code::input_contract_error "input_contract_error")
- *      if any input parameter is null
+ *      if any input parameter is @c nullptr
  *  @throws common::common_exception
  *      (@ref common::common_exception::error_code::redland_query_error "redland_query_error")
  *      on SPARQL query execution error
@@ -62,7 +62,7 @@ std::shared_ptr<common::Person> retrieve_person_father(
  *
  *  @throws person_exception
  *      (@ref person::person_exception::error_code::input_contract_error "input_contract_error")
- *      if any input parameter is null
+ *      if any input parameter is @c nullptr
  *  @throws common::common_exception
  *      (@ref common::common_exception::error_code::redland_query_error "redland_query_error")
  *      on SPARQL query execution error
@@ -93,7 +93,7 @@ std::shared_ptr<common::Person> retrieve_person_mother(
  *
  *  @throws person_exception
  *      (@ref person::person_exception::error_code::input_contract_error "input_contract_error")
- *      if any input parameter is null
+ *      if any input parameter is @c nullptr
  *  @throws common::common_exception
  *      (@ref common::common_exception::error_code::redland_query_error "redland_query_error")
  *      on SPARQL query execution error */
@@ -125,7 +125,7 @@ std::vector<std::shared_ptr<common::Resource>> retrieve_person_parents(
  *
  *  @throws person_exception
  *      (@ref person::person_exception::error_code::input_contract_error "input_contract_error")
- *      if any input parameter is null
+ *      if any input parameter is @c nullptr
  *  @throws person_exception
  *      (@ref person::person_exception::error_code::input_contract_error "input_contract_error")
  *      if the proband is an unknown resource (not referenced nor described)
