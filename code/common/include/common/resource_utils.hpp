@@ -24,7 +24,7 @@ namespace common
  *
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::input_contract_error "input_contract_error")
- *      if any input parameter is null
+ *      if any input parameter is @c nullptr
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::redland_query_error "redland_query_error")
  *      on SPARQL query execution error
@@ -48,7 +48,7 @@ bool ask_resource_described(
  *
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::input_contract_error "input_contract_error")
- *      when the @p world or @p model parameters are null
+ *      if either @p world or @p model is @c nullptr
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::redland_query_error "redland_query_error")
  *      on SPARQL query execution error
@@ -72,7 +72,7 @@ bool ask_resource_described(
  *
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::input_contract_error "input_contract_error")
- *      if any input parameter is null
+ *      if any input parameter is @c nullptr
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::redland_query_error "redland_query_error")
  *      on SPARQL query execution error
@@ -96,7 +96,7 @@ bool ask_resource_referenced(
  *
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::input_contract_error "input_contract_error")
- *      when the @p world or @p model parameters are null
+ *      if either @p world or @p model is @c nullptr
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::redland_query_error "redland_query_error")
  *      on SPARQL query execution error
@@ -118,7 +118,7 @@ bool ask_resource_referenced(
  *
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::input_contract_error "input_contract_error")
- *      if any input parameter is null
+ *      if any input parameter is @c nullptr
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::redland_query_error "redland_query_error")
  *      on SPARQL query execution error
@@ -140,7 +140,7 @@ bool ask_resource_untyped(
  *
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::input_contract_error "input_contract_error")
- *      if any input parameter is null
+ *      if any input parameter is @c nullptr
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::redland_query_error "redland_query_error")
  *      on SPARQL query execution error
@@ -164,7 +164,7 @@ bool ask_resource_untyped(
  *
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::input_contract_error "input_contract_error")
- *      when any of the @p resource, @p world, or @p model parameters are null
+ *      if any of @p resource, @p world, or @p model is @c nullptr
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::redland_query_error "redland_query_error")
  *      on SPARQL query execution error
@@ -189,7 +189,7 @@ bool ask_resource_mistyped(
  *
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::input_contract_error "input_contract_error")
- *      when any of the @p world, or @p model parameters are null
+ *      if either @p world or @p model is @c nullptr
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::redland_query_error "redland_query_error")
  *      on SPARQL query execution error
@@ -210,7 +210,7 @@ bool ask_resource_mistyped(
  *
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::input_contract_error "input_contract_error")
- *      when any of the @p resource, @p world, or @p model parameters are null
+ *      if any of @p resource, @p world, or @p model is @c nullptr
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::redland_query_error "redland_query_error")
  *      on SPARQL query execution error
@@ -231,7 +231,7 @@ bool ask_resource_typed(
  *
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::input_contract_error "input_contract_error")
- *      when any of the @p world, or @p model parameters are null
+ *      if either @p world or @p model is @c nullptr
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::redland_query_error "redland_query_error")
  *      on SPARQL query execution error
