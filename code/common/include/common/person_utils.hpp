@@ -21,7 +21,7 @@ namespace common
  *      if any input parameter is @c nullptr
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::redland_query_error "redland_query_error")
- *      on SPARQL query execution error
+ *      if a SPARQL query execution error occurs
  */
 bool ask_person_gender_unknown(
     const common::Resource* person, librdf_world* world, librdf_model* model);
@@ -40,7 +40,7 @@ bool ask_person_gender_unknown(
  *      if either @p world or @p model is @c nullptr
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::redland_query_error "redland_query_error")
- *      on SPARQL query execution error
+ *      if a SPARQL query execution error occurs
  */
 bool ask_person_gender_unknown(
     const std::string_view person_uri, librdf_world* world, librdf_model* model);
@@ -59,7 +59,7 @@ bool ask_person_gender_unknown(
  *      if any input parameter is @c nullptr
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::redland_query_error "redland_query_error")
- *      on SPARQL query execution error
+ *      if a SPARQL query execution error occurs
  */
 bool ask_person_gender_invalid(
     const common::Resource* person, librdf_world* world, librdf_model* model);
@@ -78,7 +78,7 @@ bool ask_person_gender_invalid(
  *      if either @p world or @p model is @c nullptr
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::redland_query_error "redland_query_error")
- *      on SPARQL query execution error
+ *      if a SPARQL query execution error occurs
  */
 bool ask_person_gender_invalid(
     const std::string_view person_uri, librdf_world* world, librdf_model* model);

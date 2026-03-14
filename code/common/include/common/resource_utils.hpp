@@ -27,7 +27,7 @@ namespace common
  *      if any input parameter is @c nullptr
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::redland_query_error "redland_query_error")
- *      on SPARQL query execution error
+ *      if a SPARQL query execution error occurs
  */
 bool ask_resource_described(
     const common::Resource* resource, librdf_world* world, librdf_model* model);
@@ -51,7 +51,7 @@ bool ask_resource_described(
  *      if either @p world or @p model is @c nullptr
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::redland_query_error "redland_query_error")
- *      on SPARQL query execution error
+ *      if a SPARQL query execution error occurs
  */
 bool ask_resource_described(
     const std::string_view resource_uri, librdf_world* world, librdf_model* model);
@@ -75,7 +75,7 @@ bool ask_resource_described(
  *      if any input parameter is @c nullptr
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::redland_query_error "redland_query_error")
- *      on SPARQL query execution error
+ *      if a SPARQL query execution error occurs
  */
 bool ask_resource_referenced(
     const common::Resource* resource, librdf_world* world, librdf_model* model);
@@ -99,7 +99,7 @@ bool ask_resource_referenced(
  *      if either @p world or @p model is @c nullptr
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::redland_query_error "redland_query_error")
- *      on SPARQL query execution error
+ *      if a SPARQL query execution error occurs
  */
 bool ask_resource_referenced(
     const std::string_view resource_uri, librdf_world* world, librdf_model* model);
@@ -121,7 +121,7 @@ bool ask_resource_referenced(
  *      if any input parameter is @c nullptr
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::redland_query_error "redland_query_error")
- *      on SPARQL query execution error
+ *      if a SPARQL query execution error occurs
  */
 bool ask_resource_untyped(
     const common::Resource* resource, librdf_world* world, librdf_model* model);
@@ -143,7 +143,7 @@ bool ask_resource_untyped(
  *      if any input parameter is @c nullptr
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::redland_query_error "redland_query_error")
- *      on SPARQL query execution error
+ *      if a SPARQL query execution error occurs
  */
 bool ask_resource_untyped(
     const std::string_view resource_uri, librdf_world* world, librdf_model* model);
@@ -167,7 +167,7 @@ bool ask_resource_untyped(
  *      if any of @p resource, @p world, or @p model is @c nullptr
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::redland_query_error "redland_query_error")
- *      on SPARQL query execution error
+ *      if a SPARQL query execution error occurs
  */
 bool ask_resource_mistyped(
     const common::Resource* resource, const std::string_view expected_type_uri,
@@ -192,7 +192,7 @@ bool ask_resource_mistyped(
  *      if either @p world or @p model is @c nullptr
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::redland_query_error "redland_query_error")
- *      on SPARQL query execution error
+ *      if a SPARQL query execution error occurs
  */
 bool ask_resource_mistyped(
     const std::string_view resource_uri, const std::string_view expected_type_uri,
@@ -213,7 +213,7 @@ bool ask_resource_mistyped(
  *      if any of @p resource, @p world, or @p model is @c nullptr
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::redland_query_error "redland_query_error")
- *      on SPARQL query execution error
+ *      if a SPARQL query execution error occurs
  */
 bool ask_resource_typed(
     const common::Resource* resource, const std::string_view expected_type_uri,
@@ -234,7 +234,7 @@ bool ask_resource_typed(
  *      if either @p world or @p model is @c nullptr
  *  @throws common_exception
  *      (@ref common::common_exception::error_code::redland_query_error "redland_query_error")
- *      on SPARQL query execution error
+ *      if a SPARQL query execution error occurs
  */
 bool ask_resource_typed(
     const std::string_view resource_uri, const std::string_view expected_type_uri,

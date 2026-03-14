@@ -43,7 +43,7 @@ inline constexpr std::string_view k_invalid_proband_gender_note_id = "INVALID_PR
  *      if any input parameter is @c nullptr
  *  @throws common::common_exception
  *      (@ref common::common_exception::error_code::redland_query_error "redland_query_error")
- *      on SPARQL query execution error
+ *      if a SPARQL query execution error occurs
  */
 std::shared_ptr<common::Person> retrieve_person_father(
     const common::Person* proband, librdf_world* world, librdf_model* model,
@@ -65,7 +65,7 @@ std::shared_ptr<common::Person> retrieve_person_father(
  *      if any input parameter is @c nullptr
  *  @throws common::common_exception
  *      (@ref common::common_exception::error_code::redland_query_error "redland_query_error")
- *      on SPARQL query execution error
+ *      if a SPARQL query execution error occurs
  */
 std::shared_ptr<common::Person> retrieve_person_mother(
     const common::Person* proband, librdf_world* world, librdf_model* model,
@@ -96,7 +96,7 @@ std::shared_ptr<common::Person> retrieve_person_mother(
  *      if any input parameter is @c nullptr
  *  @throws common::common_exception
  *      (@ref common::common_exception::error_code::redland_query_error "redland_query_error")
- *      on SPARQL query execution error */
+ *      if a SPARQL query execution error occurs */
 std::vector<std::shared_ptr<common::Resource>> retrieve_person_parents(
     const common::Person* proband, librdf_world* world, librdf_model* model);
 
@@ -131,7 +131,7 @@ std::vector<std::shared_ptr<common::Resource>> retrieve_person_parents(
  *      if the proband is an unknown resource (not referenced nor described)
  *  @throws common::common_exception
  *      (@ref common::common_exception::error_code::redland_query_error "redland_query_error")
- *      on SPARQL query execution error
+ *      if a SPARQL query execution error occurs
  */
 void retrieve_person_invalid_parent_notes(
     const common::Person* proband, librdf_world* world, librdf_model* model,
