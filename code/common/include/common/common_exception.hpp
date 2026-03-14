@@ -17,11 +17,11 @@ public:
          *   classification applies. Typically wraps a third-party or OS error
          *   (e.g., std::error_code). */
         general_runtime_error,
-        /** Initialization of a new Redland RDF Library context has failed for unknown reasons */
+        /** Initialization of a new _Redland RDF Library_ context has failed for unknown reasons */
         redland_initialization_failed,
         /** Execution of a Redland RDF Library query has failed */
         redland_query_error,
-        /** The Redland RDF Library has behaved unexpectedly. This error may occur due to a wrong
+        /** The _Redland RDF Library_ has behaved unexpectedly. This error may occur due to a wrong
          *   assumption about the library's functionality, an interface change related to the
          *   library upgrade, or even a bug in the library implementation. */
         redland_unexpected_behavior,

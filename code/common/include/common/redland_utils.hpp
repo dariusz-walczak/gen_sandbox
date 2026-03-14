@@ -23,7 +23,7 @@ void release_redland_ctx(redland_context* ctx);
 using scoped_redland_ctx = std::unique_ptr<redland_context, decltype(&release_redland_ctx)>;
 
 scoped_redland_ctx create_redland_ctx();
-/** Initialize a new Redland RDF Library context
+/** Initialize a new _Redland RDF Library_ context
  *
  * @throws common_exception when the context initialization fails. All Redland resources allocated
  *     before the failure are released automatically. */
