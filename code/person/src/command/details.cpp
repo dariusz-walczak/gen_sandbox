@@ -38,6 +38,9 @@ void run_details_command(const cli_options& options)
 
     retrieve_person_children(*person, redland_ctx->world, redland_ctx->model);
 
+    retrieve_person_invalid_parent_notes(
+        person.get(), redland_ctx->world, redland_ctx->model, person->notes());
+
     nlohmann::json output = person_to_json(*person);
     std::cout << output.dump(4) << '\n';
 }
