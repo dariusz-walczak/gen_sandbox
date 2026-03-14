@@ -10,7 +10,7 @@ namespace common
 /** @brief Ask if @ref person_gender is @ref unknown_person_gender "Unknown"
  *
  *  @param[in] person The person to be asked about.
- *  @param[in] world The _Redland RDF Library_ world owning the @p model.
+ *  @param[in] world The _Redland RDF Library_ world object that owns the @p model.
  *  @param[in] model The _Redland RDF Library_ model to query.
  *
  *  @retval true when the _%Person Gender_ is _Unknown_ in the @p model.
@@ -29,7 +29,7 @@ bool ask_person_gender_unknown(
 /** @brief Ask if @ref person_gender is @ref unknown_person_gender "Unknown"
  *
  *  @param[in] person_uri The URI of the person to be asked about.
- *  @param[in] world The _Redland RDF Library_ world owning the @p model.
+ *  @param[in] world The _Redland RDF Library_ world object that owns the @p model.
  *  @param[in] model The _Redland RDF Library_ model to query.
  *
  *  @retval true when the _%Person Gender_ is _Unknown_ in the @p model.
@@ -48,7 +48,7 @@ bool ask_person_gender_unknown(
 /** @brief Ask if @ref person_gender is @ref invalid_person_gender "Invalid"
  *
  *  @param[in] person The person to be asked about.
- *  @param[in] world The _Redland RDF Library_ world owning the @p model.
+ *  @param[in] world The _Redland RDF Library_ world object that owns the @p model.
  *  @param[in] model The _Redland RDF Library_ model to query.
  *
  *  @retval true when the _%Person Gender_ is _Invalid_ in the @p model.
@@ -67,7 +67,7 @@ bool ask_person_gender_invalid(
 /** @brief Ask if @ref person_gender is @ref invalid_person_gender "Invalid"
  *
  *  @param[in] person_uri The URI of the person to be asked about.
- *  @param[in] world The _Redland RDF Library_ world owning the @p model.
+ *  @param[in] world The _Redland RDF Library_ world object that owns the @p model.
  *  @param[in] model The _Redland RDF Library_ model to query.
  *
  *  @retval true when the _%Person Gender_ is _Invalid_ in the @p model.

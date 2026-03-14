@@ -16,7 +16,7 @@ namespace common
  *  @see @ref described_resource "Described Resource"
  *
  *  @param[in] resource The resource to be asked about.
- *  @param[in] world The _Redland RDF Library_ world owning the @p model.
+ *  @param[in] world The _Redland RDF Library_ world object that owns the @p model.
  *  @param[in] model The _Redland RDF Library_ model to query.
  *
  *  @retval true when the resource is described in the model
@@ -40,7 +40,7 @@ bool ask_resource_described(
  *  @see @ref described_resource "Described Resource"
  *
  *  @param[in] resource_uri The URI of the resource to be asked about.
- *  @param[in] world The _Redland RDF Library_ world owning the @p model.
+ *  @param[in] world The _Redland RDF Library_ world object that owns the @p model.
  *  @param[in] model The _Redland RDF Library_ model to query.
  *
  *  @retval true when the resource is described in the model
@@ -64,7 +64,7 @@ bool ask_resource_described(
  *  @see @ref referenced_resource "Referenced Resource"
  *
  *  @param[in] resource The resource to be asked about.
- *  @param[in] world The _Redland RDF Library_ world owning the @p model.
+ *  @param[in] world The _Redland RDF Library_ world object that owns the @p model.
  *  @param[in] model The _Redland RDF Library_ model to query.
  *
  *  @retval true when the resource is referenced in the model
@@ -88,7 +88,7 @@ bool ask_resource_referenced(
  *  @see @ref referenced_resource "Referenced Resource"
  *
  *  @param[in] resource_uri The URI of the resource to be asked about.
- *  @param[in] world The _Redland RDF Library_ world owning the @p model.
+ *  @param[in] world The _Redland RDF Library_ world object that owns the @p model.
  *  @param[in] model The _Redland RDF Library_ model to query.
  *
  *  @retval true when the resource is described in the model
@@ -110,7 +110,7 @@ bool ask_resource_referenced(
  *  but not @ref typed_resource "typed".
  *
  *  @param[in] resource The resource to be asked about.
- *  @param[in] world The _Redland RDF Library_ world owning the @p model.
+ *  @param[in] world The _Redland RDF Library_ world object that owns the @p model.
  *  @param[in] model The _Redland RDF Library_ model to query.
  *
  *  @retval true when the resource is untyped (not described by any type) in the model
@@ -132,7 +132,7 @@ bool ask_resource_untyped(
  *  but not @ref typed_resource "typed".
  *
  *  @param[in] resource_uri The URI of the resource to be asked about.
- *  @param[in] world The _Redland RDF Library_ world owning the @p model.
+ *  @param[in] world The _Redland RDF Library_ world object that owns the @p model.
  *  @param[in] model The _Redland RDF Library_ model to query.
  *
  *  @retval true when the resource is untyped (not described by any type) in the model
@@ -155,7 +155,7 @@ bool ask_resource_untyped(
  *
  *  @param[in] resource The resource to be asked about.
  *  @param[in] expected_type_uri The expected @p resource type URI.
- *  @param[in] world The _Redland RDF Library_ world owning the @p model.
+ *  @param[in] world The _Redland RDF Library_ world object that owns the @p model.
  *  @param[in] model The _Redland RDF Library_ model to query.
  *
  *  @retval true when the resource is described in the model by some type, but the type is
@@ -180,7 +180,7 @@ bool ask_resource_mistyped(
  *
  *  @param[in] resource_uri The URI of the resource to be asked about.
  *  @param[in] expected_type_uri The expected @p resource type URI.
- *  @param[in] world The _Redland RDF Library_ world owning the @p model.
+ *  @param[in] world The _Redland RDF Library_ world object that owns the @p model.
  *  @param[in] model The _Redland RDF Library_ model to query.
  *
  *  @retval true when the resource is described in the model by some type, but the type is
@@ -202,7 +202,7 @@ bool ask_resource_mistyped(
  *
  *  @param[in] resource The resource to be asked about.
  *  @param[in] expected_type_uri The expected @p resource type URI.
- *  @param[in] world The _Redland RDF Library_ world owning the @p model.
+ *  @param[in] world The _Redland RDF Library_ world object that owns the @p model.
  *  @param[in] model The _Redland RDF Library_ model to query.
  *
  *  @retval true when the resource is described in the model by the expected type
@@ -223,7 +223,7 @@ bool ask_resource_typed(
  *
  *  @param[in] resource_uri The URI of the resource to be asked about.
  *  @param[in] expected_type_uri The expected @p resource type URI.
- *  @param[in] world The _Redland RDF Library_ world owning the @p model.
+ *  @param[in] world The _Redland RDF Library_ world object that owns the @p model.
  *  @param[in] model The _Redland RDF Library_ model to query.
  *
  *  @retval true when the resource is described in the model by the expected type

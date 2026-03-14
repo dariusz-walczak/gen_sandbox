@@ -33,7 +33,7 @@ inline constexpr std::string_view k_invalid_proband_gender_note_id = "INVALID_PR
  *  Person resource object if found.
  *
  *  @param[in] proband The person whose father is being queried.
- *  @param[in] world The _Redland RDF Library_ world owning the @p model.
+ *  @param[in] world The _Redland RDF Library_ world object that owns the @p model.
  *  @param[in] model The _Redland RDF Library_ model to query.
  *  @retval std::shared_ptr<common::Person> representing the father if found
  *  @retval nullptr if no father or more than one father was found
@@ -55,7 +55,7 @@ std::shared_ptr<common::Person> retrieve_person_father(
  *  Person resource object if found.
  *
  *  @param[in] proband The person whose mother is being queried.
- *  @param[in] world The _Redland RDF Library_ world owning the @p model.
+ *  @param[in] world The _Redland RDF Library_ world object that owns the @p model.
  *  @param[in] model The _Redland RDF Library_ model to query.
  *  @retval std::shared_ptr<common::Person> representing the mother if found
  *  @retval nullptr if no mother or more than one mother was found
@@ -82,7 +82,7 @@ std::shared_ptr<common::Person> retrieve_person_mother(
  *  Duplicates are removed. The order of the returned persons is unspecified.
  *
  *  @param[in] proband The person whose parents are being queried.
- *  @param[in] world The _Redland RDF Library_ world owning the @p model.
+ *  @param[in] world The _Redland RDF Library_ world object that owns the @p model.
  *  @param[in] model The _Redland RDF Library_ model to query.
  *  @return A sequence of common::Resource objects representing the @p proband parents found in
  *          the @p model.
@@ -119,7 +119,7 @@ std::vector<std::shared_ptr<common::Resource>> retrieve_person_parents(
  *  A gender type is invalid when its value is different than `gx:Male` and `gx:Female`.
  *
  *  @param[in] proband The person whose parents are being queried.
- *  @param[in] world The _Redland RDF Library_ world owning the @p model.
+ *  @param[in] world The _Redland RDF Library_ world object that owns the @p model.
  *  @param[in] model The _Redland RDF Library_ model to query.
  *  @param[out] notes the validity note sequence to which the created notes are appended.
  *
