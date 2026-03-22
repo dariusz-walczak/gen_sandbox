@@ -50,14 +50,14 @@ TEST_P(DepsQueries_RetrieveRelatedPersons, NormalSuccessCases)
 const std::vector<Param> g_params {
     {
         "SingleRelation",
-        "data/deps_queries/retrieve_related_persons/normal_success_cases/case0.ttl",
+        "data/queries/deps/retrieve_related_persons/model-00.ttl",
         {
             { "http://example.org/P1", "http://example.org/P2" }
         }
     },
     {
         "SingleFamilyPlusOneUnrelated",
-        "data/deps_queries/retrieve_related_persons/normal_success_cases/case1.ttl",
+        "data/queries/deps/retrieve_related_persons/model-01.ttl",
         {
             { "http://example.org/P1", "http://example.org/P2" },
             { "http://example.org/P1", "http://example.org/P3" },
@@ -66,15 +66,14 @@ const std::vector<Param> g_params {
     },
     {
         "DuplicateRelation",
-        "data/deps_queries/retrieve_related_persons/normal_success_cases/case2.ttl",
+        "data/queries/deps/retrieve_related_persons/model-02.ttl",
         {
             { "http://example.org/P1", "http://example.org/P2" }
         }
     },
     {
         "SingleFamilyInferred",
-        "data/deps_queries/retrieve_related_persons/normal_success_cases/"
-        "case3_single-family-inferred.ttl",
+        "data/queries/deps/retrieve_related_persons/model-03_single-family-inferred.ttl",
         {
             { "http://example.org/P1", "http://example.org/P2" },
             { "http://example.org/P1", "http://example.org/P3" },
