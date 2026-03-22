@@ -13,9 +13,9 @@ add_library(
   src/option_parser.cpp
   src/queries/common.cpp
   src/queries/deps.cpp
-  src/queries/details.cpp
   src/queries/details/retrieve_invalid_person_notes.cpp
   src/queries/details/retrieve_person_parents.cpp
+  src/queries/details/retrieve_person_partners.cpp
 )
 
 target_include_directories(
