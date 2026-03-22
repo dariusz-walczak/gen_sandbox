@@ -7,8 +7,8 @@ add_executable(
   src/main.cpp
   src/queries/common.cpp
   src/queries/deps.cpp
-  src/queries/details.cpp
   src/queries/details/retrieve_person_invalid_parent_notes.cpp
+  src/queries/details/retrieve_person_parent.cpp
   src/queries/details/retrieve_person_parents.cpp
   src/queries/details/retrieve_person_partners.cpp
   src/test/tools/person/comparable_note_factory.cpp

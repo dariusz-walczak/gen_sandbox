@@ -1,26 +1,13 @@
-#include <algorithm>
-#include <memory>
-#include <variant>
-
-#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "common/comparators.hpp"
 #include "person/error.hpp"
 #include "person/queries/details.hpp"
 
 #include "test/tools/application.hpp"
 #include "test/tools/assertions.hpp"
-#include "test/tools/error.hpp"
 #include "test/tools/gtest.hpp"
-#include "test/tools/matchers.hpp"
 #include "test/tools/note.hpp"
-#include "test/tools/person.hpp"
-#include "test/tools/printers.hpp"
 #include "test/tools/redland.hpp"
-#include "test/tools/resource.hpp"
-
-#include "test/tools/person/comparable_note_factory.hpp"
 
 //  The retrieve_person_father and retrieve_person_mother functions tests
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - //
