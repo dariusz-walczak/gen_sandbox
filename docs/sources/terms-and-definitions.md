@@ -3,6 +3,10 @@
 ## Register {#register}
 A __Register__ is a collection of __Register Entries__ of the same type (such as birth, death, or marriage entries), typically covering a continuous period.
 
+## Register Entry {#register_entry}
+
+A __Register Entry__ is an individual record within a __Register__.
+
 ## Birth Register {#birth_register}
 A __Birth Register__ is a __Register__ dedicated to recording and preserving information about births, including the names, dates, and places of birth of individuals, as well as details about their parents and other persons such as witnesses or representatives.
 
