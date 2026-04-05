@@ -18,7 +18,7 @@ A __General Register Book__ is a __Register Book__ containing __Registers__ of a
 
 ## Marriage Register {#marriage_register}
 
-A __Marriage Register__ is a __Register__ dedicated to recording and preserving information about marriages, including the names of the individuals, dates and places of marriage, and details about their family members.
+A __Marriage Register__ is a __Register__ dedicated to recording and preserving information about marriages, including the names of the individuals, dates and places of marriage, and details about their family members and other persons such as witnesses.
 
 ## Register {#register}
 
