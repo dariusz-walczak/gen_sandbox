@@ -107,3 +107,5 @@ An unordered pair of IRIs `(person1, person2)` is an **Inferred Couple** in a gr
   ( rel2, gx:person1, person2 ) ∈ G ∧
   ( rel2, gx:person2, child  ) ∈ G
 ```
+
+<!-- See docs/conventions/terms-and-definitions.md for authoring conventions. -->
