@@ -4,7 +4,7 @@ A __Book__ is a physical or digital volume consisting of multiple [Book Leaves](
 
 ## Subtopics
 
-- [Book Leaf](#book_leaf)
-- [Book Page](#book_page)
-- [Recto](#recto)
-- [Verso](#verso)
+- \subpage book_leaf
+- \subpage book_page
+- \subpage recto
+- \subpage verso

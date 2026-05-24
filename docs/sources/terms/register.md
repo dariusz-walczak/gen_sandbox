@@ -4,6 +4,6 @@ A __Register__ is a collection of [Register Entries](#register_entry) of the sam
 
 ## Subtopics
 
-- [Birth Register](#birth_register)
-- [Death Register](#death_register)
-- [Marriage Register](#marriage_register)
+- \subpage birth_register
+- \subpage death_register
+- \subpage marriage_register
