@@ -1,32 +1,11 @@
-# Knowledge Source: Terms and Definitions
+# Knowledge Source: Terms and Definitions {#sources_terms}
 
-- [Administrative Scope](#administrative_scope)
-- [Archive](#archive)
-  - [Online Repository](#online_repository)
-- [Birth Event](#birth_event)
-  - [Multiple Birth Event](#multiple_birth_event)
-  - [Single Birth Event](#single_birth_event)
-- [Book](#book)
-  - [Book Leaf](#book_leaf)
-  - [Book Page](#book_page)
-  - [Recto](#recto)
-  - [Verso](#verso)
-- [Register](#register)
-  - [Birth Register](#birth_register)
-  - [Death Register](#death_register)
-  - [Marriage Register](#marriage_register)
-- [Register Book](#register_book)
-  - [Digitized Register Book](#digitized_register_book)
-  - [General Register Book](#general_register_book)
-  - [Register Book Leaf](#register_book_leaf)
-  - [Register Book Supplementary Content](#register_book_supplementary_content)
-- [Register Entry](#register_entry)
-  - [Birth Entry](#birth_entry)
-  - [Informant](#informant)
-  - [Register Entry Annotation](#register_entry_annotation)
-    - [Register Entry Correction Note](#register_entry_correction_note)
-    - [Register Entry Later Note](#register_entry_later_note)
-  - [Registrar](#registrar)
-  - [Witness](#witness)
+- \subpage administrative_scope
+- \subpage archive
+- \subpage birth_event
+- \subpage book
+- \subpage register
+- \subpage register_book
+- \subpage register_entry
 
 <!-- See docs/conventions/terms-and-definitions.md for authoring conventions. -->

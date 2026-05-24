@@ -4,5 +4,5 @@ A __Birth Event__ is a [Single Birth Event](#single_birth_event) or a [Multiple 
 
 ## Subtopics
 
-- [Multiple Birth Event](#multiple_birth_event)
-- [Single Birth Event](#single_birth_event)
+- \subpage multiple_birth_event
+- \subpage single_birth_event

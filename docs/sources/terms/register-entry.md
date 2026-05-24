@@ -4,11 +4,11 @@ A __Register Entry__ is an individual record within a [Register](#register).
 
 ## Subtopics
 
-- [Birth Entry](#birth_entry)
-- [Informant](#informant)
-- [Register Entry Annotation](#register_entry_annotation)
-- [Registrar](#registrar)
-- [Witness](#witness)
+- \subpage birth_entry
+- \subpage informant
+- \subpage register_entry_annotation
+- \subpage registrar
+- \subpage witness
 
 <!--
   TODO: Remaining issues to resolve
