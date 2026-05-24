@@ -4,5 +4,5 @@ A __Register Entry Annotation__ is a supplement to a [Register Entry](#register_
 
 ## Subtopics
 
-- [Register Entry Correction Note](#register_entry_correction_note)
-- [Register Entry Later Note](#register_entry_later_note)
+- \subpage register_entry_correction_note
+- \subpage register_entry_later_note
