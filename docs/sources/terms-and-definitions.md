@@ -2,8 +2,8 @@
 
 - \subpage administrative_scope
 - \subpage archive
-- \subpage birth_event
 - \subpage book
+- \subpage event
 - \subpage language
 - \subpage register
 - \subpage register_book
