@@ -163,3 +163,14 @@ docs/sources/
 **File/ID naming:**
 - File and directory names: `kebab-case` (e.g., `register-entry-annotation.md`)
 - Doxygen page IDs: `snake_case` (e.g., `register_entry_annotation`)
+
+**Term definition style:**
+- The page heading is the term in Title Case followed by its Doxygen page ID: `# Term Name {#term_id}`
+- The definition opens with the correct indefinite article ("A" or "An") followed by the term in bold (`__Term Name__`), then "is"
+- Use present tense declarative sentences; state what the term *is*, not how it is used procedurally
+- Keep definitions concise: one to three sentences; prefer one or two
+- Cross-reference other terms inline using markdown links: `[Term Name](#term_id)`
+- Clarifying examples are allowed inline, introduced with "such as", "including", or "e.g." in parentheses
+- Do not reference specific child terms unnecessarily in the definition body — list them in `## Subtopics` instead
+- End every definition sentence with a period
+- `## Subtopics` lists direct children only via `\subpage child_id`, in alphabetical order
