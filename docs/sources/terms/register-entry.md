@@ -7,6 +7,7 @@ A __Register Entry__ is an individual record within a [Register](#register).
 - \subpage birth_entry
 - \subpage informant
 - \subpage register_entry_annotation
+- \subpage register_entry_language
 - \subpage registrar
 - \subpage witness
 
