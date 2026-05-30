@@ -169,7 +169,7 @@ docs/sources/
 - The definition opens with the correct indefinite article ("A" or "An") followed by the term in bold (`__Term Name__`), then "is"
 - Use present tense declarative sentences; state what the term *is*, not how it is used procedurally
 - Keep definitions concise: one to three sentences; prefer one or two
-- Cross-reference other terms inline using markdown links: `[Term Name](#term_id)`
+- Cross-reference other terms inline using markdown links: `[Term Name](#term_id)`. Link only the **first occurrence** of each term within a page; use bold (`__Term Name__`) for subsequent occurrences of the same term.
 - Clarifying examples are allowed inline, introduced with "such as", "including", or "e.g." in parentheses
 - Do not reference specific child terms unnecessarily in the definition body — list them in `## Subtopics` instead
 - End every definition sentence with a period
