@@ -4,6 +4,7 @@
 - \subpage archive
 - \subpage birth_event
 - \subpage book
+- \subpage language
 - \subpage register
 - \subpage register_book
 - \subpage register_entry
