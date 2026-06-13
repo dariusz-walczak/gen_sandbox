@@ -1,4 +1,4 @@
-# Knowledge Source: Terms and Definitions {#sources_terms}
+# Terms and Definitions {#terms}
 
 - \subpage administrative_scope
 - \subpage archive
