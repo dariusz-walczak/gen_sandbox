@@ -30,9 +30,7 @@ def parse_options(args):
 
 
 def build_term(title, anchor):
-    _LOG.debug(
-        "Building term definitionEncountered anchor header (title=%s, anchor=%s)",
-        title, anchor)
+    _LOG.debug("Building term definition (title=%s, anchor=%s)", title, anchor)
 
     return {
         "anchor": anchor,
@@ -57,6 +55,8 @@ def strip_empty_lines(lines):
 
 def load_term(term_path):
     basic_header_pattern = re.compile(r"^#+ .+$")
+    # NOTE: Update the pattern also in the docs/conventions/terms-and-definitions.md when it
+    #       changes.
     anchor_header_pattern = re.compile(
         r"^# (?P<text>[\w \-().:,!?.]+) \{#(?P<anchor>[a-zA-Z0-9_]+)\}\s*$")
 
@@ -138,8 +138,12 @@ def process_term_path(term_path):
             return [term]
 
         _LOG.debug("The term path (%s) is not a markdown file", term_path)
+    elif os.path.isdir(term_path):
+        _LOG.debug("The term path (%s) is a directory", term_path)
+
+        return process_term_directory(term_path)
     else:
-        _LOG.debug("The term path (%s) is not an existing file", term_path)
+        _LOG.debug("The term path (%s) is not an existing file nor a directory", term_path)
 
     return []
 
