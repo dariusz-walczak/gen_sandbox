@@ -21,26 +21,24 @@ serves as the foundation for defining the functional requirements of the gen/san
 
 #### Register Book
 
-* ✅ A typical [Register Book](#register_book) is handwritten.
-* ✅ A typical [Register Book](#register_book) is preserved and provided by an [Archive](#archive).
-* ✅ A [Register Book](#register_book) consists of multiple [Pages](#book_page).
-* ✅ The [Register Book](#register_book) [Pages](#book_page) or [Leafs](#book_leaf) are almost always numbered.
-* ✅ A typical [Register Book](#register_book) consists of a series of prose [Register Entries](#register_entry).
-* ✅ A series of [Register Entries](#register_entry) may take a concise tabular form.
-* ✅ A single [Register Book](#register_book) [Page](#book_page) may include one or more [Register Entries](#register_entry), either complete or partial (started or continued on adjacent **Pages**).
-* ✅ All [Register Entries](#register_entry) of a typical [Register Book](#register_book) are written in the same [Language](#language) but exceptions may occur.
-  (e.g., Polish and Russian in an 1868 book from the Russian Partition).
-* ✅ A [Register Book](#register_book) may be a [Digitized Register Book](#digitized_register_book).
-* ✅ A [Register Book](#register_book) may include [Register Book Supplementary
-  Content](#register_book_supplementary_content) and [Register Entry
-  Annotations](#register_entry_annotation) which may be written in languages different from the
-  language(s) of the entries.
-* ✅ A typical [Register Book](#register_book) includes an index of [Register Entries](#register_entry) for each included [Register](#register).
+* \refined A typical [Register Book](#register_book) is handwritten.
+* \refined A typical [Register Book](#register_book) is preserved and provided by an [Archive](#archive).
+* \refined A [Register Book](#register_book) may be a [Digitized Register Book](#digitized_register_book).
+* \refined A [Register Book](#register_book) consists of multiple [Pages](#book_page).
+* \refined The [Register Book](#register_book) [Pages](#book_page) or [Leafs](#book_leaf) are almost always numbered.
+* \refined A typical [Russian Partition](#russian_partition) [Register Book](#register_book) consists of a series of [Narrative Register Entries](#narrative_register_entry).
+* \refined A [Russian Partition](#russian_partition) [Register Book](#register_book) may, in the early XIX century, consist of a series of [Tabular Register Entries](#tabular_register_entry).
+* \refined A series of [Register Entries](#register_entry) may take a concise tabular form.
+* \refined A single [Register Book](#register_book) [Page](#book_page) may include one or more [Register Entries](#register_entry), either complete or partial (started or continued on adjacent **Pages**).
+* \refined Typically, all [Register Book Entries](#register_entry) use the same [Primary Entry Language](#primary_entry_language).
+* \refined Sometimes, different subsets of [Register Book Entries](#register_book_entries) use different [Primary Entry Languages](#primary_entry_language).
 
+##### Other
+
+* ✅ A [Register Book](#register_book) may include [Register Book Supplementary Content](#register_book_supplementary_content).
+* ✅ A typical [Register Book](#register_book) includes an index of [Register Entries](#register_entry) for each included [Register](#register).
 * -> Mixed Register -> Some _birth register books_ may be shared with the deaths, and marriages registers (e.g., at
   the beginning of the 19th century).
-
-* ✅ A typical [Register Book](#register_book) is written in one primary language.
 * ✅ [Register Book Suplementary Content](#register_book_supplementary_content) may be written in languages different from the [Register Entry](#register_entry) languages.
 
 #### Online Repository
@@ -68,6 +66,8 @@ serves as the foundation for defining the functional requirements of the gen/san
 * Parts of a [Register Entry](#register_entry) may have a different date of registrationcreation and authorship (e.g. marginal notes).
 * In some entries, the date of creation may be imprecise -- for example, when Gregorian and Julian
   calendar dates recorded in the same entry are contradictory.
+* A [Register Entry](#register_entry) may include [Register Entry Annotations](#register_entry_annotation).
+* A [Register Entry Annotation](#register_entry_annotation) may be written in a [Language](#language) different from the [Primary Entry Language](#primary_entry_language).
 
 #### Register Entry Annotation
 
