@@ -2,7 +2,7 @@
 
 A __Participant__ is a person who takes part in an [Event](#event).
 
-## Subtopics
+## Subterms
 
 - \subpage primary_participant
 - \subpage secondary_participant

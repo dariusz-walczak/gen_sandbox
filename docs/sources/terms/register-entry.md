@@ -2,7 +2,7 @@
 
 A __Register Entry__ is an individual record within a [Register](#register).
 
-## Subtopics
+## Subterms
 
 - \subpage birth_entry
 - \subpage informant
@@ -12,12 +12,3 @@ A __Register Entry__ is an individual record within a [Register](#register).
 - \subpage registrar
 - \subpage tabular_register_entry
 - \subpage witness
-
-<!--
-  TODO: Remaining issues to resolve
-
-  1. register-entry-too-vague
-     Register Entry is intentionally minimal as a placeholder. The definition should be
-     expanded to describe what a record contains, or note that content varies by register
-     type (e.g., birth, death, marriage).
--->
