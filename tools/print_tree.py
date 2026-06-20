@@ -5,6 +5,9 @@ import enum
 import logging
 import sys
 
+import shared.argparse_types
+import shared.output
+
 logging.basicConfig(
     level=logging.DEBUG,
     format="[%(levelname)s] %(message)s",
@@ -12,43 +15,18 @@ logging.basicConfig(
 
 _LOG = logging.getLogger()
 
-class Format(enum.Enum):
-    HUMAN = enum.auto()
-    MACHINE = enum.auto()
-    SYMBOLIC = enum.auto()
-
-    def __str__(self):
-        return self.name
-
-
 def parse_options(args):
-    def _format_enum(str_val):
-        try:
-            enum_val = Format[str_val]
-        except KeyError:
-            raise argparse.ArgumentTypeError(f"{repr(str_val)} is not a valid format code name (allowed: {[v.name for v in Format]}")
-        return enum_val
-
-    def _positive_int(str_val):
-        try:
-            int_val = int(str_val)
-        except ValueError as e:
-            raise argparse.ArgumentTypeError(f"{repr(str_val)} is not a valid integer ({e})")
-        if int_val <= 0:
-            raise argparse.ArgumentTypeError(f"{str_val} is not a positive integer")
-        return int_val
-
     parser = argparse.ArgumentParser()
-    default_format = Format.HUMAN
+    default_format = shared.output.Format.HUMAN
     parser.add_argument(
-        "-f", "--format", dest="format", choices=[x for x in Format], type=_format_enum,
-        default=default_format,
+        "-f", "--format", dest="output_format", choices=[x for x in shared.output.Format],
+        type=shared.argparse_types.format_enum, default=default_format,
         help=f"Output format (default: {default_format.name})")
 
     return parser.parse_args(args)
 
 def main(options):
-    print(options.format.name)
+    print(options.output_format.name)
 
 if __name__ == '__main__':
     sys.exit(main(parse_options(sys.argv[1:])))

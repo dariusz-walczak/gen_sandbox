@@ -11,6 +11,8 @@ import os
 import re
 import sys
 
+import shared.argparse_types
+
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -21,22 +23,16 @@ _LOG = logging.getLogger()
 
 
 def parse_options(args):
-    def _positive_int(str_val):
-        try:
-            int_val = int(str_val)
-        except ValueError as e:
-            raise argparse.ArgumentTypeError(f"{repr(str_val)} is not a valid integer ({e})")
-        if int_val <= 0:
-            raise argparse.ArgumentTypeError(f"{str_val} is not a positive integer")
-        return int_val
-
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-t", "--term", nargs="+", action="store", metavar="PATH", dest="term_paths", default=[],
         help="PATH to the term file to be included in the exported term list")
     parser.add_argument(
-        "--max-depth", action="store", metavar="DEPTH", dest="max_depth", type=_positive_int,
-        help="Maximum number of subterm levels to be exported starting from each specified term")
+        "--max-depth", action="store", metavar="DEPTH", dest="max_depth",
+        type=shared.argparse_types.positive_int,
+        help=(
+            "Maximum number of subterm levels to be exported starting from each specified term"
+            " (default: <unlimited>)"))
 
     return parser.parse_args(args)
 
