@@ -21,10 +21,22 @@ _LOG = logging.getLogger()
 
 
 def parse_options(args):
+    def _positive_int(str_val):
+        try:
+            int_val = int(str_val)
+        except ValueError as e:
+            raise argparse.ArgumentTypeError(f"{repr(str_val)} is not a valid integer ({e})")
+        if int_val <= 0:
+            raise argparse.ArgumentTypeError(f"{str_val} is not a positive integer")
+        return int_val
+
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "-t", "--term", nargs="+", action="store", metavar="PATH", dest="term_paths",
+        "-t", "--term", nargs="+", action="store", metavar="PATH", dest="term_paths", default=[],
         help="PATH to the term file to be included in the exported term list")
+    parser.add_argument(
+        "--max-depth", action="store", metavar="DEPTH", dest="max_depth", type=_positive_int,
+        help="Maximum number of subterm levels to be exported starting from each specified term")
 
     return parser.parse_args(args)
 
@@ -99,13 +111,13 @@ def load_term(term_path):
 
 # Returns list of terms in the directory (can be assigned to the children of the parent term or
 #  be used directly)
-def process_term_directory(term_dir_path):
+def process_term_directory(options, term_dir_path):
     _LOG.info("Processing term directory: %s", term_dir_path)
 
     result_terms = []
 
     for term_path in glob.glob(f"{term_dir_path}/*.md"):
-        term = process_term_path(term_path)
+        term = process_term_path(options, term_path)
 
         if term is not None:
             result_terms.append(term)
@@ -113,7 +125,7 @@ def process_term_directory(term_dir_path):
     return result_terms
 
 
-def process_term_path(term_path):
+def process_term_path(options, term_path):
     _LOG.info("Processing term path: %s", term_path)
 
     if os.path.isfile(term_path):
@@ -133,7 +145,7 @@ def process_term_path(term_path):
             if os.path.isdir(root_path):
                 _LOG.debug("The term directory (%s) exists", root_path)
 
-                term["children"] = process_term_directory(root_path)
+                term["children"] = process_term_directory(options, root_path)
 
             return [term]
 
@@ -141,7 +153,7 @@ def process_term_path(term_path):
     elif os.path.isdir(term_path):
         _LOG.debug("The term path (%s) is a directory", term_path)
 
-        return process_term_directory(term_path)
+        return process_term_directory(options, term_path)
     else:
         _LOG.debug("The term path (%s) is not an existing file nor a directory", term_path)
 
@@ -151,7 +163,7 @@ def main(options):
     terms = []
 
     for term_path in options.term_paths:
-        terms += process_term_path(term_path)
+        terms += process_term_path(options, term_path)
 
     print(json.dumps(terms, indent=2))
 
