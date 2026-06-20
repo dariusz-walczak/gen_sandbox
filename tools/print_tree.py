@@ -12,7 +12,13 @@ logging.basicConfig(
 
 _LOG = logging.getLogger()
 
-Format = enum.Enum('Format', ('HUMAN', 'MACHINE', 'SYMBOLIC'))
+class Format(enum.Enum):
+    HUMAN = enum.auto()
+    MACHINE = enum.auto()
+    SYMBOLIC = enum.auto()
+
+    def __str__(self):
+        return self.name
 
 
 def parse_options(args):
