@@ -1,6 +1,7 @@
+<!-- See docs/conventions/terms-and-definitions.md for authoring conventions. -->
 # Register Entry Language {#register_entry_language}
 
-A __Register Entry Language__ is a [Language](#language) in which a [Register Entry](#register_entry) or a part of it is written.
+A __Register Entry Language__ is a __[Language](#language)__ in which a __[Register Entry](#register_entry)__ or a part of it is written.
 
 ## Subterms
 

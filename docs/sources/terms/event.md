@@ -1,6 +1,7 @@
+<!-- See docs/conventions/terms-and-definitions.md for authoring conventions. -->
 # Event {#event}
 
-An __Event__ is an occurrence in which one or more [Participants](#participant) take part. An event may or may not be documented by a [Register Entry](#register_entry).
+An __Event__ is an occurrence in which one or more __[Participants](#participant)__ take part. An event may or may not be documented by a __[Register Entry](#register_entry)__.
 
 ## Subterms
 
