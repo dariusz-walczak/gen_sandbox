@@ -1,6 +1,7 @@
+<!-- See docs/conventions/terms-and-definitions.md for authoring conventions. -->
 # Register Entry {#register_entry}
 
-A __Register Entry__ is an individual record within a [Register](#register).
+A __Register Entry__ is an individual record within a __[Register](#register)__.
 
 ## Subterms
 

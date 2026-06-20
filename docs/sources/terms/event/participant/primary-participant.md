@@ -1,3 +1,4 @@
+<!-- See docs/conventions/terms-and-definitions.md for authoring conventions. -->
 # Primary Participant {#primary_participant}
 
-A __Primary Participant__ is a [Participant](#participant) who is one of the central subjects of an [Event](#event), such as a newborn in a [Birth Event](#birth_event) or the deceased in a burial.
+A __Primary Participant__ is a __[Participant](#participant)__ who is one of the central subjects of an __[Event](#event)__, such as a newborn in a __[Birth Event](#birth_event)__ or the deceased in a burial.
