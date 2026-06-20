@@ -1,6 +1,7 @@
+<!-- See docs/conventions/terms-and-definitions.md for authoring conventions. -->
 # Register {#register}
 
-A __Register__ is a collection of [Register Entries](#register_entry) of the same type (such as birth, death, or marriage entries), typically covering a continuous period within a specific [Administrative Scope](#administrative_scope).
+A __Register__ is a collection of __[Register Entries](#register_entry)__ of the same type (such as birth, death, or marriage entries), typically covering a continuous period within a specific __[Administrative Scope](#administrative_scope)__.
 
 ## Subterms
 

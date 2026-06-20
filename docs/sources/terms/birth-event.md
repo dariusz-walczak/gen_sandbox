@@ -1,6 +1,7 @@
+<!-- See docs/conventions/terms-and-definitions.md for authoring conventions. -->
 # Birth Event {#birth_event}
 
-A __Birth Event__ is an [Event](#event) that is either a [Single Birth Event](#single_birth_event) or a [Multiple Birth Event](#multiple_birth_event).
+A __Birth Event__ is an __[Event](#event)__ that is either a __[Single Birth Event](#single_birth_event)__ or a __[Multiple Birth Event](#multiple_birth_event)__.
 
 ## Subterms
 
