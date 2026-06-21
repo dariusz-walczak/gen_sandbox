@@ -7,6 +7,9 @@ import logging
 import sys
 
 import colorama
+import rich.console
+import rich.markdown
+import rich.theme
 
 import shared.argparse_types
 import shared.error
@@ -50,44 +53,43 @@ def parse_std_input_json():
 
     return parsed
 
-###################################################################################################
-
-from rich.markdown import Markdown
-from rich.console import Console
-from rich.theme import Theme
 
 def render_console_markdown(options, text):
     # Define a custom theme
-    custom_theme = Theme({
-        "markdown.bold": "bold red",          # Bold text in red
+    custom_theme = rich.theme.Theme({
+        "markdown.strong": "bold white",          # Bold text in red
+        "markdown.code": "dim green",
         "markdown.link_url": "dim",           # URL part (hidden or dimmed)
     })
 
     # Create a console with the custom theme
-    console = Console(theme=custom_theme)
+    console = rich.console.Console(theme=custom_theme)
 
     # Render the markdown
-    md = Markdown(text)
+    md = rich.markdown.Markdown(text)
     console.print(md)
 
-###################################################################################################
 
 def print_terms_human_int(options, terms, level=1):
     lines = []
 
     for term in terms:
-        title = term.get("title", "<unknown-title>")
         anchor = term.get("anchor", "<unknown-anchor>")
-        lines.append(
-            f"{' '*(level-1)*4}* "
-            f"{colorama.Fore.BLUE}{colorama.Style.BRIGHT}{title}{colorama.Style.RESET_ALL} "
-            f"{{{colorama.Fore.GREEN}{colorama.Style.DIM}#{anchor}{colorama.Style.RESET_ALL}}}")
+        anchor_markdown = f"`{{#{anchor}}}`"
+        item_head_markdown = f"{' '*(level-1)*4}*"
+        item_tail_markdown = f"{' '*(level)}"
 
-        if not options.exclude_definition:
-            # Add two spaces after the title/anchor line to force line break before the definition:
-            lines[-1] += "  "
-            for line in term.get("definition", "<no-definition>"):
-                lines.append(f"{' '*(level)} {line}")
+        if options.exclude_definition:
+            title = term.get("title", "<unknown-title>")
+            lines.append(
+                f"{item_head_markdown} __{title}__ {anchor_markdown}")
+        else:
+            definition = term.get("definition", "<no-definition>")
+
+            lines.append(f"{item_head_markdown} {definition[0]}")
+            for line in definition[1:]:
+                lines.append(f"{item_tail_markdown} {line}")
+            lines[-1] += f" {anchor_markdown}"
 
         lines += print_terms_human_int(options, term["children"], level+1)
 
