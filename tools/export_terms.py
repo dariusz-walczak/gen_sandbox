@@ -12,7 +12,7 @@ import re
 import sys
 
 import shared.argparse_types
-
+import shared.error
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -24,15 +24,23 @@ _LOG = logging.getLogger()
 
 def parse_options(args):
     parser = argparse.ArgumentParser()
+
     parser.add_argument(
         "-t", "--term", nargs="+", action="store", metavar="PATH", dest="term_paths", default=[],
         help="PATH to the term file to be included in the exported term list")
+
     parser.add_argument(
         "--max-depth", action="store", metavar="DEPTH", dest="max_depth",
         type=shared.argparse_types.positive_int,
         help=(
             "Maximum number of subterm levels to be exported starting from each specified term"
             " (default: <unlimited>)"))
+
+    default_log_level = "WARNING"
+    parser.add_argument(
+        "-l", "--log-level", dest="log_level", choices=logging.getLevelNamesMapping().keys(),
+        type=shared.argparse_types.logging_level, default=default_log_level,
+        help=f"Logging level (default: {default_log_level})")
 
     return parser.parse_args(args)
 
@@ -116,7 +124,7 @@ def process_term_directory(options, term_dir_path):
         term = process_term_path(options, term_path)
 
         if term is not None:
-            result_terms.append(term)
+            result_terms += term
 
     return result_terms
 
@@ -167,4 +175,14 @@ def main(options):
 
 
 if __name__ == '__main__':
-    sys.exit(main(parse_options(sys.argv[1:])))
+    options = parse_options(sys.argv[1:])
+
+    # Apply the log level optionally provided through command line argument:
+    level = logging.getLevelNamesMapping().get(options.log_level, logging.NOTSET)
+    logging.getLogger().setLevel(level)
+
+    try:
+        sys.exit(main(options))
+    except shared.error.AppError as e:
+        print(f"ERROR: {e}")
+        sys.exit(1)
