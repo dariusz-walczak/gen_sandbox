@@ -10,6 +10,7 @@ import colorama
 import rich.console
 import rich.markdown
 import rich.theme
+import sexpdata
 
 import shared.argparse_types
 import shared.error
@@ -57,9 +58,9 @@ def parse_std_input_json():
 def render_console_markdown(options, text):
     # Define a custom theme
     custom_theme = rich.theme.Theme({
-        "markdown.strong": "bold white",          # Bold text in red
+        "markdown.strong": "bold white",
         "markdown.code": "dim green",
-        "markdown.link_url": "dim",           # URL part (hidden or dimmed)
+        "markdown.link_url": "dim",
     })
 
     # Create a console with the custom theme
@@ -99,11 +100,44 @@ def print_terms_human(options, terms):
     lines = print_terms_human_int(options, terms)
     render_console_markdown(options, '\n'.join(lines))
 
+def print_terms_machine(terms):
+    minimized = json.dumps(terms, indent=None, separators=(",", ":"))
+    print(minimized)
+
+def print_terms_symbolic_int(terms):
+    output = []
+
+    for term in terms:
+        anchor = term.get("anchor", "<unknown-anchor>")
+        title = term.get("title", "<unknown-title>")
+        body = "\n".join(term.get("definition", ["<no-definition>"]))
+
+        if term["children"]:
+            optional_subterms = [":subterms", print_terms_symbolic_int(term["children"])]
+        else:
+            optional_subterms = []
+
+        output.append(["term", ":id", anchor, ":name", title, ":definition", body
+                       ] + optional_subterms)
+
+    return output
+
+
+def print_terms_symbolic(terms):
+    sexp_data = ["glossary", ":terms"] + [print_terms_symbolic_int(terms)]
+    serialized = sexpdata.dumps(sexp_data)
+    print(serialized)
+
+
 def main(options):
     data = parse_std_input_json()
 
     if options.output_format == shared.output.Format.HUMAN:
         print_terms_human(options, data)
+    elif options.output_format == shared.output.Format.MACHINE:
+        print_terms_machine(data)
+    elif options.output_format == shared.output.Format.SYMBOLIC:
+        print_terms_symbolic(data)
 
 
 if __name__ == '__main__':
