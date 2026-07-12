@@ -79,8 +79,8 @@ class PlainTextRenderer(mistune.BaseRenderer):
 # * References: [Caption](#anchor) -> Caption {anchor}
 # * Strip emphasis and strong
 # * Eliminate soft breaks
+# * Eliminate the last trailing newline
 def genai_friendly_format(md_text: str) -> str:
-    renderer = PlainTextRenderer()
-    md = mistune.create_markdown(renderer=renderer)
-    result = md(md_text)
-    return result
+    md_instance = mistune.create_markdown(renderer=PlainTextRenderer())
+    # The strip call is supposed to eliminate the trailing newline
+    return md_instance(md_text).strip()
