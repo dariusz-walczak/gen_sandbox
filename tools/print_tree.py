@@ -1,9 +1,10 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run
 
 import argparse
 import enum
 import json
 import logging
+import re
 import sys
 
 import colorama
@@ -14,7 +15,9 @@ import sexpdata
 
 import shared.argparse_types
 import shared.error
+import shared.markdown
 import shared.output
+import shared.terms
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -31,6 +34,12 @@ def parse_options(args):
         "-f", "--format", dest="output_format", choices=[x for x in shared.output.Format],
         type=shared.argparse_types.format_enum, default=default_format,
         help=f"Output format (default: {default_format.name})")
+
+    parser.add_argument(
+        "-i", "--input", dest="input_path", metavar="PATH",
+        help=(
+            "Input json file PATH (the data will be read from the STDIN if the PATH is not"
+            " specified)"))
 
     parser.add_argument(
         "-D", "--no-definition", dest="exclude_definition", action="store_true",
@@ -51,6 +60,24 @@ def parse_std_input_json():
         raise shared.error.AppError(
             shared.error.AppError.Codes.InvalidInput,
             f"Invalid JSON data provided on the standard input") from e
+
+    return parsed
+
+
+def parse_file_input_json(file_path):
+    try:
+        json_file = open(file_path)
+    except OSError as e:
+        raise shared.error.AppError(
+            shared.error.AppError.Codes.InvalidInput,
+            f"Failed to open the json file (file_path)") from e
+
+    try:
+        parsed = json.loads(json_file.read())
+    except json.JSONDecodeError as e:
+        raise shared.error.AppError(
+            shared.error.AppError.Codes.InvalidInput,
+            f"Failed to deserialize the json file ({file_path})") from e
 
     return parsed
 
@@ -110,14 +137,16 @@ def print_terms_symbolic_int(terms):
     for term in terms:
         anchor = term.get("anchor", "<unknown-anchor>")
         title = term.get("title", "<unknown-title>")
-        body = "\n".join(term.get("definition", ["<no-definition>"]))
+        definition_lines = [line.strip() for line in term.get("definition", ["<no-definition>"])]
+        definition_raw = "\n".join(definition_lines)
+        definition = shared.markdown.genai_friendly_format(definition_raw)
 
         if term["children"]:
             optional_subterms = [":subterms", print_terms_symbolic_int(term["children"])]
         else:
             optional_subterms = []
 
-        output.append(["term", ":id", anchor, ":name", title, ":definition", body
+        output.append(["term", ":id", anchor, ":name", title, ":definition", definition
                        ] + optional_subterms)
 
     return output
@@ -130,7 +159,10 @@ def print_terms_symbolic(terms):
 
 
 def main(options):
-    data = parse_std_input_json()
+    if options.input_path is not None:
+        data = parse_file_input_json(options.input_path)
+    else:
+        data = parse_std_input_json()
 
     if options.output_format == shared.output.Format.HUMAN:
         print_terms_human(options, data)

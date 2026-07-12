@@ -1,7 +1,4 @@
-#!/usr/bin/env python3
-"""
-Export terms definitions from the docs/sources/terms/ directory to a markdown list.
-"""
+#!/usr/bin/env -S uv run
 
 import argparse
 import glob
@@ -13,6 +10,7 @@ import sys
 
 import shared.argparse_types
 import shared.error
+import shared.terms
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -71,10 +69,12 @@ def strip_empty_lines(lines):
 
 def load_term(term_path):
     basic_header_pattern = re.compile(r"^#+ .+$")
-    # NOTE: Update the pattern also in the docs/conventions/terms-and-definitions.md when it
-    #       changes.
+
+    name_pattern_str = shared.terms.TERM_NAME_SINGLELINE_PATTERN_STRING
+    id_pattern_str = shared.terms.TERM_ID_PATTERN_STRING
+
     anchor_header_pattern = re.compile(
-        r"^# (?P<text>[\w \-().:,!?.]+) \{#(?P<anchor>[a-zA-Z0-9_]+)\}\s*$")
+        rf"^# (?P<name>{name_pattern_str}) \{{#(?P<id>{id_pattern_str})\}}\s*$")
 
     # [ignored lines]
     # # Valid Anchor Header {#valid_anchor_header}
@@ -97,7 +97,7 @@ def load_term(term_path):
 
                 if m is not None:
                     _LOG.debug("The valid anchor header was just encountered")
-                    term = build_term(m.group("text"), m.group("anchor"))
+                    term = build_term(m.group("name"), m.group("id"))
             elif basic_header_pattern.match(line):
                 _LOG.debug("The follow-up header was encountered")
                 # The definition line list is complete. All remaining lines are ignored.
