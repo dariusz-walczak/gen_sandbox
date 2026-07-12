@@ -1,0 +1,20 @@
+[project]
+name = "gen-sandbox-tools"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+   "colorama",
+   "rich",
+   "sexpdata",
+   "mistune",
+]
+
+[dependency-groups]
+dev = [
+   "pytest",
+   "pytest-cov",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--cov=shared --cov-report=term-missing"
