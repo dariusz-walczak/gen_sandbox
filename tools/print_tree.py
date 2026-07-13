@@ -85,6 +85,7 @@ def parse_file_input_json(file_path):
 def render_console_markdown(options, text):
     # Define a custom theme
     custom_theme = rich.theme.Theme({
+        "markdown.em": "bold red", # Used for errors indication
         "markdown.strong": "bold white",
         "markdown.code": "dim green",
         "markdown.link_url": "dim",
@@ -102,17 +103,24 @@ def print_terms_human_int(options, terms, level=1):
     lines = []
 
     for term in terms:
-        anchor = term.get("anchor", "<unknown-anchor>")
-        anchor_markdown = f"`{{#{anchor}}}`"
+        anchor = term.get("anchor")
+        if anchor is not None:
+            anchor_markdown = f"`{{#{anchor}}}`"
+        else:
+            anchor_markdown = f"_{{MISSING ID}}_"
         item_head_markdown = f"{' '*(level-1)*4}*"
         item_tail_markdown = f"{' '*(level)}"
 
         if options.exclude_definition:
-            title = term.get("title", "<unknown-title>")
+            title = term.get("title")
+            if title is not None:
+                title_markdown = f"__{title}__"
+            else:
+                title_markdown = "_MISSING TITLE_"
             lines.append(
-                f"{item_head_markdown} __{title}__ {anchor_markdown}")
+                f"{item_head_markdown} {title_markdown} {anchor_markdown}")
         else:
-            definition = term.get("definition", "<no-definition>")
+            definition = term.get("definition", ["_MISSING DEFINITION_"])
 
             lines.append(f"{item_head_markdown} {definition[0]}")
             for line in definition[1:]:
