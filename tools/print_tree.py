@@ -131,15 +131,18 @@ def print_terms_machine(terms):
     minimized = json.dumps(terms, indent=None, separators=(",", ":"))
     print(minimized)
 
+def make_gen_ai_friendly_definition(term):
+    definition_lines = [line.strip() for line in term.get("definition", ["<no-definition>"])]
+    definition_raw = "\n".join(definition_lines)
+    return shared.markdown.genai_friendly_format(definition_raw)
+
 def print_terms_symbolic_int(terms):
     output = []
 
     for term in terms:
         anchor = term.get("anchor", "<unknown-anchor>")
         title = term.get("title", "<unknown-title>")
-        definition_lines = [line.strip() for line in term.get("definition", ["<no-definition>"])]
-        definition_raw = "\n".join(definition_lines)
-        definition = shared.markdown.genai_friendly_format(definition_raw)
+        definition = make_gen_ai_friendly_definition(term)
 
         if term["children"]:
             optional_subterms = [":subterms", print_terms_symbolic_int(term["children"])]
@@ -158,6 +161,77 @@ def print_terms_symbolic(terms):
     print(serialized)
 
 
+# Make the terms hierarchy flat (with the parent annotation). Return them as a list of line lists,
+# to delegate terms joining to the caller
+def print_terms_context_int(
+        terms,
+        parent_title: str|None = None,
+        parent_id: str|None = None) -> list[list[str]]:
+
+    output_terms = [] # list of line groups, a single group represents one term
+    for term in terms:
+        anchor = term.get("anchor", "<unknown-anchor>")
+        title = term.get("title", "<unknown-title>")
+        if parent_title is not None and parent_id is not None:
+            parent_lines = [f"  Parent: {parent_title} {{{parent_id}}}"]
+        elif parent_id is not None:
+            parent_lines = [f"  Parent: {{{parent_id}}}"]
+        else:
+            parent_lines = []
+        definition_lines = make_gen_ai_friendly_definition(term).splitlines()
+        head_definition_line = next(iter(definition_lines), "<no-definition>")
+        term_lines = [
+            f"- {title} {{{anchor}}}",
+        ] + parent_lines + [
+            f"  Definition: {head_definition_line}"
+        ] + [
+            f"  {line}" for line in definition_lines[1:]
+        ]
+        output_terms.append(term_lines)
+        if term["children"]:
+            output_terms += print_terms_context_int(
+                term["children"], term.get("title"), term.get("anchor"))
+
+    return output_terms
+
+
+def print_terms_context(terms):
+    output_lines = [
+        "BEGIN GLOSSARY CONTEXT",
+        "",
+        "GLOSSARY INSTRUCTIONS",
+        "",
+        "Each glossary item is separated by a blank line and contains:",
+        "",
+        "- Space Separated Title {snake_case_id}            Required. `snake_case_id` is globally"
+        " unique and stable.",
+        "- Parent: Space Separated Title {snake_case_id}    Optional. Term cross-reference.",
+        "- Definition: text                                 Required. May cross-reference terms.",
+        "",
+        "Cross-references appear as `Space Separated Title {snake_case_id}`. In each such"
+        " reference, the `{snake_case_id}` is the authoritative target. Do not infer a different"
+        " target from similar title text elsewhere in the glossary."
+        " Reference Title variations (plural, abbreviated, or contextually simplified forms) are"
+        " intentional and carry meaning — do not normalize or correct them.",
+        "",
+        "This export may omit referenced terms. Treat unavailable references as opaque labels"
+        " unless their definitions are required to complete the requested task; then request the"
+        " missing term(s).",
+        "",
+        "GLOSSARY ITEMS (SUBSET)"
+    ]
+    terms_sections = print_terms_context_int(terms)
+
+    for section in terms_sections:
+        output_lines.append("")
+        output_lines.extend(section)
+
+    output_lines.append("")
+    output_lines.append("END GLOSSARY CONTEXT")
+
+    print('\n'.join(output_lines))
+
+
 def main(options):
     if options.input_path is not None:
         data = parse_file_input_json(options.input_path)
@@ -170,6 +244,8 @@ def main(options):
         print_terms_machine(data)
     elif options.output_format == shared.output.Format.SYMBOLIC:
         print_terms_symbolic(data)
+    elif options.output_format == shared.output.Format.CONTEXT:
+        print_terms_context(data)
 
 
 if __name__ == '__main__':
