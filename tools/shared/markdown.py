@@ -1,10 +1,8 @@
-
-
-
 import re
 import mistune
 
 import shared.terms
+
 
 class PlainTextRenderer(mistune.BaseRenderer):
     NAME = "plain"
