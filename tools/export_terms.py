@@ -24,7 +24,7 @@ def parse_options(args):
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
-        "-t", "--term", nargs="+", action="store", metavar="PATH", dest="term_paths", default=[],
+        "-i", "--input", nargs="+", action="store", metavar="PATH", dest="input_paths", default=[],
         help="PATH to the term file to be included in the exported term list")
 
     parser.add_argument(
@@ -166,7 +166,7 @@ def process_term_path(options, term_path):
 def main(options):
     terms = []
 
-    for term_path in options.term_paths:
+    for term_path in options.input_paths:
         terms += process_term_path(options, term_path)
 
     print(json.dumps(terms, indent=2))
