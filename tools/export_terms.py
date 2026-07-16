@@ -28,10 +28,21 @@ def parse_options(args):
         help="PATH to the term file to be included in the exported term list")
 
     parser.add_argument(
-        "--max-depth", action="store", metavar="DEPTH", dest="max_depth",
+        "-t", "--term", nargs="+", action="store", metavar="ID", dest="term_ids", default=[],
+        help="ID of the root term to be included in the exported term list")
+
+    parser.add_argument(
+        "--max-tree-depth", action="store", metavar="NUMBER", dest="max_tree_depth",
         type=shared.argparse_types.positive_int,
         help=(
-            "Maximum number of subterm levels to be exported starting from each specified term"
+            "Maximum NUMBER of term hierarchy levels to be extracted starting from each specified"
+            " input path (default: <unlimited>)"))
+
+    parser.add_argument(
+        "--max-cref-depth", action="store", metavar="DEPTH", dest="max_cref_depth",
+        type=shared.argparse_types.positive_int,
+        help=(
+            "Maximum NUMBER of cross-references to be followed starting from each specified term"
             " (default: <unlimited>)"))
 
     default_log_level = "WARNING"
@@ -53,6 +64,13 @@ def build_term(title, anchor):
         "children": []
     }
 
+
+def strip_children(term):
+    """shallow copy: the definition list is referenced rather then copied. the main purpose is to optionally exclude
+    children"""
+    return {**term, "children": []}
+
+
 def strip_empty_lines(lines):
     if not lines:
         return []
@@ -65,7 +83,7 @@ def strip_empty_lines(lines):
     assert back_non_empty_offset is not None
 
     return lines[front_non_empty_offset : len(lines) - back_non_empty_offset]
-    
+
 
 def load_term(term_path):
     basic_header_pattern = re.compile(r"^#+ .+$")
@@ -121,7 +139,7 @@ def process_term_directory(options, term_dir_path):
     result_terms = []
 
     for term_path in glob.glob(f"{term_dir_path}/*.md"):
-        term = process_term_path(options, term_path)
+        term = process_input_path(options, term_path)
 
         if term is not None:
             result_terms += term
@@ -129,7 +147,7 @@ def process_term_directory(options, term_dir_path):
     return result_terms
 
 
-def process_term_path(options, term_path):
+def process_input_path(options, term_path):
     _LOG.info("Processing term path: %s", term_path)
 
     if os.path.isfile(term_path):
@@ -163,13 +181,72 @@ def process_term_path(options, term_path):
 
     return []
 
+
+def build_terms_lookup(terms_hierarchy):
+    """Simply convert the hierarchy to a lookup dictionary
+    terms_hierarchy shall be deduplicated in terms of the term anchor/id (input contract)
+    """
+
+    terms_lookup = {}
+
+    for term in terms_hierarchy:
+        term_id = term["anchor"]
+        assert term_id not in terms_lookup # Input
+        terms_lookup[term_id] = term
+        terms_lookup |= build_terms_lookup(term["children"])
+
+    return terms_lookup
+
+
+def extract_term_references(term):
+    name_pattern_str = shared.terms.TERM_NAME_MULTILINE_PATTERN_STRING
+    id_pattern_str = shared.terms.TERM_ID_PATTERN_STRING
+
+    definition_text = "\n".join(term["definition"])
+    term_id_pattern = re.compile(
+        rf"\[(?:{name_pattern_str})\]\(#(?P<id>{id_pattern_str})\)")
+    return [m.group("id") for m in term_id_pattern.finditer(definition_text)]
+
+
+def extract_referenced_terms(term_ids, terms_lookup, seen_terms=None):
+    extracted_terms = []
+    if seen_terms is None:
+        seen_terms = set()
+
+    for term_id in term_ids:
+        if term_id in seen_terms:
+            _LOG.debug(f"Term ({term_id}) already extracted")
+        elif term_id not in terms_lookup:
+            _LOG.warning(f"Requested term ({term_id}) wasn't found in the specified term trees")
+        else:
+            term = terms_lookup[term_id]
+            extracted_terms.append(strip_children(term))
+            seen_terms.add(term_id)
+            referenced_terms = extract_term_references(term)
+            _LOG.info(f"Terms referenced by the {term['anchor']} definition: {', '.join(referenced_terms)}")
+            extracted_terms += extract_referenced_terms(
+                referenced_terms, terms_lookup, seen_terms)
+
+    return extracted_terms
+
+
+
+
 def main(options):
-    terms = []
+    terms_hierarchy = []
 
-    for term_path in options.input_paths:
-        terms += process_term_path(options, term_path)
+    for input_path in options.input_paths:
+        terms_hierarchy += process_input_path(options, input_path)
 
-    print(json.dumps(terms, indent=2))
+    # TODO: Filter out duplicates
+
+    terms_lookup = build_terms_lookup(terms_hierarchy)
+    terms_collection = extract_referenced_terms(options.term_ids, terms_lookup)
+
+    if terms_collection:
+        print(json.dumps(terms_collection, indent=2))
+    else:
+        print(json.dumps(terms_hierarchy, indent=2))
 
     return 0
 
