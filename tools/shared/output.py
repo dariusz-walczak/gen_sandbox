@@ -1,5 +1,6 @@
 import enum
 
+
 class Format(enum.Enum):
     HUMAN = enum.auto() # Human-friendly, colored console output
     MACHINE = enum.auto() # JSON

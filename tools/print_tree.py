@@ -1,13 +1,10 @@
 #!/usr/bin/env -S uv run
 
 import argparse
-import enum
 import json
 import logging
-import re
 import sys
 
-import colorama
 import rich.console
 import rich.markdown
 import rich.theme
@@ -58,7 +55,7 @@ def parse_std_input_json():
     except json.JSONDecodeError as e:
         raise shared.error.AppError(
             shared.error.AppError.Codes.InvalidInput,
-            f"Invalid JSON data provided on the standard input") from e
+            "Invalid JSON data provided on the standard input") from e
 
     return parsed
 
@@ -69,7 +66,7 @@ def parse_file_input_json(file_path):
     except OSError as e:
         raise shared.error.AppError(
             shared.error.AppError.Codes.InvalidInput,
-            f"Failed to open the json file (file_path)") from e
+            f"Failed to open the json file {file_path}") from e
 
     try:
         parsed = json.loads(json_file.read())
@@ -106,7 +103,7 @@ def print_terms_human_int(options, terms, level=1):
         if anchor is not None:
             anchor_markdown = f"`{{#{anchor}}}`"
         else:
-            anchor_markdown = f"_{{MISSING ID}}_"
+            anchor_markdown = "_{MISSING ID}_"
         item_head_markdown = f"{' '*(level-1)*4}*"
         item_tail_markdown = f"{' '*(level)}"
 
