@@ -66,8 +66,8 @@ def build_term(title, anchor):
 
 
 def strip_children(term):
-    """shallow copy: the definition list is referenced rather then copied. the main purpose is to optionally exclude
-    children"""
+    """shallow copy: the definition list is referenced rather then copied. the main purpose is to
+    optionally exclude children"""
     return {**term, "children": []}
 
 
@@ -104,7 +104,7 @@ def load_term(term_path):
 
     _LOG.info("Opening term file (%s)", term_path)
 
-    with open(term_path, "r", encoding="utf-8") as term_file:
+    with open(term_path, encoding="utf-8") as term_file:
         for line in term_file:
             line = line.rstrip("\n")
 
@@ -223,7 +223,9 @@ def extract_referenced_terms(term_ids, terms_lookup, seen_terms=None):
             extracted_terms.append(strip_children(term))
             seen_terms.add(term_id)
             referenced_terms = extract_term_references(term)
-            _LOG.info(f"Terms referenced by the {term['anchor']} definition: {', '.join(referenced_terms)}")
+            _LOG.info(
+                f"Terms referenced by the {term['anchor']} definition: "
+                f"{', '.join(referenced_terms)}")
             extracted_terms += extract_referenced_terms(
                 referenced_terms, terms_lookup, seen_terms)
 
