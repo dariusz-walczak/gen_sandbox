@@ -230,8 +230,6 @@ def extract_referenced_terms(term_ids, terms_lookup, seen_terms=None):
     return extracted_terms
 
 
-
-
 def main(options):
     terms_hierarchy = []
 
