@@ -17,7 +17,6 @@ import shared.argparse_types
 import shared.error
 import shared.markdown
 import shared.output
-import shared.terms
 
 logging.basicConfig(
     level=logging.DEBUG,
