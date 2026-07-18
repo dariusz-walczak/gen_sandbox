@@ -1,12 +1,14 @@
 #!/usr/bin/env -S uv run
 
 import argparse
+import dataclasses
 import glob
 import json
 import logging
 import os
 import re
 import sys
+import typing
 
 import shared.argparse_types
 import shared.error
@@ -20,7 +22,7 @@ logging.basicConfig(
 _LOG = logging.getLogger()
 
 
-def parse_options(args):
+def parse_options(args: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
@@ -54,24 +56,12 @@ def parse_options(args):
     return parser.parse_args(args)
 
 
-def build_term(title, anchor):
-    _LOG.debug("Building term definition (title=%s, anchor=%s)", title, anchor)
-
-    return {
-        "anchor": anchor,
-        "title": title,
-        "definition": [],
-        "children": []
-    }
+# Maybe introduce a Term container class?
+def build_term(title: str, anchor: str) -> shared.terms.Term:
+    return shared.terms.Term(id_=anchor, title=title)
 
 
-def strip_children(term):
-    """shallow copy: the definition list is referenced rather then copied. the main purpose is to
-    optionally exclude children"""
-    return {**term, "children": []}
-
-
-def strip_empty_lines(lines):
+def strip_empty_lines(lines: list[str]) -> list[str]:
     if not lines:
         return []
 
@@ -85,7 +75,7 @@ def strip_empty_lines(lines):
     return lines[front_non_empty_offset : len(lines) - back_non_empty_offset]
 
 
-def load_term(term_path):
+def load_term(term_path: str) -> shared.terms.Term | None:
     basic_header_pattern = re.compile(r"^#+ .+$")
 
     name_pattern_str = shared.terms.TERM_NAME_SINGLELINE_PATTERN_STRING
@@ -123,17 +113,21 @@ def load_term(term_path):
             else:
                 _LOG.debug("A definition line was encountered")
                 # A line between the valid anchor header and the first follow-up header
-                term["definition"].append(line)
+                term.definition.append(line)
 
     if term is not None:
-        term["definition"] = strip_empty_lines(term["definition"])
+        term.definition = strip_empty_lines(term.definition)
 
     return term
 
 
 # Returns list of terms in the directory (can be assigned to the children of the parent term or
 #  be used directly)
-def process_term_directory(options, term_dir_path):
+def process_term_directory(
+        options: argparse.Namespace,
+        term_dir_path: str
+) -> list[shared.terms.Term]:
+
     _LOG.info("Processing term directory: %s", term_dir_path)
 
     result_terms = []
@@ -147,7 +141,11 @@ def process_term_directory(options, term_dir_path):
     return result_terms
 
 
-def process_input_path(options, term_path):
+def process_input_path(
+        options: argparse.Namespace,
+        term_path: str
+) -> list[shared.terms.Term]:
+
     _LOG.info("Processing term path: %s", term_path)
 
     if os.path.isfile(term_path):
@@ -167,7 +165,7 @@ def process_input_path(options, term_path):
             if os.path.isdir(root_path):
                 _LOG.debug("The term directory (%s) exists", root_path)
 
-                term["children"] = process_term_directory(options, root_path)
+                term.children = process_term_directory(options, root_path)
 
             return [term]
 
@@ -182,7 +180,7 @@ def process_input_path(options, term_path):
     return []
 
 
-def build_terms_lookup(terms_hierarchy):
+def build_terms_lookup(terms_hierarchy: list[shared.terms.Term]) -> dict[str, shared.terms.Term]:
     """Simply convert the hierarchy to a lookup dictionary
     terms_hierarchy shall be deduplicated in terms of the term anchor/id (input contract)
     """
@@ -190,25 +188,29 @@ def build_terms_lookup(terms_hierarchy):
     terms_lookup = {}
 
     for term in terms_hierarchy:
-        term_id = term["anchor"]
-        assert term_id not in terms_lookup # Input
-        terms_lookup[term_id] = term
-        terms_lookup |= build_terms_lookup(term["children"])
+        assert term.id_ not in terms_lookup # Input terms_hierarchy should be deduplicated
+        terms_lookup[term.id_] = term
+        terms_lookup |= build_terms_lookup(term.children)
 
     return terms_lookup
 
 
-def extract_term_references(term):
+def extract_term_references(term: shared.terms.Term) -> list[str]:
     name_pattern_str = shared.terms.TERM_NAME_MULTILINE_PATTERN_STRING
     id_pattern_str = shared.terms.TERM_ID_PATTERN_STRING
 
-    definition_text = "\n".join(term["definition"])
+    definition_text = "\n".join(term.definition)
     term_id_pattern = re.compile(
         rf"\[(?:{name_pattern_str})\]\(#(?P<id>{id_pattern_str})\)")
     return [m.group("id") for m in term_id_pattern.finditer(definition_text)]
 
 
-def extract_referenced_terms(term_ids, terms_lookup, seen_terms=None):
+def extract_referenced_terms(
+        term_ids: list[str],
+        terms_lookup: dict[str, shared.terms.Term],
+        seen_terms: set[str] | None = None
+) -> list[shared.terms.Term]:
+
     extracted_terms = []
     if seen_terms is None:
         seen_terms = set()
@@ -220,11 +222,13 @@ def extract_referenced_terms(term_ids, terms_lookup, seen_terms=None):
             _LOG.warning(f"Requested term ({term_id}) wasn't found in the specified term trees")
         else:
             term = terms_lookup[term_id]
-            extracted_terms.append(strip_children(term))
+            # Make a shallow copy of `term` with the `children` list cleared to not pollute the
+            #  result list with unreferenced subterms of a referenced term:
+            extracted_terms.append(dataclasses.replace(term, children=[]))
             seen_terms.add(term_id)
             referenced_terms = extract_term_references(term)
             _LOG.info(
-                f"Terms referenced by the {term['anchor']} definition: "
+                f"Terms referenced by the {term.id_} definition: "
                 f"{', '.join(referenced_terms)}")
             extracted_terms += extract_referenced_terms(
                 referenced_terms, terms_lookup, seen_terms)
@@ -232,7 +236,7 @@ def extract_referenced_terms(term_ids, terms_lookup, seen_terms=None):
     return extracted_terms
 
 
-def main(options):
+def main(options: argparse.Namespace) -> int:
     terms_hierarchy = []
 
     for input_path in options.input_paths:
@@ -243,10 +247,15 @@ def main(options):
     terms_lookup = build_terms_lookup(terms_hierarchy)
     terms_collection = extract_referenced_terms(options.term_ids, terms_lookup)
 
+    def _serialize(obj: object) -> object:
+        if dataclasses.is_dataclass(obj) and not isinstance(obj, type):
+            return dataclasses.asdict(obj)
+        raise TypeError(f"Object of type {type(obj).__name__} is not JSON serializable")
+
     if terms_collection:
-        print(json.dumps(terms_collection, indent=2))
+        print(json.dumps(terms_collection, indent=2, default=_serialize))
     else:
-        print(json.dumps(terms_hierarchy, indent=2))
+        print(json.dumps(terms_hierarchy, indent=2, default=_serialize))
 
     return 0
 
