@@ -68,5 +68,5 @@ import shared.markdown
         "",
     ),
 ])
-def test_convert(md_input, expected):
+def test_convert(md_input: str, expected: str) -> None:
     assert shared.markdown.genai_friendly_format(md_input) == expected
