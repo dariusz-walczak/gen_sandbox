@@ -7,5 +7,5 @@ class Format(enum.Enum):
     SYMBOLIC = enum.auto() # Symbolic expression
     CONTEXT = enum.auto() # Generative AI friendly plain text
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
