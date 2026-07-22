@@ -1,4 +1,4 @@
-import dataclasses
+import pydantic
 
 # NOTE: Keep the TERM_NAME_SINGLELINE_PATTERN_STRING and the TERM_NAME_MULTILINE_PATTERN_STRING
 #       constants consistent in terms of all non-whitespace characters.
@@ -9,9 +9,8 @@ TERM_NAME_MULTILINE_PATTERN_STRING = r"[\w\s\-().:,!?.]+"
 TERM_ID_PATTERN_STRING = r"[a-zA-Z0-9_]+"
 
 
-@dataclasses.dataclass
-class Term:
-    id_: str
-    title: str
-    definition: list[str] = dataclasses.field(default_factory=list)
-    children: list["Term"] = dataclasses.field(default_factory=list)
+class Term(pydantic.BaseModel):
+    id: str
+    title: str | None = None
+    definition: list[str] = []
+    children: list["Term"] = []
