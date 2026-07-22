@@ -4,6 +4,7 @@ import argparse
 import json
 import logging
 import sys
+import typing
 
 import rich.console
 import rich.markdown
@@ -12,8 +13,10 @@ import sexpdata
 
 import shared.argparse_types
 import shared.error
+import shared.json
 import shared.markdown
 import shared.output
+import shared.terms
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -22,7 +25,7 @@ logging.basicConfig(
 
 _LOG = logging.getLogger()
 
-def parse_options(args):
+def parse_options(args: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser()
 
     default_format = shared.output.Format.HUMAN
@@ -49,7 +52,7 @@ def parse_options(args):
 
     return parser.parse_args(args)
 
-def parse_std_input_json():
+def parse_std_input_json() -> typing.Any:
     try:
         parsed = json.loads(sys.stdin.read())
     except json.JSONDecodeError as e:
@@ -60,7 +63,7 @@ def parse_std_input_json():
     return parsed
 
 
-def parse_file_input_json(file_path):
+def parse_file_input_json(file_path: str) -> typing.Any:
     try:
         json_file = open(file_path)
     except OSError as e:
@@ -78,7 +81,7 @@ def parse_file_input_json(file_path):
     return parsed
 
 
-def render_console_markdown(options, text):
+def render_console_markdown(options: argparse.Namespace, text: str) -> None:
     # Define a custom theme
     custom_theme = rich.theme.Theme({
         "markdown.em": "bold red", # Used for errors indication
@@ -95,87 +98,99 @@ def render_console_markdown(options, text):
     console.print(md)
 
 
-def print_terms_human_int(options, terms, level=1):
+def print_terms_human_int(
+        options: argparse.Namespace,
+        terms: typing.Sequence[shared.terms.Term],
+        level: int = 1
+) -> list[str]:
     lines = []
 
     for term in terms:
-        anchor = term.get("anchor")
-        if anchor is not None:
-            anchor_markdown = f"`{{#{anchor}}}`"
+        if term.id is not None:
+            anchor_markdown = f"`{{#{term.id}}}`"
         else:
             anchor_markdown = "_{MISSING ID}_"
         item_head_markdown = f"{' '*(level-1)*4}*"
         item_tail_markdown = f"{' '*(level)}"
 
         if options.exclude_definition:
-            title = term.get("title")
-            if title is not None:
-                title_markdown = f"__{title}__"
+            if term.title is not None:
+                title_markdown = f"__{term.title}__"
             else:
-                title_markdown = "_MISSING TITLE_"
+                title_markdown = "_MISSING TERM.TITLE_"
             lines.append(
                 f"{item_head_markdown} {title_markdown} {anchor_markdown}")
         else:
-            definition = term.get("definition", ["_MISSING DEFINITION_"])
+            if term.definition:
+                definition = term.definition
+            else:
+                definition = ["_MISSING DEFINITION_"]
 
             lines.append(f"{item_head_markdown} {definition[0]}")
             for line in definition[1:]:
                 lines.append(f"{item_tail_markdown} {line}")
             lines[-1] += f" {anchor_markdown}"
 
-        lines += print_terms_human_int(options, term["children"], level+1)
+        lines += print_terms_human_int(options, term.children, level+1)
 
     return lines
 
-def print_terms_human(options, terms):
+def print_terms_human(
+        options: argparse.Namespace,
+        terms: typing.Sequence[shared.terms.Term]
+) -> None:
+
     lines = print_terms_human_int(options, terms)
     render_console_markdown(options, '\n'.join(lines))
 
-def print_terms_machine(terms):
-    minimized = json.dumps(terms, indent=None, separators=(",", ":"))
+def print_terms_machine(terms : typing.Sequence[shared.terms.Term]) -> None:
+    minimized = json.dumps(
+        terms, indent=None, separators=(",", ":"), default=shared.json.default_cb)
     print(minimized)
 
-def make_gen_ai_friendly_definition(term):
-    definition_lines = [line.strip() for line in term.get("definition", ["<no-definition>"])]
+def make_gen_ai_friendly_definition(term: shared.terms.Term) -> str:
+    if term.definition:
+        definition_lines = [line.strip() for line in term.definition]
+    else:
+        definition_lines = ["[MISSING DEFINITION]"]
     definition_raw = "\n".join(definition_lines)
     return shared.markdown.genai_friendly_format(definition_raw)
 
-def print_terms_symbolic_int(terms):
+def print_terms_symbolic_int(terms: typing.Sequence[shared.terms.Term]) -> list[list[typing.Any]]:
     output = []
 
     for term in terms:
-        anchor = term.get("anchor", "<unknown-anchor>")
-        title = term.get("title", "<unknown-title>")
+        title = term.title if term.title else "<unknown-title>"
         definition = make_gen_ai_friendly_definition(term)
 
-        if term["children"]:
-            optional_subterms = [":subterms", print_terms_symbolic_int(term["children"])]
+        if term.children:
+            optional_subterms = [":subterms", print_terms_symbolic_int(term.children)]
         else:
             optional_subterms = []
 
-        output.append(["term", ":id", anchor, ":name", title, ":definition", definition
-                       ] + optional_subterms)
+        output.append(
+            ["term", ":id", term.id, ":name", title, ":definition", definition] +
+            optional_subterms)
 
     return output
 
 
-def print_terms_symbolic(terms):
+def print_terms_symbolic(terms: typing.Sequence[shared.terms.Term]) -> None:
     sexp_data = ["glossary", ":terms"] + [print_terms_symbolic_int(terms)]
-    serialized = sexpdata.dumps(sexp_data)
+    serialized: str = sexpdata.dumps(sexp_data) # type: ignore[no-untyped-call]
     print(serialized)
 
 
 # Make the terms hierarchy flat (with the parent annotation). Return them as a list of line lists,
 # to delegate terms joining to the caller
 def print_terms_context_int(
-        terms,
-        parent_title: str|None = None,
-        parent_id: str|None = None) -> list[list[str]]:
+        terms: typing.Sequence[shared.terms.Term],
+        parent_title: str | None = None,
+        parent_id: str | None = None) -> list[list[str]]:
 
     output_terms = [] # list of line groups, a single group represents one term
     for term in terms:
-        anchor = term.get("anchor", "<unknown-anchor>")
-        title = term.get("title", "<unknown-title>")
+        title = term.title if term.title else "<unknown-title>"
         if parent_title is not None and parent_id is not None:
             parent_lines = [f"  Parent: {parent_title} {{{parent_id}}}"]
         elif parent_id is not None:
@@ -185,21 +200,20 @@ def print_terms_context_int(
         definition_lines = make_gen_ai_friendly_definition(term).splitlines()
         head_definition_line = next(iter(definition_lines), "<no-definition>")
         term_lines = [
-            f"- {title} {{{anchor}}}",
+            f"- {title} {{{term.id}}}",
         ] + parent_lines + [
             f"  Definition: {head_definition_line}"
         ] + [
             f"  {line}" for line in definition_lines[1:]
         ]
         output_terms.append(term_lines)
-        if term["children"]:
-            output_terms += print_terms_context_int(
-                term["children"], term.get("title"), term.get("anchor"))
+        if term.children:
+            output_terms += print_terms_context_int(term.children, term.title, term.id)
 
     return output_terms
 
 
-def print_terms_context(terms):
+def print_terms_context(terms: typing.Sequence[shared.terms.Term]) -> None:
     output_lines = [
         "BEGIN GLOSSARY CONTEXT",
         "",
@@ -236,20 +250,27 @@ def print_terms_context(terms):
     print('\n'.join(output_lines))
 
 
-def main(options):
+def json_to_terms(raw_terms: typing.Any) -> tuple[shared.terms.Term, ...]:
+    return tuple(shared.terms.Term(**raw_term) for raw_term in raw_terms)
+
+
+def main(options: argparse.Namespace) -> int:
     if options.input_path is not None:
-        data = parse_file_input_json(options.input_path)
+        raw_terms = parse_file_input_json(options.input_path)
     else:
-        data = parse_std_input_json()
+        raw_terms = parse_std_input_json()
+    terms = json_to_terms(raw_terms)
 
     if options.output_format == shared.output.Format.HUMAN:
-        print_terms_human(options, data)
+        print_terms_human(options, terms)
     elif options.output_format == shared.output.Format.MACHINE:
-        print_terms_machine(data)
+        print_terms_machine(terms)
     elif options.output_format == shared.output.Format.SYMBOLIC:
-        print_terms_symbolic(data)
+        print_terms_symbolic(terms)
     elif options.output_format == shared.output.Format.CONTEXT:
-        print_terms_context(data)
+        print_terms_context(terms)
+
+    return 0
 
 
 if __name__ == '__main__':

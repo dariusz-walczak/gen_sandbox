@@ -1,7 +1,6 @@
 #!/usr/bin/env -S uv run
 
 import argparse
-import dataclasses
 import glob
 import json
 import logging
@@ -12,6 +11,7 @@ import typing
 
 import shared.argparse_types
 import shared.error
+import shared.json
 import shared.terms
 
 logging.basicConfig(
@@ -58,7 +58,7 @@ def parse_options(args: list[str]) -> argparse.Namespace:
 
 # Maybe introduce a Term container class?
 def build_term(title: str, anchor: str) -> shared.terms.Term:
-    return shared.terms.Term(id_=anchor, title=title)
+    return shared.terms.Term(id=anchor, title=title)
 
 
 def strip_empty_lines(lines: list[str]) -> list[str]:
@@ -180,7 +180,9 @@ def process_input_path(
     return []
 
 
-def build_terms_lookup(terms_hierarchy: list[shared.terms.Term]) -> dict[str, shared.terms.Term]:
+def build_terms_lookup(
+        terms_hierarchy: typing.Sequence[shared.terms.Term]
+) -> dict[str, shared.terms.Term]:
     """Simply convert the hierarchy to a lookup dictionary
     terms_hierarchy shall be deduplicated in terms of the term anchor/id (input contract)
     """
@@ -188,8 +190,8 @@ def build_terms_lookup(terms_hierarchy: list[shared.terms.Term]) -> dict[str, sh
     terms_lookup = {}
 
     for term in terms_hierarchy:
-        assert term.id_ not in terms_lookup # Input terms_hierarchy should be deduplicated
-        terms_lookup[term.id_] = term
+        assert term.id not in terms_lookup # Input terms_hierarchy should be deduplicated
+        terms_lookup[term.id] = term
         terms_lookup |= build_terms_lookup(term.children)
 
     return terms_lookup
@@ -206,7 +208,7 @@ def extract_term_references(term: shared.terms.Term) -> list[str]:
 
 
 def extract_referenced_terms(
-        term_ids: list[str],
+        term_ids: typing.Sequence[str],
         terms_lookup: dict[str, shared.terms.Term],
         seen_terms: set[str] | None = None
 ) -> list[shared.terms.Term]:
@@ -224,11 +226,11 @@ def extract_referenced_terms(
             term = terms_lookup[term_id]
             # Make a shallow copy of `term` with the `children` list cleared to not pollute the
             #  result list with unreferenced subterms of a referenced term:
-            extracted_terms.append(dataclasses.replace(term, children=[]))
+            extracted_terms.append(term.model_copy(update={"children": []}))
             seen_terms.add(term_id)
             referenced_terms = extract_term_references(term)
             _LOG.info(
-                f"Terms referenced by the {term.id_} definition: "
+                f"Terms referenced by the {term.id} definition: "
                 f"{', '.join(referenced_terms)}")
             extracted_terms += extract_referenced_terms(
                 referenced_terms, terms_lookup, seen_terms)
@@ -247,15 +249,10 @@ def main(options: argparse.Namespace) -> int:
     terms_lookup = build_terms_lookup(terms_hierarchy)
     terms_collection = extract_referenced_terms(options.term_ids, terms_lookup)
 
-    def _serialize(obj: object) -> object:
-        if dataclasses.is_dataclass(obj) and not isinstance(obj, type):
-            return dataclasses.asdict(obj)
-        raise TypeError(f"Object of type {type(obj).__name__} is not JSON serializable")
-
     if terms_collection:
-        print(json.dumps(terms_collection, indent=2, default=_serialize))
+        print(json.dumps(terms_collection, indent=2, default=shared.json.default_cb))
     else:
-        print(json.dumps(terms_hierarchy, indent=2, default=_serialize))
+        print(json.dumps(terms_hierarchy, indent=2, default=shared.json.default_cb))
 
     return 0
 
