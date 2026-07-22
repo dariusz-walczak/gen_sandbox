@@ -26,11 +26,12 @@ def parse_options(args: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
-        "-i", "--input", nargs="+", action="store", metavar="PATH", dest="input_paths", default=[],
+        "-i", "--input", nargs="+", action="extend", metavar="PATH", dest="input_paths",
+        default=[],
         help="PATH to the term file to be included in the exported term list")
 
     parser.add_argument(
-        "-t", "--term", nargs="+", action="store", metavar="ID", dest="term_ids", default=[],
+        "-t", "--term", nargs="+", action="extend", metavar="ID", dest="term_ids", default=[],
         help="ID of the root term to be included in the exported term list")
 
     parser.add_argument(
