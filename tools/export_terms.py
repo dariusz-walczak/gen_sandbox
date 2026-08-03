@@ -1,6 +1,7 @@
 #!/usr/bin/env -S uv run
 
 import argparse
+import dataclasses
 import glob
 import json
 import logging
@@ -8,6 +9,12 @@ import os
 import re
 import sys
 import typing
+
+import rich.box
+import rich.console
+import rich.markdown
+import rich.panel
+import rich.theme
 
 import shared.argparse_types
 import shared.error
@@ -22,31 +29,119 @@ logging.basicConfig(
 _LOG = logging.getLogger()
 
 
+def get_default_input_path() -> str:
+    tools_dir = os.path.dirname(os.path.abspath(__file__))
+    terms_dir = os.path.join(tools_dir, "../docs/sources/terms")
+    return os.path.relpath(terms_dir)
+
+class OptionNames:
+    HIERARCHY: str = "--root"
+    TERM: str = "--term"
+    MAX_REF_DEPTH: str = "--max-reference-depth"
+    MAX_TREE_DEPTH: str = "--max-tree-depth"
+
+def render_argparse_description():
+    custom_theme = rich.theme.Theme({
+        "markdown.em": "red",
+        "markdown.strong": "bold white",
+        "markdown.code": "green",
+    })
+
+    console = rich.console.Console(theme=custom_theme)
+
+    def _make_markdown(*lines):
+        return rich.markdown.Markdown("\n".join(lines))
+
+    def _make_panel(*lines):
+        return rich.panel.Panel(
+            rich.markdown.Markdown("\n".join(lines)),
+            box=rich.box.MINIMAL)
+
+    with console.capture() as capture:
+        console.print(
+            _make_markdown(
+                "Export project terms from the term repository to JSON format in one of two",
+                " modes.",
+                "",
+                "__Hierarchy Mode__ (default)",
+            )
+        )
+        console.print(
+            _make_panel(
+                f"The hierarchy mode is triggered by the absence of the `{OptionNames.TERM}`",
+                " option.",
+                "",
+                "In this mode, the program exports the term repository as a list of term",
+                " subtrees.",
+                "The number of exported subtrees depends on the type of the filesystem node",
+                f" pointed by the `{OptionNames.HIERARCHY}` option:",
+                "* A single subtree is exported when the option points to a term file.",
+                f"* When the `{OptionNames.HIERARCHY}` option points to a directory (default),",
+                " one subtree is exported per term file located in the directory.",
+                "",
+                f"The depth of each subtree is controlled by `{OptionNames.MAX_TREE_DEPTH}`"
+                " (roots count as level 1).",
+            )
+        )
+        console.print(
+            _make_markdown(
+                "__Reference Mode__",
+            )
+        )
+        console.print(
+            _make_panel(
+                "The reference mode is triggered by the presence of at least one",
+                f" `{OptionNames.TERM}` option.",
+                "",
+                "In this mode, the program exports a flat list of root terms, specified using the",
+                f" `{OptionNames.TERM}` option(s), and, recursively, all terms referenced in",
+                " their definition.",
+                "",
+                f"The maximum reference depth is controlled by the `{OptionNames.MAX_REF_DEPTH}`",
+                " option (roots count as level 1).",
+            )
+        )
+        console.print(
+            _make_markdown(
+                "The output of this command is typically piped to the `print_tree.py` tool, which",
+                " prints the exported data in human-, machine-, or AI-friendly formats."
+            )
+        )
+
+    return capture.get()
+
+
 def parse_options(args: list[str]) -> argparse.Namespace:
-    parser = argparse.ArgumentParser()
+    desc = render_argparse_description()
+
+    parser = argparse.ArgumentParser(
+        description = desc,
+        formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+
+    default_input_path = get_default_input_path()
+    parser.add_argument(
+        "-i", OptionNames.HIERARCHY, action="store", metavar="PATH", dest="input_path",
+        default=default_input_path,
+        help=(f"PATH to the term tree root file or directory (default: {default_input_path})"))
 
     parser.add_argument(
-        "-i", "--input", nargs="+", action="extend", metavar="PATH", dest="input_paths",
-        default=[],
-        help="PATH to the term file to be included in the exported term list")
+        "-t", OptionNames.TERM, nargs="+", action="extend", metavar="ID", dest="term_ids", default=[],
+        help="ID of the first level term to be included in the exported term list")
 
     parser.add_argument(
-        "-t", "--term", nargs="+", action="extend", metavar="ID", dest="term_ids", default=[],
-        help="ID of the root term to be included in the exported term list")
-
-    parser.add_argument(
-        "--max-tree-depth", action="store", metavar="NUMBER", dest="max_tree_depth",
+        OptionNames.MAX_TREE_DEPTH, action="store", metavar="LEVEL", dest="max_tree_depth",
         type=shared.argparse_types.positive_int,
         help=(
-            "Maximum NUMBER of term hierarchy levels to be extracted starting from each specified"
-            " input path (default: <unlimited>)"))
+            "Maximum number of term tree levels to be processed starting from the specified input"
+            " path (default: <unlimited>)"))
 
     parser.add_argument(
-        "--max-cref-depth", action="store", metavar="DEPTH", dest="max_cref_depth",
+        OptionNames.MAX_REF_DEPTH, action="store", metavar="LEVEL", dest="max_cref_depth",
         type=shared.argparse_types.positive_int,
         help=(
-            "Maximum NUMBER of cross-references to be followed starting from each specified term"
-            " (default: <unlimited>)"))
+            "Maximum number of term reference levels to be processed starting from each specified"
+            " first level term (default: <unlimited>)"))
 
     default_log_level = "WARNING"
     parser.add_argument(
@@ -55,11 +150,6 @@ def parse_options(args: list[str]) -> argparse.Namespace:
         help=f"Logging level (default: {default_log_level})")
 
     return parser.parse_args(args)
-
-
-# Maybe introduce a Term container class?
-def build_term(title: str, anchor: str) -> shared.terms.Term:
-    return shared.terms.Term(id=anchor, title=title)
 
 
 def strip_empty_lines(lines: list[str]) -> list[str]:
@@ -106,7 +196,9 @@ def load_term(term_path: str) -> shared.terms.Term | None:
 
                 if m is not None:
                     _LOG.debug("The valid anchor header was just encountered")
-                    term = build_term(m.group("name"), m.group("id"))
+
+                    term = shared.terms.Term(
+                        id=m.group("id"), title=m.group("name"), path=term_path)
             elif basic_header_pattern.match(line):
                 _LOG.debug("The follow-up header was encountered")
                 # The definition line list is complete. All remaining lines are ignored.
@@ -126,6 +218,7 @@ def load_term(term_path: str) -> shared.terms.Term | None:
 #  be used directly)
 def process_term_directory(
         options: argparse.Namespace,
+        seen_terms: dict[str, shared.terms.Term],
         term_dir_path: str
 ) -> list[shared.terms.Term]:
 
@@ -134,7 +227,7 @@ def process_term_directory(
     result_terms = []
 
     for term_path in glob.glob(f"{term_dir_path}/*.md"):
-        term = process_input_path(options, term_path)
+        term = process_input_path(options, seen_terms, term_path)
 
         if term is not None:
             result_terms += term
@@ -144,58 +237,51 @@ def process_term_directory(
 
 def process_input_path(
         options: argparse.Namespace,
+        seen_terms: dict[str, shared.terms.Term],
         term_path: str
 ) -> list[shared.terms.Term]:
 
-    _LOG.info("Processing term path: %s", term_path)
+    _LOG.info(f"Processing term path: {term_path}")
 
     if os.path.isfile(term_path):
-        _LOG.debug("The term path (%s) is an existing regular file", term_path)
+        _LOG.debug(f"The term path ({term_path}) is an existing regular file")
 
         root_path, ext = os.path.splitext(term_path)
 
         if ext == ".md":
-            _LOG.debug("The term path (%s) is a markdown file", term_path)
+            _LOG.debug(f"The term path ({term_path}) is a markdown file")
 
             term = load_term(term_path)
 
             if term is None:
-                _LOG.error("The term file (%s) is not valid", term_path)
+                _LOG.error(f"The term file ({term_path}) is not valid")
                 return []
+
+            if term.id in seen_terms:
+                _LOG.warning(
+                    f"Duplicate definition for term '{term.id}' found at '{term.path}'. First"
+                    f" occurrence at '{seen_terms[term.id].path}'. The duplicate and its children"
+                    " are ignored.")
+                return []
+            else:
+                seen_terms[term.id] = term
 
             if os.path.isdir(root_path):
                 _LOG.debug("The term directory (%s) exists", root_path)
 
-                term.children = process_term_directory(options, root_path)
+                term.children = process_term_directory(options, seen_terms, root_path)
 
             return [term]
 
-        _LOG.debug("The term path (%s) is not a markdown file", term_path)
+        _LOG.debug(f"The term path ({term_path}) is not a markdown file")
     elif os.path.isdir(term_path):
-        _LOG.debug("The term path (%s) is a directory", term_path)
+        _LOG.debug(f"The term path ({term_path}) is a directory")
 
-        return process_term_directory(options, term_path)
+        return process_term_directory(options, seen_terms, term_path)
     else:
-        _LOG.debug("The term path (%s) is not an existing file nor a directory", term_path)
+        _LOG.debug(f"The term path ({term_path}) is not an existing file nor a directory")
 
     return []
-
-
-def build_terms_lookup(
-        terms_hierarchy: typing.Sequence[shared.terms.Term]
-) -> dict[str, shared.terms.Term]:
-    """Simply convert the hierarchy to a lookup dictionary
-    terms_hierarchy shall be deduplicated in terms of the term anchor/id (input contract)
-    """
-
-    terms_lookup = {}
-
-    for term in terms_hierarchy:
-        assert term.id not in terms_lookup # Input terms_hierarchy should be deduplicated
-        terms_lookup[term.id] = term
-        terms_lookup |= build_terms_lookup(term.children)
-
-    return terms_lookup
 
 
 def extract_term_references(term: shared.terms.Term) -> list[str]:
@@ -240,20 +326,18 @@ def extract_referenced_terms(
 
 
 def main(options: argparse.Namespace) -> int:
-    terms_hierarchy = []
+    # The terms lookup table is used for de-duplication when passed to the process_input_path.
+    # It is later reused for term reference resolution when passed to the extract_referenced_terms.
+    terms_lookup: dict[str, shared.terms.Term] = {}
 
-    for input_path in options.input_paths:
-        terms_hierarchy += process_input_path(options, input_path)
+    term_trees: list[shared.terms.Term] = process_input_path(
+        options, terms_lookup, options.input_path)
 
-    # TODO: Filter out duplicates
-
-    terms_lookup = build_terms_lookup(terms_hierarchy)
-    terms_collection = extract_referenced_terms(options.term_ids, terms_lookup)
-
-    if terms_collection:
+    if options.term_ids:
+        terms_collection = extract_referenced_terms(options.term_ids, terms_lookup)
         print(json.dumps(terms_collection, indent=2, default=shared.json.default_cb))
     else:
-        print(json.dumps(terms_hierarchy, indent=2, default=shared.json.default_cb))
+        print(json.dumps(term_trees, indent=2, default=shared.json.default_cb))
 
     return 0
 
