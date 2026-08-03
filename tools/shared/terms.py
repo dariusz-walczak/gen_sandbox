@@ -12,5 +12,6 @@ TERM_ID_PATTERN_STRING = r"[a-zA-Z0-9_]+"
 class Term(pydantic.BaseModel):
     id: str
     title: str | None = None
+    path: str
     definition: list[str] = []
     children: list["Term"] = []
