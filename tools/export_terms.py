@@ -40,7 +40,7 @@ class OptionNames:
     MAX_REF_DEPTH: str = "--max-reference-depth"
     MAX_TREE_DEPTH: str = "--max-tree-depth"
 
-def render_argparse_description():
+def render_argparse_description() -> str:
     custom_theme = rich.theme.Theme({
         "markdown.em": "red",
         "markdown.strong": "bold white",
@@ -49,10 +49,10 @@ def render_argparse_description():
 
     console = rich.console.Console(theme=custom_theme)
 
-    def _make_markdown(*lines):
+    def _make_markdown(*lines: str) -> rich.markdown.Markdown:
         return rich.markdown.Markdown("\n".join(lines))
 
-    def _make_panel(*lines):
+    def _make_panel(*lines: str) -> rich.panel.Panel:
         return rich.panel.Panel(
             rich.markdown.Markdown("\n".join(lines)),
             box=rich.box.MINIMAL)
