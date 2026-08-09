@@ -152,66 +152,11 @@ def parse_options(args: list[str]) -> argparse.Namespace:
     return parser.parse_args(args)
 
 
-def strip_empty_lines(lines: list[str]) -> list[str]:
-    if not lines:
-        return []
-
-    front_non_empty_offset = next((i for i, s in enumerate(lines) if s), None)
-    if front_non_empty_offset is None:
-        return []
-
-    back_non_empty_offset = next((i for i, s in enumerate(reversed(lines)) if s), None)
-    assert back_non_empty_offset is not None
-
-    return lines[front_non_empty_offset : len(lines) - back_non_empty_offset]
-
-
 def load_term(term_path: str) -> shared.term.Term | None:
-    basic_header_pattern = re.compile(r"^#+ .+$")
-
-    name_pattern_str = shared.term.TERM_NAME_SINGLELINE_PATTERN_STRING
-    id_pattern_str = shared.term.TERM_ID_PATTERN_STRING
-
-    anchor_header_pattern = re.compile(
-        rf"^# (?P<name>{name_pattern_str}) \{{#(?P<id>{id_pattern_str})\}}\s*$")
-
-    # [ignored lines]
-    # # Valid Anchor Header {#valid_anchor_header}
-    # [definition lines]
-    # # Follow-up Header
-    # [ignored lines]
-
-    term = None
-
     _LOG.info("Opening term file (%s)", term_path)
 
     with open(term_path, encoding="utf-8") as term_file:
-        for line in term_file:
-            line = line.rstrip("\n")
-
-            if term is None:
-                _LOG.debug("The valid anchor header wasn't yet encountered")
-
-                m = anchor_header_pattern.match(line)
-
-                if m is not None:
-                    _LOG.debug("The valid anchor header was just encountered")
-
-                    term = shared.term.Term(
-                        id=m.group("id"), title=m.group("name"), path=term_path)
-            elif basic_header_pattern.match(line):
-                _LOG.debug("The follow-up header was encountered")
-                # The definition line list is complete. All remaining lines are ignored.
-                break
-            else:
-                _LOG.debug("A definition line was encountered")
-                # A line between the valid anchor header and the first follow-up header
-                term.definition.append(line)
-
-    if term is not None:
-        term.definition = strip_empty_lines(term.definition)
-
-    return term
+        return shared.term.load(term_file, term_path)
 
 
 # Returns list of terms in the directory (can be assigned to the children of the parent term or
