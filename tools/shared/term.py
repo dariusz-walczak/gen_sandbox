@@ -1,7 +1,8 @@
 import logging
-import pydantic
 import re
 import typing
+
+import pydantic
 
 # NOTE: Keep the TERM_NAME_SINGLELINE_PATTERN_STRING and the TERM_NAME_MULTILINE_PATTERN_STRING
 #       constants consistent in terms of all non-whitespace characters.
