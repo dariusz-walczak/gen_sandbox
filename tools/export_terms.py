@@ -93,9 +93,9 @@ def render_argparse_description():
                 "The reference mode is triggered by the presence of at least one",
                 f" `{OptionNames.TERM}` option.",
                 "",
-                "In this mode, the program exports a flat list of root terms, specified using the",
-                f" `{OptionNames.TERM}` option(s), and, recursively, all terms referenced in",
-                " their definition.",
+                "In this mode, the program exports a flat list of the root terms specified by the",
+                f" `{OptionNames.TERM}` option(s), together with all terms recursively referenced",
+                " by those terms.",
                 "",
                 f"The maximum reference depth is controlled by the `{OptionNames.MAX_REF_DEPTH}`",
                 " option (roots count as level 1).",
@@ -127,21 +127,21 @@ def parse_options(args: list[str]) -> argparse.Namespace:
 
     parser.add_argument(
         "-t", OptionNames.TERM, nargs="+", action="extend", metavar="ID", dest="term_ids", default=[],
-        help="ID of the first level term to be included in the exported term list")
+        help="IDs of root terms to be included in the exported term list")
 
     parser.add_argument(
         OptionNames.MAX_TREE_DEPTH, action="store", metavar="LEVEL", dest="max_tree_depth",
         type=shared.argparse_types.positive_int,
         help=(
-            "Maximum number of term tree levels to be processed starting from the specified input"
+            "Maximum number of term tree LEVELs to be processed starting from the specified input"
             " path (default: <unlimited>)"))
 
     parser.add_argument(
         OptionNames.MAX_REF_DEPTH, action="store", metavar="LEVEL", dest="max_cref_depth",
         type=shared.argparse_types.positive_int,
         help=(
-            "Maximum number of term reference levels to be processed starting from each specified"
-            " first level term (default: <unlimited>)"))
+            "Maximum number of term reference LEVELs to be processed starting from each specified"
+            " root term (default: <unlimited>)"))
 
     default_log_level = "WARNING"
     parser.add_argument(
