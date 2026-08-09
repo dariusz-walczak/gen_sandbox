@@ -76,9 +76,9 @@ def strip_empty_lines(lines: list[str]) -> list[str]:
 
     front_non_empty_offset = next((i for i, s in enumerate(lines) if s), None)
     if front_non_empty_offset is None:
-        return []
+        return []  # The term contains empty lines only
 
     back_non_empty_offset = next((i for i, s in enumerate(reversed(lines)) if s), None)
-    assert back_non_empty_offset is not None
+    assert back_non_empty_offset is not None # Excluded by the front_non_empty_offset is None check
 
     return lines[front_non_empty_offset : len(lines) - back_non_empty_offset]
