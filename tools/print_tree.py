@@ -16,7 +16,7 @@ import shared.error
 import shared.json
 import shared.markdown
 import shared.output
-import shared.terms
+import shared.term
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -100,7 +100,7 @@ def render_console_markdown(options: argparse.Namespace, text: str) -> None:
 
 def print_terms_human_int(
         options: argparse.Namespace,
-        terms: typing.Sequence[shared.terms.Term],
+        terms: typing.Sequence[shared.term.Term],
         level: int = 1
 ) -> list[str]:
     lines = []
@@ -137,18 +137,18 @@ def print_terms_human_int(
 
 def print_terms_human(
         options: argparse.Namespace,
-        terms: typing.Sequence[shared.terms.Term]
+        terms: typing.Sequence[shared.term.Term]
 ) -> None:
 
     lines = print_terms_human_int(options, terms)
     render_console_markdown(options, '\n'.join(lines))
 
-def print_terms_machine(terms : typing.Sequence[shared.terms.Term]) -> None:
+def print_terms_machine(terms : typing.Sequence[shared.term.Term]) -> None:
     minimized = json.dumps(
         terms, indent=None, separators=(",", ":"), default=shared.json.default_cb)
     print(minimized)
 
-def make_gen_ai_friendly_definition(term: shared.terms.Term) -> str:
+def make_gen_ai_friendly_definition(term: shared.term.Term) -> str:
     if term.definition:
         definition_lines = [line.strip() for line in term.definition]
     else:
@@ -156,7 +156,7 @@ def make_gen_ai_friendly_definition(term: shared.terms.Term) -> str:
     definition_raw = "\n".join(definition_lines)
     return shared.markdown.genai_friendly_format(definition_raw)
 
-def print_terms_symbolic_int(terms: typing.Sequence[shared.terms.Term]) -> list[list[typing.Any]]:
+def print_terms_symbolic_int(terms: typing.Sequence[shared.term.Term]) -> list[list[typing.Any]]:
     output = []
 
     for term in terms:
@@ -175,7 +175,7 @@ def print_terms_symbolic_int(terms: typing.Sequence[shared.terms.Term]) -> list[
     return output
 
 
-def print_terms_symbolic(terms: typing.Sequence[shared.terms.Term]) -> None:
+def print_terms_symbolic(terms: typing.Sequence[shared.term.Term]) -> None:
     sexp_data = ["glossary", ":terms"] + [print_terms_symbolic_int(terms)]
     serialized: str = sexpdata.dumps(sexp_data) # type: ignore[no-untyped-call]
     print(serialized)
@@ -184,7 +184,7 @@ def print_terms_symbolic(terms: typing.Sequence[shared.terms.Term]) -> None:
 # Make the terms hierarchy flat (with the parent annotation). Return them as a list of line lists,
 # to delegate terms joining to the caller
 def print_terms_context_int(
-        terms: typing.Sequence[shared.terms.Term],
+        terms: typing.Sequence[shared.term.Term],
         parent_title: str | None = None,
         parent_id: str | None = None) -> list[list[str]]:
 
@@ -213,7 +213,7 @@ def print_terms_context_int(
     return output_terms
 
 
-def print_terms_context(terms: typing.Sequence[shared.terms.Term]) -> None:
+def print_terms_context(terms: typing.Sequence[shared.term.Term]) -> None:
     output_lines = [
         "BEGIN GLOSSARY CONTEXT",
         "",
@@ -250,8 +250,8 @@ def print_terms_context(terms: typing.Sequence[shared.terms.Term]) -> None:
     print('\n'.join(output_lines))
 
 
-def json_to_terms(raw_terms: typing.Any) -> tuple[shared.terms.Term, ...]:
-    return tuple(shared.terms.Term(**raw_term) for raw_term in raw_terms)
+def json_to_terms(raw_terms: typing.Any) -> tuple[shared.term.Term, ...]:
+    return tuple(shared.term.Term(**raw_term) for raw_term in raw_terms)
 
 
 def main(options: argparse.Namespace) -> int:

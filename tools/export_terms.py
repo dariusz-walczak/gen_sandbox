@@ -19,7 +19,7 @@ import rich.theme
 import shared.argparse_types
 import shared.error
 import shared.json
-import shared.terms
+import shared.term
 
 logging.basicConfig(
     level=logging.INFO,
@@ -166,11 +166,11 @@ def strip_empty_lines(lines: list[str]) -> list[str]:
     return lines[front_non_empty_offset : len(lines) - back_non_empty_offset]
 
 
-def load_term(term_path: str) -> shared.terms.Term | None:
+def load_term(term_path: str) -> shared.term.Term | None:
     basic_header_pattern = re.compile(r"^#+ .+$")
 
-    name_pattern_str = shared.terms.TERM_NAME_SINGLELINE_PATTERN_STRING
-    id_pattern_str = shared.terms.TERM_ID_PATTERN_STRING
+    name_pattern_str = shared.term.TERM_NAME_SINGLELINE_PATTERN_STRING
+    id_pattern_str = shared.term.TERM_ID_PATTERN_STRING
 
     anchor_header_pattern = re.compile(
         rf"^# (?P<name>{name_pattern_str}) \{{#(?P<id>{id_pattern_str})\}}\s*$")
@@ -197,7 +197,7 @@ def load_term(term_path: str) -> shared.terms.Term | None:
                 if m is not None:
                     _LOG.debug("The valid anchor header was just encountered")
 
-                    term = shared.terms.Term(
+                    term = shared.term.Term(
                         id=m.group("id"), title=m.group("name"), path=term_path)
             elif basic_header_pattern.match(line):
                 _LOG.debug("The follow-up header was encountered")
@@ -218,9 +218,9 @@ def load_term(term_path: str) -> shared.terms.Term | None:
 #  be used directly)
 def process_term_directory(
         options: argparse.Namespace,
-        seen_terms: dict[str, shared.terms.Term],
+        seen_terms: dict[str, shared.term.Term],
         term_dir_path: str
-) -> list[shared.terms.Term]:
+) -> list[shared.term.Term]:
 
     _LOG.info("Processing term directory: %s", term_dir_path)
 
@@ -237,9 +237,9 @@ def process_term_directory(
 
 def process_input_path(
         options: argparse.Namespace,
-        seen_terms: dict[str, shared.terms.Term],
+        seen_terms: dict[str, shared.term.Term],
         term_path: str
-) -> list[shared.terms.Term]:
+) -> list[shared.term.Term]:
 
     _LOG.info(f"Processing term path: {term_path}")
 
@@ -284,9 +284,9 @@ def process_input_path(
     return []
 
 
-def extract_term_references(term: shared.terms.Term) -> list[str]:
-    name_pattern_str = shared.terms.TERM_NAME_MULTILINE_PATTERN_STRING
-    id_pattern_str = shared.terms.TERM_ID_PATTERN_STRING
+def extract_term_references(term: shared.term.Term) -> list[str]:
+    name_pattern_str = shared.term.TERM_NAME_MULTILINE_PATTERN_STRING
+    id_pattern_str = shared.term.TERM_ID_PATTERN_STRING
 
     definition_text = "\n".join(term.definition)
     term_id_pattern = re.compile(
@@ -296,9 +296,9 @@ def extract_term_references(term: shared.terms.Term) -> list[str]:
 
 def extract_referenced_terms(
         term_ids: typing.Sequence[str],
-        terms_lookup: dict[str, shared.terms.Term],
+        terms_lookup: dict[str, shared.term.Term],
         seen_terms: set[str] | None = None
-) -> list[shared.terms.Term]:
+) -> list[shared.term.Term]:
 
     extracted_terms = []
     if seen_terms is None:
@@ -328,9 +328,9 @@ def extract_referenced_terms(
 def main(options: argparse.Namespace) -> int:
     # The terms lookup table is used for de-duplication when passed to the process_input_path.
     # It is later reused for term reference resolution when passed to the extract_referenced_terms.
-    terms_lookup: dict[str, shared.terms.Term] = {}
+    terms_lookup: dict[str, shared.term.Term] = {}
 
-    term_trees: list[shared.terms.Term] = process_input_path(
+    term_trees: list[shared.term.Term] = process_input_path(
         options, terms_lookup, options.input_path)
 
     if options.term_ids:

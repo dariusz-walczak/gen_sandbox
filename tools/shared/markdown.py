@@ -4,7 +4,7 @@ import typing
 import mistune
 
 import shared.error
-import shared.terms
+import shared.term
 
 
 class PlainTextRenderer(mistune.BaseRenderer):
@@ -63,7 +63,7 @@ class PlainTextRenderer(mistune.BaseRenderer):
         caption = self.render_tokens(token["children"], state)
         url: str = token["attrs"].get("url", "")
 
-        term_id_match = re.match(rf"^#(?P<id>{shared.terms.TERM_ID_PATTERN_STRING})$", url.strip())
+        term_id_match = re.match(rf"^#(?P<id>{shared.term.TERM_ID_PATTERN_STRING})$", url.strip())
         if term_id_match is not None:
             return f"{caption} {{{term_id_match.group('id')}}}"
         else:
