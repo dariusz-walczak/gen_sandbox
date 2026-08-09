@@ -1,7 +1,6 @@
 #!/usr/bin/env -S uv run
 
 import argparse
-import dataclasses
 import glob
 import json
 import logging
@@ -126,8 +125,8 @@ def parse_options(args: list[str]) -> argparse.Namespace:
         help=(f"PATH to the term tree root file or directory (default: {default_input_path})"))
 
     parser.add_argument(
-        "-t", OptionNames.TERM, nargs="+", action="extend", metavar="ID", dest="term_ids", default=[],
-        help="IDs of root terms to be included in the exported term list")
+        "-t", OptionNames.TERM, nargs="+", action="extend", metavar="ID", dest="term_ids",
+        default=[], help="IDs of root terms to be included in the exported term list")
 
     parser.add_argument(
         OptionNames.MAX_TREE_DEPTH, action="store", metavar="LEVEL", dest="max_tree_depth",
