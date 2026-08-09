@@ -22,7 +22,7 @@ import shared.json
 import shared.terms
 
 logging.basicConfig(
-    level=logging.DEBUG,
+    level=logging.INFO,
     format="[%(levelname)s] %(message)s",
     stream=sys.stderr)
 
