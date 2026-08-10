@@ -1,0 +1,3 @@
+# Abuja {#abuja}
+
+**Abuja** is the capital of Nigeria.

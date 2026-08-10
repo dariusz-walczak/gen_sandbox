@@ -1,4 +1,6 @@
+import glob
 import logging
+import os
 import re
 import typing
 
@@ -22,8 +24,94 @@ class Term(pydantic.BaseModel):
     definition: list[str] = []
     children: list["Term"] = []
 
+class Options(pydantic.BaseModel):
+    max_tree_depth: int | None = None
 
-def load(term_file: typing.IO[str], term_path: str) -> Term | None:
+# Local function call tree:
+#
+# process_input_path
+# -> load_from_path
+#    -> load_from_file
+#       -> strip_empty_lines
+# -> process_term_directory
+#    -> [process_input_path]
+
+def process_input_path(
+        options: Options,
+        seen_terms: dict[str, Term],
+        term_path: str) -> list[Term]:
+
+    _LOG.info(f"Processing term path: {term_path}")
+
+    if os.path.isfile(term_path):
+        _LOG.debug(f"The term path ({term_path}) is an existing regular file")
+
+        root_path, ext = os.path.splitext(term_path)
+
+        if ext == ".md":
+            _LOG.debug(f"The term path ({term_path}) is a markdown file")
+
+            term = load_from_path(term_path)
+
+            if term is None:
+                _LOG.error(f"The term file ({term_path}) is not valid")
+                return []
+
+            if term.id in seen_terms:
+                _LOG.warning(
+                    f"Duplicate definition for term '{term.id}' found at '{term.path}'. First"
+                    f" occurrence at '{seen_terms[term.id].path}'. The duplicate and its children"
+                    " are ignored.")
+                return []
+            else:
+                seen_terms[term.id] = term
+
+            if os.path.isdir(root_path):
+                _LOG.debug("The term directory (%s) exists", root_path)
+
+                term.children = process_term_directory(options, seen_terms, root_path)
+
+            return [term]
+
+        _LOG.debug(f"The term path ({term_path}) is not a markdown file")
+    elif os.path.isdir(term_path):
+        _LOG.debug(f"The term path ({term_path}) is a directory")
+
+        return process_term_directory(options, seen_terms, term_path)
+    else:
+        _LOG.debug(f"The term path ({term_path}) is not an existing file nor a directory")
+
+    return []
+
+
+# Returns list of terms in the directory (can be assigned to the children of the parent term or
+#  be used directly)
+def process_term_directory(
+        options: Options,
+        seen_terms: dict[str, Term],
+        term_dir_path: str) -> list[Term]:
+
+    _LOG.info("Processing term directory: %s", term_dir_path)
+
+    result_terms = []
+
+    for term_path in glob.glob(f"{term_dir_path}/*.md"):
+        term = process_input_path(options, seen_terms, term_path)
+
+        if term is not None:
+            result_terms += term
+
+    return result_terms
+
+
+def load_from_path(term_path: str) -> Term | None:
+    _LOG.info("Opening term file (%s)", term_path)
+
+    with open(term_path, encoding="utf-8") as term_file:
+        return load_from_file(term_file, term_path)
+
+
+def load_from_file(term_file: typing.IO[str], term_path: str) -> Term | None:
     # [ignored lines]
     # # Valid Anchor Header {#valid_anchor_header}
     # [definition lines]
