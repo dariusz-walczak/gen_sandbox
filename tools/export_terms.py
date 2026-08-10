@@ -1,7 +1,6 @@
 #!/usr/bin/env -S uv run
 
 import argparse
-import glob
 import json
 import logging
 import os
@@ -151,83 +150,6 @@ def parse_options(args: list[str]) -> argparse.Namespace:
     return parser.parse_args(args)
 
 
-def load_term(term_path: str) -> shared.term.Term | None:
-    _LOG.info("Opening term file (%s)", term_path)
-
-    with open(term_path, encoding="utf-8") as term_file:
-        return shared.term.load(term_file, term_path)
-
-
-# Returns list of terms in the directory (can be assigned to the children of the parent term or
-#  be used directly)
-def process_term_directory(
-        options: argparse.Namespace,
-        seen_terms: dict[str, shared.term.Term],
-        term_dir_path: str
-) -> list[shared.term.Term]:
-
-    _LOG.info("Processing term directory: %s", term_dir_path)
-
-    result_terms = []
-
-    for term_path in glob.glob(f"{term_dir_path}/*.md"):
-        term = process_input_path(options, seen_terms, term_path)
-
-        if term is not None:
-            result_terms += term
-
-    return result_terms
-
-
-def process_input_path(
-        options: argparse.Namespace,
-        seen_terms: dict[str, shared.term.Term],
-        term_path: str
-) -> list[shared.term.Term]:
-
-    _LOG.info(f"Processing term path: {term_path}")
-
-    if os.path.isfile(term_path):
-        _LOG.debug(f"The term path ({term_path}) is an existing regular file")
-
-        root_path, ext = os.path.splitext(term_path)
-
-        if ext == ".md":
-            _LOG.debug(f"The term path ({term_path}) is a markdown file")
-
-            term = load_term(term_path)
-
-            if term is None:
-                _LOG.error(f"The term file ({term_path}) is not valid")
-                return []
-
-            if term.id in seen_terms:
-                _LOG.warning(
-                    f"Duplicate definition for term '{term.id}' found at '{term.path}'. First"
-                    f" occurrence at '{seen_terms[term.id].path}'. The duplicate and its children"
-                    " are ignored.")
-                return []
-            else:
-                seen_terms[term.id] = term
-
-            if os.path.isdir(root_path):
-                _LOG.debug("The term directory (%s) exists", root_path)
-
-                term.children = process_term_directory(options, seen_terms, root_path)
-
-            return [term]
-
-        _LOG.debug(f"The term path ({term_path}) is not a markdown file")
-    elif os.path.isdir(term_path):
-        _LOG.debug(f"The term path ({term_path}) is a directory")
-
-        return process_term_directory(options, seen_terms, term_path)
-    else:
-        _LOG.debug(f"The term path ({term_path}) is not an existing file nor a directory")
-
-    return []
-
-
 def extract_term_references(term: shared.term.Term) -> list[str]:
     name_pattern_str = shared.term.TERM_NAME_MULTILINE_PATTERN_STRING
     id_pattern_str = shared.term.TERM_ID_PATTERN_STRING
@@ -274,8 +196,9 @@ def main(options: argparse.Namespace) -> int:
     # It is later reused for term reference resolution when passed to the extract_referenced_terms.
     terms_lookup: dict[str, shared.term.Term] = {}
 
-    term_trees: list[shared.term.Term] = process_input_path(
-        options, terms_lookup, options.input_path)
+    term_options = shared.term.Options(max_tree_depth=options.max_tree_depth)
+    term_trees: list[shared.term.Term] = shared.term.process_input_path(
+        term_options, terms_lookup, options.input_path)
 
     if options.term_ids:
         terms_collection = extract_referenced_terms(options.term_ids, terms_lookup)

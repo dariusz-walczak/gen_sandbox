@@ -20,7 +20,7 @@ dev = [
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "--cov=shared --cov=export_terms --cov=print_tree --cov-report=term-missing --cov-report=html"
+addopts = "--cov=shared --cov-report=term-missing --cov-report=html"
 
 [tool.ruff]
 target-version = "py312"
