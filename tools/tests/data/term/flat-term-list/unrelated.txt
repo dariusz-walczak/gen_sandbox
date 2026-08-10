@@ -1,0 +1,1 @@
+This is a regular non-term file, and the term tree processing functions should ignore it.
