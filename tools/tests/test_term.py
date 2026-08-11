@@ -162,6 +162,76 @@ def _make_flat_term(term_id: str, title: str, definition_suffix: str) -> shared.
                 definition=["**Pretoria** is the capital of South Africa."]),
         ]
     ),
+    # The path locates a directory with a twice duplicated term; duplicates are skipped
+    (
+        shared.term.Options(),
+        "term/term-duplicate-handling-1",
+        {
+            "first_unique": shared.term.Term(
+                id="first_unique", title="First Unique",
+                path=os.path.join(
+                    _DATA_ROOT, "term", "term-duplicate-handling-1", "1_unique.md"),
+                definition=["The __First Unique__ is one of four unique terms."]),
+            "duplicate": shared.term.Term(
+                id="duplicate", title="First Duplicate",
+                path=os.path.join(
+                    _DATA_ROOT, "term", "term-duplicate-handling-1", "2_duplicate.md"),
+                definition=["The __First Duplicate__ is one of three duplicates."]),
+            "second_unique": shared.term.Term(
+                id="second_unique", title="Second Unique",
+                path=os.path.join(
+                    _DATA_ROOT, "term", "term-duplicate-handling-1", "4_unique.md"),
+                definition=["The __Second Unique__ is one of four unique terms."],
+                children=[
+                    shared.term.Term(
+                        id="third_unique", title="Third Unique",
+                        path=os.path.join(
+                            _DATA_ROOT, "term", "term-duplicate-handling-1", "4_unique",
+                            "5_unique.md"),
+                        definition=["The __Third Unique__ is one of four unique terms."]),
+                ]),
+            "third_unique": shared.term.Term(
+                id="third_unique", title="Third Unique",
+                path=os.path.join(
+                    _DATA_ROOT, "term", "term-duplicate-handling-1", "4_unique", "5_unique.md"),
+                definition=["The __Third Unique__ is one of four unique terms."]),
+            "fourth_unique": shared.term.Term(
+                id="fourth_unique", title="Fourth Unique",
+                path=os.path.join(
+                    _DATA_ROOT, "term", "term-duplicate-handling-1", "7_unique.md"),
+                definition=["The __Fourth Unique__ is one of four unique terms."]),
+        },
+        [
+            shared.term.Term(
+                id="first_unique", title="First Unique",
+                path=os.path.join(
+                    _DATA_ROOT, "term", "term-duplicate-handling-1", "1_unique.md"),
+                definition=["The __First Unique__ is one of four unique terms."]),
+            shared.term.Term(
+                id="duplicate", title="First Duplicate",
+                path=os.path.join(
+                    _DATA_ROOT, "term", "term-duplicate-handling-1", "2_duplicate.md"),
+                definition=["The __First Duplicate__ is one of three duplicates."]),
+            shared.term.Term(
+                id="second_unique", title="Second Unique",
+                path=os.path.join(
+                    _DATA_ROOT, "term", "term-duplicate-handling-1", "4_unique.md"),
+                definition=["The __Second Unique__ is one of four unique terms."],
+                children=[
+                    shared.term.Term(
+                        id="third_unique", title="Third Unique",
+                        path=os.path.join(
+                            _DATA_ROOT, "term", "term-duplicate-handling-1", "4_unique",
+                            "5_unique.md"),
+                        definition=["The __Third Unique__ is one of four unique terms."]),
+                ]),
+            shared.term.Term(
+                id="fourth_unique", title="Fourth Unique",
+                path=os.path.join(
+                    _DATA_ROOT, "term", "term-duplicate-handling-1", "7_unique.md"),
+                definition=["The __Fourth Unique__ is one of four unique terms."]),
+        ]
+    ),
 ])
 def test_process_input_path_normal_cases(
         input_options: shared.term.Options,
@@ -176,5 +246,4 @@ def test_process_input_path_normal_cases(
         input_options, output_seen_terms, input_term_path)
 
     assert output_seen_terms == expected_seen_terms
-    assert sorted(output_term_trees, key=lambda t: t.id) == \
-        sorted(expected_term_trees, key=lambda t: t.id)
+    assert output_term_trees == expected_term_trees
