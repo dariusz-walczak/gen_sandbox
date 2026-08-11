@@ -232,6 +232,36 @@ def _make_flat_term(term_id: str, title: str, definition_suffix: str) -> shared.
                 definition=["The __Fourth Unique__ is one of four unique terms."]),
         ]
     ),
+    # The path locates a directory where the second occurrence of a duplicate term also has a child
+    #  term; both the duplicate and its child are ignored.
+    (
+        shared.term.Options(),
+        "term/term-duplicate-handling-2",
+        {
+            "first_unique": shared.term.Term(
+                id="first_unique", title="First Unique",
+                path=os.path.join(
+                    _DATA_ROOT, "term", "term-duplicate-handling-2", "1_unique.md"),
+                definition=["The __First Unique__ is one of four unique terms."]),
+            "duplicate": shared.term.Term(
+                id="duplicate", title="First Duplicate",
+                path=os.path.join(
+                    _DATA_ROOT, "term", "term-duplicate-handling-2", "2_duplicate.md"),
+                definition=["The __First Duplicate__ is one of three duplicates."]),
+        },
+        [
+            shared.term.Term(
+                id="first_unique", title="First Unique",
+                path=os.path.join(
+                    _DATA_ROOT, "term", "term-duplicate-handling-2", "1_unique.md"),
+                definition=["The __First Unique__ is one of four unique terms."]),
+            shared.term.Term(
+                id="duplicate", title="First Duplicate",
+                path=os.path.join(
+                    _DATA_ROOT, "term", "term-duplicate-handling-2", "2_duplicate.md"),
+                definition=["The __First Duplicate__ is one of three duplicates."]),
+        ]
+    ),
 ])
 def test_process_input_path_normal_cases(
         input_options: shared.term.Options,
