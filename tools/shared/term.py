@@ -95,7 +95,7 @@ def process_term_directory(
 
     result_terms = []
 
-    for term_path in glob.glob(f"{term_dir_path}/*.md"):
+    for term_path in sorted(glob.glob(f"{term_dir_path}/*.md")):
         term = process_input_path(options, seen_terms, term_path)
 
         if term is not None:
