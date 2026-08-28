@@ -2,6 +2,7 @@ import glob
 import logging
 import os
 import re
+import sys
 import typing
 
 import pydantic
@@ -24,20 +25,36 @@ class Term(pydantic.BaseModel):
     definition: list[str] = []
     children: list["Term"] = []
 
+HARD_DEPTH_LIMIT = sys.getrecursionlimit() / 4
+
 class Options(pydantic.BaseModel):
     max_tree_depth: int | None = None
 
 # Local function call tree:
 #
 # process_input_path
-# -> load_from_path
-#    -> load_from_file
-#       -> strip_empty_lines
-# -> process_term_directory
-#    -> [process_input_path]
+# -> process_input_path_inner
+#    -> load_from_path
+#        -> load_from_file
+#           -> strip_empty_lines
+#     -> process_term_directory
+#        -> [process_input_path_inner]
 
 def process_input_path(
         options: Options,
+        seen_terms: dict[str, Term],
+        term_path: str) -> list[Term]:
+
+    if options.max_tree_depth is None:
+        max_depth = HARD_DEPTH_LIMIT
+    else:
+        max_depth = min(options.max_tree_depth, HARD_DEPTH_LIMIT)
+
+    return process_input_path_inner(max_depth, seen_terms, term_path)
+
+
+def process_input_path_inner(
+        remaining_tree_depth: int,
         seen_terms: dict[str, Term],
         term_path: str) -> list[Term]:
 
@@ -69,7 +86,8 @@ def process_input_path(
             if os.path.isdir(root_path):
                 _LOG.debug("The term directory (%s) exists", root_path)
 
-                term.children = process_term_directory(options, seen_terms, root_path)
+                term.children = process_term_directory(
+                    remaining_tree_depth, seen_terms, root_path)
 
             return [term]
 
@@ -77,7 +95,7 @@ def process_input_path(
     elif os.path.isdir(term_path):
         _LOG.debug(f"The term path ({term_path}) is a directory")
 
-        return process_term_directory(options, seen_terms, term_path)
+        return process_term_directory(remaining_tree_depth, seen_terms, term_path)
     else:
         _LOG.debug(f"The term path ({term_path}) is not an existing file nor a directory")
 
@@ -87,16 +105,20 @@ def process_input_path(
 # Returns list of terms in the directory (can be assigned to the children of the parent term or
 #  be used directly)
 def process_term_directory(
-        options: Options,
+        remaining_tree_depth: int,
         seen_terms: dict[str, Term],
         term_dir_path: str) -> list[Term]:
 
-    _LOG.info("Processing term directory: %s", term_dir_path)
+    if remaining_tree_depth <= 0:
+        _LOG.debug(f"Max tree depth reached - skipping term directory: {term_dir_path}")
+        return []
+
+    _LOG.info(f"Processing term directory: {term_dir_path}")
 
     result_terms = []
 
     for term_path in sorted(glob.glob(f"{term_dir_path}/*.md")):
-        term = process_input_path(options, seen_terms, term_path)
+        term = process_input_path_inner(remaining_tree_depth-1, seen_terms, term_path)
 
         if term is not None:
             result_terms += term
