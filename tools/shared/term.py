@@ -25,7 +25,7 @@ class Term(pydantic.BaseModel):
     definition: list[str] = []
     children: list["Term"] = []
 
-HARD_DEPTH_LIMIT = sys.getrecursionlimit() / 4
+HARD_DEPTH_LIMIT = sys.getrecursionlimit() // 4
 
 class Options(pydantic.BaseModel):
     max_tree_depth: int | None = None
@@ -118,10 +118,7 @@ def process_term_directory(
     result_terms = []
 
     for term_path in sorted(glob.glob(f"{term_dir_path}/*.md")):
-        term = process_input_path_inner(remaining_tree_depth-1, seen_terms, term_path)
-
-        if term is not None:
-            result_terms += term
+        result_terms += process_input_path_inner(remaining_tree_depth-1, seen_terms, term_path)
 
     return result_terms
 
