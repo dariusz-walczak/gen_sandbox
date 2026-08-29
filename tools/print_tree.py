@@ -65,20 +65,17 @@ def parse_std_input_json() -> typing.Any:
 
 def parse_file_input_json(file_path: str) -> typing.Any:
     try:
-        json_file = open(file_path)
+        with open(file_path) as json_file:
+            try:
+                return json.loads(json_file.read())
+            except json.JSONDecodeError as e:
+                raise shared.error.AppError(
+                    shared.error.AppError.Codes.InvalidInput,
+                    f"Failed to deserialize the json file ({file_path})") from e
     except OSError as e:
         raise shared.error.AppError(
             shared.error.AppError.Codes.InvalidInput,
             f"Failed to open the json file {file_path}") from e
-
-    try:
-        parsed = json.loads(json_file.read())
-    except json.JSONDecodeError as e:
-        raise shared.error.AppError(
-            shared.error.AppError.Codes.InvalidInput,
-            f"Failed to deserialize the json file ({file_path})") from e
-
-    return parsed
 
 
 def render_console_markdown(options: argparse.Namespace, text: str) -> None:
