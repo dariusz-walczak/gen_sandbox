@@ -301,7 +301,7 @@ def test_process_input_path_normal_cases(
 # > shared.term.process_input_path > deep tree cases (including tree depth limit)
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 
-def make_dt_term(id: str, *children: list[shared.term.Term]):
+def make_dt_term(id: str, *children: shared.term.Term) -> shared.term.Term:
     base_path = os.path.join(_DATA_ROOT, "term", "deep-tree")
 
     match id:
