@@ -12,7 +12,7 @@
 - The term definition body starts with the first line following the anchor header.
 - The term definition body ends with the first header following the anchor header (any header level)
 - The leading and trailing blank lines are ignored
-- All content preceeding the anchor header and following the closing header is a supplementary content.
+- All content preceding the anchor header and following the closing header is supplementary content.
 - The supplementary content may provide extra clarifications, examples, todo notes, AI-instructions, etc.
 - The terms hierarchy is reflected by the filesystem structure and a dedicated subterm section of the term file.
 - The subterm section is preferred to be named "Subterms" (not enforced yet)
