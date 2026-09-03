@@ -13,8 +13,8 @@ _DATA_ROOT = os.path.join(os.path.dirname(__file__), "data")
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 
 def assert_term_trees_equal(
-        actual: list[shared.term.Term],
-        expected: list[shared.term.Term]) -> None:
+        actual: typing.Sequence[shared.term.Term],
+        expected: typing.Sequence[shared.term.Term]) -> None:
     assert len(actual) == len(expected)
     actual_by_id = {t.id: t for t in actual}
     expected_by_id = {t.id: t for t in expected}
@@ -897,43 +897,43 @@ def make_dt_expected(
         shared.term.Options(max_tree_depth=1),
         make_dt_expected("seen_terms", 1),
         make_dt_expected("term_trees", 1),
-        id="max_tree_depth=1",
+        id="max_tree_depth_1",
     ),
     pytest.param(
         shared.term.Options(max_tree_depth=2),
         make_dt_expected("seen_terms", 2),
         make_dt_expected("term_trees", 2),
-        id="max_tree_depth=2",
+        id="max_tree_depth_2",
     ),
     pytest.param(
         shared.term.Options(max_tree_depth=3),
         make_dt_expected("seen_terms", 3),
         make_dt_expected("term_trees", 3),
-        id="max_tree_depth=3",
+        id="max_tree_depth_3",
     ),
     pytest.param(
         shared.term.Options(max_tree_depth=4),
         make_dt_expected("seen_terms", 4),
         make_dt_expected("term_trees", 4),
-        id="max_tree_depth=4",
+        id="max_tree_depth_4",
     ),
     pytest.param(
         shared.term.Options(max_tree_depth=5),
         make_dt_expected("seen_terms", 5),
         make_dt_expected("term_trees", 5),
-        id="max_tree_depth=5",
+        id="max_tree_depth_5",
     ),
     pytest.param(
         shared.term.Options(max_tree_depth=6),
         make_dt_expected("seen_terms", 5), # Level 5 is the greatest level in the input tree
         make_dt_expected("term_trees", 5),
-        id="max_tree_depth=6",
+        id="max_tree_depth_6",
     ),
     pytest.param(
         shared.term.Options(),
         make_dt_expected("seen_terms", 5), # Level 5 is the greatest level in the input tree
         make_dt_expected("term_trees", 5),
-        id="max_tree_depth=<unlimited>",
+        id="max_tree_depth_unlimited",
     ),
 ])
 def test_process_input_path_max_tree_depth(
@@ -956,4 +956,1143 @@ def test_process_input_path_max_tree_depth(
         for term_id, term in output_seen_terms.items()}
 
     assert adapted_seen_terms == expected_seen_terms
-    assert output_term_trees == expected_term_trees
+    assert_term_trees_equal(output_term_trees, expected_term_trees)
+
+
+# > shared.term.extract_referenced_terms > deep graph cases (including distance limit)
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+
+def make_dg_term(id: str, *children: shared.term.Term) -> shared.term.Term:
+    base_path = os.path.join(_DATA_ROOT, "term", "deep-graph")
+
+    match id:
+        case "albania":
+            term = shared.term.Term(
+                id="albania", title="Albania",
+                path=os.path.join(base_path, "europe", "albania.md"),
+                definition=[
+                    "__Albania__ is a country in [Europe](#europe) that borders [Greece](#greece),"
+                    " [Montenegro](#montenegro), [North Macedonia](#north_macedonia), and"
+                    " [Kosovo](#kosovo)."
+                ]
+            )
+        case "andorra":
+            term = shared.term.Term(
+                id="andorra", title="Andorra",
+                path=os.path.join(base_path, "europe", "andorra.md"),
+                definition=[
+                    "__Andorra__ is a country in [Europe](#europe) that borders [France](#france)"
+                    " and [Spain](#spain)."
+                ]
+            )
+        case "armenia":
+            term = shared.term.Term(
+                id="armenia", title="Armenia",
+                path=os.path.join(base_path, "europe", "armenia.md"),
+                definition=[
+                    "__Armenia__ is a country in [Europe](#europe) that borders [Turkey](#turkey),"
+                    " __Iran__, [Azerbaijan](#azerbaijan), and [Georgia](#georgia)."
+                ]
+            )
+        case "austria":
+            term = shared.term.Term(
+                id="austria", title="Austria",
+                path=os.path.join(base_path, "europe", "austria.md"),
+                definition=[
+                    "__Austria__ is a country in [Europe](#europe) that borders [Germany]"
+                    "(#germany), [Czechia](#czechia), [Slovakia](#slovakia), [Hungary](#hungary),"
+                    " [Slovenia](#slovenia), [Italy](#italy), [Switzerland](#switzerland), and"
+                    " [Liechtenstein](#liechtenstein)."
+                ]
+            )
+        case "azerbaijan":
+            term = shared.term.Term(
+                id="azerbaijan", title="Azerbaijan",
+                path=os.path.join(base_path, "europe", "azerbaijan.md"),
+                definition=[
+                    "__Azerbaijan__ is a country in [Europe](#europe) that borders [Georgia]"
+                    "(#georgia), [Armenia](#armenia), __Iran__, and [Russia](#russia)."
+                ]
+            )
+        case "belarus":
+            term = shared.term.Term(
+                id="belarus", title="Belarus",
+                path=os.path.join(base_path, "europe", "belarus.md"),
+                definition=[
+                    "__Belarus__ is a country in [Europe](#europe) that borders [Russia](#russia),"
+                    " [Ukraine](#ukraine), [Poland](#poland), [Lithuania](#lithuania), and"
+                    " [Latvia](#latvia)."
+                ]
+            )
+        case "belgium":
+            term = shared.term.Term(
+                id="belgium", title="Belgium",
+                path=os.path.join(base_path, "europe", "belgium.md"),
+                definition=[
+                    "__Belgium__ is a country in [Europe](#europe) that borders [France](#france),"
+                    " [Germany](#germany), [Luxembourg](#luxembourg), and [Netherlands]"
+                    "(#netherlands)."
+                ]
+            )
+        case "bosnia_and_herzegovina":
+            term = shared.term.Term(
+                id="bosnia_and_herzegovina", title="Bosnia and Herzegovina",
+                path=os.path.join(base_path, "europe", "bosnia_and_herzegovina.md"),
+                definition=[
+                    "__Bosnia and Herzegovina__ is a country in [Europe](#europe) that borders"
+                    " [Croatia](#croatia), [Serbia](#serbia), and [Montenegro](#montenegro)."
+                ]
+            )
+        case "bulgaria":
+            term = shared.term.Term(
+                id="bulgaria", title="Bulgaria",
+                path=os.path.join(base_path, "europe", "bulgaria.md"),
+                definition=[
+                    "__Bulgaria__ is a country in [Europe](#europe) that borders [Romania]"
+                    "(#romania), [Serbia](#serbia), [North Macedonia](#north_macedonia), [Greece]"
+                    "(#greece), and [Turkey](#turkey)."
+                ]
+            )
+        case "croatia":
+            term = shared.term.Term(
+                id="croatia", title="Croatia",
+                path=os.path.join(base_path, "europe", "croatia.md"),
+                definition=[
+                    "__Croatia__ is a country in [Europe](#europe) that borders [Slovenia]"
+                    "(#slovenia), [Hungary](#hungary), [Serbia](#serbia), [Bosnia and Herzegovina]"
+                    "(#bosnia_and_herzegovina), and [Montenegro](#montenegro)."
+                ]
+            )
+        case "cyprus":
+            term = shared.term.Term(
+                id="cyprus", title="Cyprus",
+                path=os.path.join(base_path, "europe", "cyprus.md"),
+                definition=[
+                    "__Cyprus__ is a country in [Europe](#europe) that has no land borders."
+                ]
+            )
+        case "czechia":
+            term = shared.term.Term(
+                id="czechia", title="Czechia",
+                path=os.path.join(base_path, "europe", "czechia.md"),
+                definition=[
+                    "__Czechia__ is a country in [Europe](#europe) that borders [Germany]"
+                    "(#germany), [Austria](#austria), [Slovakia](#slovakia), and [Poland]"
+                    "(#poland)."
+                ]
+            )
+        case "denmark":
+            term = shared.term.Term(
+                id="denmark", title="Denmark",
+                path=os.path.join(base_path, "europe", "denmark.md"),
+                definition=[
+                    "__Denmark__ is a country in [Europe](#europe) that borders [Germany]"
+                    "(#germany)."
+                ]
+            )
+        case "estonia":
+            term = shared.term.Term(
+                id="estonia", title="Estonia",
+                path=os.path.join(base_path, "europe", "estonia.md"),
+                definition=[
+                    "__Estonia__ is a country in [Europe](#europe) that borders [Latvia](#latvia)"
+                    " and [Russia](#russia)."
+                ]
+            )
+        case "europe":
+            term = shared.term.Term(
+                id="europe", title="Europe",
+                path=os.path.join(base_path, "europe.md"),
+                definition=[
+                    "__Europe__ is a continent."
+                ]
+            )
+        case "finland":
+            term = shared.term.Term(
+                id="finland", title="finland",
+                path=os.path.join(base_path, "europe", "finland.md"),
+                definition=[
+                    "__Finland__ is a country in [Europe](#europe) that borders [Sweden](#sweden),"
+                    " [Russia](#russia), and [Norway](#norway)."
+                ]
+            )
+        case "france":
+            term = shared.term.Term(
+                id="france", title="France",
+                path=os.path.join(base_path, "europe", "france.md"),
+                definition=[
+                    "__France__ is a country in [Europe](#europe) that borders [Belgium]"
+                    "(#belgium), [Luxembourg](#luxembourg), [Germany](#germany), [Switzerland]"
+                    "(#switzerland), [Italy](#italy), [Monaco](#monaco), [Andorra](#andorra), and"
+                    " [Spain](#spain)."
+                ]
+            )
+        case "georgia":
+            term = shared.term.Term(
+                id="georgia", title="Georgia",
+                path=os.path.join(base_path, "europe", "georgia.md"),
+                definition=[
+                    "__Georgia__ is a country in [Europe](#europe) that borders [Russia](#russia),"
+                    " [Azerbaijan](#azerbaijan), [Armenia](#armenia), and [Turkey](#turkey)."
+                ]
+            )
+        case "germany":
+            term = shared.term.Term(
+                id="germany", title="Germany",
+                path=os.path.join(base_path, "europe", "germany.md"),
+                definition=[
+                    "__Germany__ is a country in [Europe](#europe) that borders [Denmark]"
+                    "(#denmark), [Poland](#poland), [Czechia](#czechia), [Austria](#austria),"
+                    " [Switzerland](#switzerland), [France](#france), [Luxembourg](#luxembourg),"
+                    " [Belgium](#belgium), and [Netherlands](#netherlands)."
+                ]
+            )
+        case "greece":
+            term = shared.term.Term(
+                id="greece", title="Greece",
+                path=os.path.join(base_path, "europe", "greece.md"),
+                definition=[
+                    "__Greece__ is a country in [Europe](#europe) that borders [Albania]"
+                    "(#albania), [North Macedonia](#north_macedonia), [Bulgaria](#bulgaria), and"
+                    " [Turkey](#turkey)."
+                ]
+            )
+        case "hungary":
+            term = shared.term.Term(
+                id="hungary", title="Hungary",
+                path=os.path.join(base_path, "europe", "hungary.md"),
+                definition=[
+                    "__Hungary__ is a country in [Europe](#europe) that borders [Austria]"
+                    "(#austria), [Slovakia](#slovakia), [Ukraine](#ukraine), [Romania](#romania),"
+                    " [Serbia](#serbia), [Croatia](#croatia), and [Slovenia](#slovenia)."
+                ]
+            )
+        case "iceland":
+            term = shared.term.Term(
+                id="iceland", title="Iceland",
+                path=os.path.join(base_path, "europe", "iceland.md"),
+                definition=[
+                    "__Iceland__ is a country in [Europe](#europe) that has no land borders."
+                ]
+            )
+        case "ireland":
+            term = shared.term.Term(
+                id="ireland", title="Ireland",
+                path=os.path.join(base_path, "europe", "ireland.md"),
+                definition=[
+                    "__Ireland__ is a country in [Europe](#europe) that borders [United Kingdom]"
+                    "(#united_kingdom)."
+                ]
+            )
+        case "italy":
+            term = shared.term.Term(
+                id="italy", title="Italy",
+                path=os.path.join(base_path, "europe", "italy.md"),
+                definition=[
+                    "__Italy__ is a country in [Europe](#europe) that borders [France](#france),"
+                    " [Switzerland](#switzerland), [Austria](#austria), [Slovenia](#slovenia),"
+                    " [San Marino](#san_marino), and [Vatican City](#vatican_city)."
+                ]
+            )
+        case "kazakhstan":
+            term = shared.term.Term(
+                id="kazakhstan", title="Kazakhstan",
+                path=os.path.join(base_path, "europe", "kazakhstan.md"),
+                definition=[
+                    "__Kazakhstan__ is a country in [Europe](#europe) that borders [Russia]"
+                    "(#russia), __China__, __Kyrgyzstan__, __Uzbekistan__, and __Turkmenistan__."
+                ]
+            )
+        case "kosovo":
+            term = shared.term.Term(
+                id="kosovo", title="Kosovo",
+                path=os.path.join(base_path, "europe", "kosovo.md"),
+                definition=[
+                    "__Kosovo__ is a country in [Europe](#europe) that has partial diplomatic"
+                    " recognition and borders [Serbia](#serbia), [Montenegro](#montenegro),"
+                    " [Albania](#albania), and [North Macedonia](#north_macedonia)."
+                ]
+            )
+        case "latvia":
+            term = shared.term.Term(
+                id="latvia", title="Latvia",
+                path=os.path.join(base_path, "europe", "latvia.md"),
+                definition=[
+                    "__Latvia__ is a country in [Europe](#europe) that borders [Estonia]"
+                    "(#estonia), [Lithuania](#lithuania), [Russia](#russia), and"
+                    " [Belarus](#belarus)."
+                ]
+            )
+        case "liechtenstein":
+            term = shared.term.Term(
+                id="liechtenstein", title="Liechtenstein",
+                path=os.path.join(base_path, "europe", "liechtenstein.md"),
+                definition=[
+                    "__Liechtenstein__ is a country in [Europe](#europe) that borders"
+                    " [Switzerland](#switzerland) and [Austria](#austria)."
+                ]
+            )
+        case "lithuania":
+            term = shared.term.Term(
+                id="lithuania", title="Lithuania",
+                path=os.path.join(base_path, "europe", "lithuania.md"),
+                definition=[
+                    "__Lithuania__ is a country in [Europe](#europe) that borders [Poland]"
+                    "(#poland), [Latvia](#latvia), [Belarus](#belarus), and [Russia](#russia)."
+                ]
+            )
+        case "luxembourg":
+            term = shared.term.Term(
+                id="luxembourg", title="Luxembourg",
+                path=os.path.join(base_path, "europe", "luxembourg.md"),
+                definition=[
+                    "__Luxembourg__ is a country in [Europe](#europe) that borders [Belgium]"
+                    "(#belgium), [Germany](#germany), and [France](#france)."
+                ]
+            )
+        case "malta":
+            term = shared.term.Term(
+                id="malta", title="Malta",
+                path=os.path.join(base_path, "europe", "malta.md"),
+                definition=[
+                    "__Malta__ is a country in [Europe](#europe) that has no land borders."
+                ]
+            )
+        case "moldova":
+            term = shared.term.Term(
+                id="moldova", title="Moldova",
+                path=os.path.join(base_path, "europe", "moldova.md"),
+                definition=[
+                    "__Moldova__ is a country in [Europe](#europe) that borders [Romania]"
+                    "(#romania) and [Ukraine](#ukraine)."
+                ]
+            )
+        case "monaco":
+            term = shared.term.Term(
+                id="monaco", title="Monaco",
+                path=os.path.join(base_path, "europe", "monaco.md"),
+                definition=[
+                    "__Monaco__ is a country in [Europe](#europe) that borders [France](#france)."
+                ]
+            )
+        case "montenegro":
+            term = shared.term.Term(
+                id="montenegro", title="Montenegro",
+                path=os.path.join(base_path, "europe", "montenegro.md"),
+                definition=[
+                    "__Montenegro__ is a country in [Europe](#europe) that borders [Serbia]"
+                    "(#serbia), [Bosnia and Herzegovina](#bosnia_and_herzegovina), [Albania]"
+                    "(#albania), [Croatia](#croatia), and [Kosovo](#kosovo)."
+                ]
+            )
+        case "netherlands":
+            term = shared.term.Term(
+                id="netherlands", title="Netherlands",
+                path=os.path.join(base_path, "europe", "netherlands.md"),
+                definition=[
+                    "__Netherlands__ is a country in [Europe](#europe) that borders [Germany]"
+                    "(#germany) and [Belgium](#belgium)."
+                ]
+            )
+        case "north_macedonia":
+            term = shared.term.Term(
+                id="north_macedonia", title="North Macedonia",
+                path=os.path.join(base_path, "europe", "north_macedonia.md"),
+                definition=[
+                    "__North Macedonia__ is a country in [Europe](#europe) that borders [Serbia]"
+                    "(#serbia), [Kosovo](#kosovo), [Albania](#albania), [Greece](#greece), and"
+                    " [Bulgaria](#bulgaria)."
+                ]
+            )
+        case "norway":
+            term = shared.term.Term(
+                id="norway", title="Norway",
+                path=os.path.join(base_path, "europe", "norway.md"),
+                definition=[
+                    "__Norway__ is a country in [Europe](#europe) that borders [Sweden](#sweden),"
+                    " [Finland](#finland), and [Russia](#russia)."
+                ]
+            )
+        case "poland":
+            term = shared.term.Term(
+                id="poland", title="Poland",
+                path=os.path.join(base_path, "europe", "poland.md"),
+                definition=[
+                    "__Poland__ is a country in [Europe](#europe) that borders [Germany]"
+                    "(#germany), [Czechia](#czechia), [Slovakia](#slovakia), [Ukraine](#ukraine),"
+                    " [Belarus](#belarus), [Lithuania](#lithuania), and [Russia](#russia)."
+                ]
+            )
+        case "portugal":
+            term = shared.term.Term(
+                id="portugal", title="Portugal",
+                path=os.path.join(base_path, "europe", "portugal.md"),
+                definition=[
+                    "__Portugal__ is a country in [Europe](#europe) that borders [Spain](#spain)."
+                ]
+            )
+        case "romania":
+            term = shared.term.Term(
+                id="romania", title="Romania",
+                path=os.path.join(base_path, "europe", "romania.md"),
+                definition=[
+                    "__Romania__ is a country in [Europe](#europe) that borders [Ukraine]"
+                    "(#ukraine), [Moldova](#moldova), [Bulgaria](#bulgaria), [Serbia](#serbia),"
+                    " and [Hungary](#hungary)."
+                ]
+            )
+        case "russia":
+            term = shared.term.Term(
+                id="russia", title="Russia",
+                path=os.path.join(base_path, "europe", "russia.md"),
+                definition=[
+                    "__Russia__ is a country in [Europe](#europe) that borders [Norway](#norway),"
+                    " [Finland](#finland), [Estonia](#estonia), [Latvia](#latvia), [Lithuania]"
+                    "(#lithuania), [Poland](#poland), [Belarus](#belarus), [Ukraine](#ukraine),"
+                    " [Georgia](#georgia), [Azerbaijan](#azerbaijan), [Kazakhstan](#kazakhstan),"
+                    " __China__, __Mongolia__, and __North Korea__."
+                ]
+            )
+        case "san_marino":
+            term = shared.term.Term(
+                id="san_marino", title="San Marino",
+                path=os.path.join(base_path, "europe", "san_marino.md"),
+                definition=[
+                    "__San Marino__ is a country in [Europe](#europe) that borders [Italy]"
+                    "(#italy)."
+                ]
+            )
+        case "serbia":
+            term = shared.term.Term(
+                id="serbia", title="Serbia",
+                path=os.path.join(base_path, "europe", "serbia.md"),
+                definition=[
+                    "__Serbia__ is a country in [Europe](#europe) that borders [Hungary]"
+                    "(#hungary), [Romania](#romania), [Bulgaria](#bulgaria), [North Macedonia]"
+                    "(#north_macedonia), [Kosovo](#kosovo), [Montenegro](#montenegro), [Bosnia and"
+                    " Herzegovina](#bosnia_and_herzegovina), and [Croatia](#croatia)."
+                ]
+            )
+        case "slovakia":
+            term = shared.term.Term(
+                id="slovakia", title="Slovakia",
+                path=os.path.join(base_path, "europe", "slovakia.md"),
+                definition=[
+                    "__Slovakia__ is a country in [Europe](#europe) that borders [Poland]"
+                    "(#poland), [Ukraine](#ukraine), [Hungary](#hungary), [Czechia](#czechia),"
+                    " and [Austria](#austria)."
+                ]
+            )
+        case "slovenia":
+            term = shared.term.Term(
+                id="slovenia", title="Slovenia",
+                path=os.path.join(base_path, "europe", "slovenia.md"),
+                definition=[
+                    "__Slovenia__ is a country in [Europe](#europe) that borders [Italy](#italy),"
+                    " [Austria](#austria), [Hungary](#hungary), and [Croatia](#croatia)."
+                ]
+            )
+        case "spain":
+            term = shared.term.Term(
+                id="spain", title="Spain",
+                path=os.path.join(base_path, "europe", "spain.md"),
+                definition=[
+                    "__Spain__ is a country in [Europe](#europe) that borders [France](#france),"
+                    " [Andorra](#andorra), and [Portugal](#portugal)."
+                ]
+            )
+        case "sweden":
+            term = shared.term.Term(
+                id="sweden", title="Sweden",
+                path=os.path.join(base_path, "europe", "sweden.md"),
+                definition=[
+                    "__Sweden__ is a country in [Europe](#europe) that borders [Norway](#norway)"
+                    " and [Finland](#finland)."
+                ]
+            )
+        case "switzerland":
+            term = shared.term.Term(
+                id="switzerland", title="Switzerland",
+                path=os.path.join(base_path, "europe", "switzerland.md"),
+                definition=[
+                    "__Switzerland__ is a country in [Europe](#europe) that borders [France]"
+                    "(#france), [Germany](#germany), [Austria](#austria), [Liechtenstein]"
+                    "(#liechtenstein), and [Italy](#italy)."
+                ]
+            )
+        case "turkey":
+            term = shared.term.Term(
+                id="turkey", title="Turkey",
+                path=os.path.join(base_path, "europe", "turkey.md"),
+                definition=[
+                    "__Turkey__ is a country in [Europe](#europe) that borders [Greece](#greece),"
+                    " [Bulgaria](#bulgaria), [Georgia](#georgia), [Armenia](#armenia),"
+                    " [Azerbaijan](#azerbaijan), __Iran__, __Iraq__, and __Syria__."
+                ]
+            )
+        case "ukraine":
+            term = shared.term.Term(
+                id="ukraine", title="Ukraine",
+                path=os.path.join(base_path, "europe", "ukraine.md"),
+                definition=[
+                    "__Ukraine__ is a country in [Europe](#europe) that borders [Poland](#poland),"
+                    " [Slovakia](#slovakia), [Hungary](#hungary), [Romania](#romania), [Moldova]"
+                    "(#moldova), [Belarus](#belarus), and [Russia](#russia)."
+                ]
+            )
+        case "united_kingdom":
+            term = shared.term.Term(
+                id="united_kingdom", title="United Kingdom",
+                path=os.path.join(base_path, "europe", "united_kingdom.md"),
+                definition=[
+                    "__United Kingdom__ is a country in [Europe](#europe) that borders [Ireland]"
+                    "(#ireland)."
+                ]
+            )
+        case "vatican_city":
+            term = shared.term.Term(
+                id="vatican_city", title="Vatican City",
+                path=os.path.join(base_path, "europe", "vatican_city.md"),
+                definition=[
+                    "__Vatican City__ is a country in [Europe](#europe) that borders [Italy]"
+                    "(#italy)."
+                ]
+            )
+        case _:
+            raise Exception(f"Unknown term id: {id}")
+
+    term.children = list(children)
+
+    return term
+
+def make_dg_term_lookup() -> dict[str, shared.term.Term]:
+    return {
+        "albania":                make_dg_term("albania"),
+        "andorra":                make_dg_term("andorra"),
+        "armenia":                make_dg_term("armenia"),
+        "austria":                make_dg_term("austria"),
+        "azerbaijan":             make_dg_term("azerbaijan"),
+        "belarus":                make_dg_term("belarus"),
+        "belgium":                make_dg_term("belgium"),
+        "bosnia_and_herzegovina": make_dg_term("bosnia_and_herzegovina"),
+        "bulgaria":               make_dg_term("bulgaria"),
+        "croatia":                make_dg_term("croatia"),
+        "cyprus":                 make_dg_term("cyprus"),
+        "czechia":                make_dg_term("czechia"),
+        "denmark":                make_dg_term("denmark"),
+        "estonia":                make_dg_term("estonia"),
+        "europe":                 make_dg_term("europe"),
+        "finland":                make_dg_term("finland"),
+        "france":                 make_dg_term("france"),
+        "georgia":                make_dg_term("georgia"),
+        "germany":                make_dg_term("germany"),
+        "greece":                 make_dg_term("greece"),
+        "hungary":                make_dg_term("hungary"),
+        "iceland":                make_dg_term("iceland"),
+        "ireland":                make_dg_term("ireland"),
+        "italy":                  make_dg_term("italy"),
+        "kazakhstan":             make_dg_term("kazakhstan"),
+        "kosovo":                 make_dg_term("kosovo"),
+        "latvia":                 make_dg_term("latvia"),
+        "liechtenstein":          make_dg_term("liechtenstein"),
+        "lithuania":              make_dg_term("lithuania"),
+        "luxembourg":             make_dg_term("luxembourg"),
+        "malta":                  make_dg_term("malta"),
+        "moldova":                make_dg_term("moldova"),
+        "monaco":                 make_dg_term("monaco"),
+        "montenegro":             make_dg_term("montenegro"),
+        "netherlands":            make_dg_term("netherlands"),
+        "north_macedonia":        make_dg_term("north_macedonia"),
+        "norway":                 make_dg_term("norway"),
+        "poland":                 make_dg_term("poland"),
+        "portugal":               make_dg_term("portugal"),
+        "romania":                make_dg_term("romania"),
+        "russia":                 make_dg_term("russia"),
+        "san_marino":             make_dg_term("san_marino"),
+        "serbia":                 make_dg_term("serbia"),
+        "slovakia":               make_dg_term("slovakia"),
+        "slovenia":               make_dg_term("slovenia"),
+        "spain":                  make_dg_term("spain"),
+        "sweden":                 make_dg_term("sweden"),
+        "switzerland":            make_dg_term("switzerland"),
+        "turkey":                 make_dg_term("turkey"),
+        "ukraine":                make_dg_term("ukraine"),
+        "united_kingdom":         make_dg_term("united_kingdom"),
+        "vatican_city":           make_dg_term("vatican_city")
+    }
+
+@pytest.mark.parametrize("input_options,input_term_ids,input_term_lookup,expected_terms", [
+    #   Malta
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+    pytest.param(
+        shared.term.Options(max_ref_depth=1),
+        ("malta",),
+        make_dg_term_lookup(),
+        [
+            make_dg_term("malta"),
+        ],
+        id="malta_max_ref_depth_1",
+    ),
+    pytest.param(
+        shared.term.Options(max_ref_depth=2),
+        ("malta",),
+        make_dg_term_lookup(),
+        [
+            make_dg_term("europe"),
+            make_dg_term("malta"),
+        ],
+        id="malta_max_ref_depth_2",
+    ),
+    pytest.param(
+        shared.term.Options(max_ref_depth=3),
+        ("malta",),
+        make_dg_term_lookup(),
+        [
+            make_dg_term("europe"),
+            make_dg_term("malta"),
+        ],
+        id="malta_max_ref_depth_3",
+    ),
+    pytest.param(
+        shared.term.Options(),
+        ("malta",),
+        make_dg_term_lookup(),
+        [
+            make_dg_term("europe"),
+            make_dg_term("malta"),
+        ],
+        id="malta_max_ref_depth_unlimited",
+    ),
+    #   Cyprus + Iceland
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+    pytest.param(
+        shared.term.Options(max_ref_depth=1),
+        ("cyprus", "iceland"),
+        make_dg_term_lookup(),
+        [
+            make_dg_term("cyprus"),
+            make_dg_term("iceland"),
+        ],
+        id="cyprus_ireland_max_ref_depth_1",
+    ),
+    pytest.param(
+        shared.term.Options(max_ref_depth=2),
+        ("cyprus", "iceland"),
+        make_dg_term_lookup(),
+        [
+            make_dg_term("cyprus"),
+            make_dg_term("europe"),
+            make_dg_term("iceland"),
+        ],
+        id="cyprus_ireland_max_ref_depth_2",
+    ),
+    pytest.param(
+        shared.term.Options(max_ref_depth=3),
+        ("cyprus", "iceland"),
+        make_dg_term_lookup(),
+        [
+            make_dg_term("cyprus"),
+            make_dg_term("europe"),
+            make_dg_term("iceland"),
+        ],
+        id="cyprus_ireland_max_ref_depth_3",
+    ),
+    pytest.param(
+        shared.term.Options(),
+        ("cyprus", "iceland"),
+        make_dg_term_lookup(),
+        [
+            make_dg_term("cyprus"),
+            make_dg_term("europe"),
+            make_dg_term("iceland"),
+        ],
+        id="cyprus_ireland_max_ref_depth_unlimited",
+    ),
+    #   Netherlands
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+    pytest.param(
+        shared.term.Options(max_ref_depth=1),
+        ("netherlands",),
+        make_dg_term_lookup(),
+        [
+            make_dg_term("netherlands"), # 1
+        ],
+        id="netherlands_max_ref_depth_1",
+    ),
+    pytest.param(
+        shared.term.Options(max_ref_depth=2),
+        ("netherlands",),
+        make_dg_term_lookup(),
+        [
+            make_dg_term("netherlands"), # 1
+                make_dg_term("belgium"), # 2
+                make_dg_term("europe"),  # 2
+                make_dg_term("germany"), # 2
+        ],
+        id="netherlands_max_ref_depth_2",
+    ),
+    pytest.param(
+        shared.term.Options(max_ref_depth=3),
+        ("netherlands",),
+        make_dg_term_lookup(),
+        [
+            make_dg_term("netherlands"),         # 1
+                make_dg_term("belgium"),         # 2
+                    make_dg_term("france"),      # 3
+                    make_dg_term("luxembourg"),  # 3
+                make_dg_term("europe"),          # 2
+                make_dg_term("germany"),         # 2
+                    make_dg_term("denmark"),     # 3
+                    make_dg_term("poland"),      # 3
+                    make_dg_term("czechia"),     # 3
+                    make_dg_term("austria"),     # 3
+                    make_dg_term("switzerland"), # 3
+        ],
+        id="netherlands_max_ref_depth_3",
+    ),
+    pytest.param(
+        shared.term.Options(max_ref_depth=4),
+        ("netherlands",),
+        make_dg_term_lookup(),
+        [
+            make_dg_term("netherlands"),               # 1
+                make_dg_term("belgium"),               # 2
+                    make_dg_term("france"),            # 3
+                        make_dg_term("italy"),         # 4
+                        make_dg_term("monaco"),        # 4
+                        make_dg_term("andorra"),       # 4
+                        make_dg_term("spain"),         # 4
+                    make_dg_term("luxembourg"),        # 3
+                make_dg_term("europe"),                # 2
+                make_dg_term("germany"),               # 2
+                    make_dg_term("denmark"),           # 3
+                    make_dg_term("poland"),            # 3
+                        make_dg_term("slovakia"),      # 4
+                        make_dg_term("ukraine"),       # 4
+                        make_dg_term("belarus"),       # 4
+                        make_dg_term("lithuania"),     # 4
+                        make_dg_term("russia"),        # 4
+                    make_dg_term("czechia"),           # 3
+                    make_dg_term("austria"),           # 3
+                        make_dg_term("hungary"),       # 4
+                        make_dg_term("slovenia"),      # 4
+                        make_dg_term("liechtenstein"), # 4
+                    make_dg_term("switzerland"),       # 3
+        ],
+        id="netherlands_max_ref_depth_4",
+    ),
+    pytest.param(
+        shared.term.Options(max_ref_depth=5),
+        ("netherlands",),
+        make_dg_term_lookup(),
+        [
+            make_dg_term("netherlands"),                  # 1
+                make_dg_term("belgium"),                  # 2
+                    make_dg_term("france"),               # 3
+                        make_dg_term("italy"),            # 4
+                            make_dg_term("san_marino"),   # 5
+                            make_dg_term("vatican_city"), # 5
+                        make_dg_term("monaco"),           # 4
+                        make_dg_term("andorra"),          # 4
+                        make_dg_term("spain"),            # 4
+                            make_dg_term("portugal"),     # 5
+                    make_dg_term("luxembourg"),           # 3
+                make_dg_term("europe"),                   # 2
+                make_dg_term("germany"),                  # 2
+                    make_dg_term("denmark"),              # 3
+                    make_dg_term("poland"),               # 3
+                        make_dg_term("slovakia"),         # 4
+                        make_dg_term("ukraine"),          # 4
+                            make_dg_term("romania"),      # 5
+                            make_dg_term("moldova"),      # 5
+                        make_dg_term("belarus"),          # 4
+                            make_dg_term("latvia"),       # 5
+                        make_dg_term("lithuania"),        # 4
+                        make_dg_term("russia"),           # 4
+                            make_dg_term("norway"),       # 5
+                            make_dg_term("finland"),      # 5
+                            make_dg_term("estonia"),      # 5
+                            make_dg_term("georgia"),      # 5
+                            make_dg_term("azerbaijan"),   # 5
+                            make_dg_term("kazakhstan"),   # 5
+                    make_dg_term("czechia"),              # 3
+                    make_dg_term("austria"),              # 3
+                        make_dg_term("hungary"),          # 4
+                            make_dg_term("serbia"),       # 5
+                            make_dg_term("croatia"),      # 5
+                        make_dg_term("slovenia"),         # 4
+                        make_dg_term("liechtenstein"),    # 4
+                    make_dg_term("switzerland"),          # 3
+        ],
+        id="netherlands_max_ref_depth_5",
+    ),
+    pytest.param(
+        shared.term.Options(max_ref_depth=6),
+        ("netherlands",),
+        make_dg_term_lookup(),
+        [
+            make_dg_term("netherlands"),                                # 1
+                make_dg_term("belgium"),                                # 2
+                    make_dg_term("france"),                             # 3
+                        make_dg_term("italy"),                          # 4
+                            make_dg_term("san_marino"),                 # 5
+                            make_dg_term("vatican_city"),               # 5
+                        make_dg_term("monaco"),                         # 4
+                        make_dg_term("andorra"),                        # 4
+                        make_dg_term("spain"),                          # 4
+                            make_dg_term("portugal"),                   # 5
+                    make_dg_term("luxembourg"),                         # 3
+                make_dg_term("europe"),                                 # 2
+                make_dg_term("germany"),                                # 2
+                    make_dg_term("denmark"),                            # 3
+                    make_dg_term("poland"),                             # 3
+                        make_dg_term("slovakia"),                       # 4
+                        make_dg_term("ukraine"),                        # 4
+                            make_dg_term("romania"),                    # 5
+                                make_dg_term("bulgaria"),               # 6
+                            make_dg_term("moldova"),                    # 5
+                        make_dg_term("belarus"),                        # 4
+                            make_dg_term("latvia"),                     # 5
+                        make_dg_term("lithuania"),                      # 4
+                        make_dg_term("russia"),                         # 4
+                            make_dg_term("norway"),                     # 5
+                                make_dg_term("sweden"),                 # 6
+                            make_dg_term("finland"),                    # 5
+                            make_dg_term("estonia"),                    # 5
+                            make_dg_term("georgia"),                    # 5
+                                make_dg_term("armenia"),                # 6
+                                make_dg_term("turkey"),                 # 6
+                            make_dg_term("azerbaijan"),                 # 5
+                            make_dg_term("kazakhstan"),                 # 5
+                    make_dg_term("czechia"),                            # 3
+                    make_dg_term("austria"),                            # 3
+                        make_dg_term("hungary"),                        # 4
+                            make_dg_term("serbia"),                     # 5
+                                make_dg_term("north_macedonia"),        # 6
+                                make_dg_term("kosovo"),                 # 6
+                                make_dg_term("montenegro"),             # 6
+                                make_dg_term("bosnia_and_herzegovina"), # 6 
+                            make_dg_term("croatia"),                    # 5
+                        make_dg_term("slovenia"),                       # 4
+                        make_dg_term("liechtenstein"),                  # 4
+                    make_dg_term("switzerland"),                        # 3
+        ],
+        id="netherlands_max_ref_depth_6",
+    ),
+    pytest.param(
+        shared.term.Options(max_ref_depth=7),
+        ("netherlands",),
+        make_dg_term_lookup(),
+        [
+            make_dg_term("netherlands"),                                # 1
+                make_dg_term("belgium"),                                # 2
+                    make_dg_term("france"),                             # 3
+                        make_dg_term("italy"),                          # 4
+                            make_dg_term("san_marino"),                 # 5
+                            make_dg_term("vatican_city"),               # 5
+                        make_dg_term("monaco"),                         # 4
+                        make_dg_term("andorra"),                        # 4
+                        make_dg_term("spain"),                          # 4
+                            make_dg_term("portugal"),                   # 5
+                    make_dg_term("luxembourg"),                         # 3
+                make_dg_term("europe"),                                 # 2
+                make_dg_term("germany"),                                # 2
+                    make_dg_term("denmark"),                            # 3
+                    make_dg_term("poland"),                             # 3
+                        make_dg_term("slovakia"),                       # 4
+                        make_dg_term("ukraine"),                        # 4
+                            make_dg_term("romania"),                    # 5
+                                make_dg_term("bulgaria"),               # 6
+                                    make_dg_term("greece"),             # 7
+                            make_dg_term("moldova"),                    # 5
+                        make_dg_term("belarus"),                        # 4
+                            make_dg_term("latvia"),                     # 5
+                        make_dg_term("lithuania"),                      # 4
+                        make_dg_term("russia"),                         # 4
+                            make_dg_term("norway"),                     # 5
+                                make_dg_term("sweden"),                 # 6
+                            make_dg_term("finland"),                    # 5
+                            make_dg_term("estonia"),                    # 5
+                            make_dg_term("georgia"),                    # 5
+                                make_dg_term("armenia"),                # 6
+                                make_dg_term("turkey"),                 # 6
+                            make_dg_term("azerbaijan"),                 # 5
+                            make_dg_term("kazakhstan"),                 # 5
+                    make_dg_term("czechia"),                            # 3
+                    make_dg_term("austria"),                            # 3
+                        make_dg_term("hungary"),                        # 4
+                            make_dg_term("serbia"),                     # 5
+                                make_dg_term("north_macedonia"),        # 6
+                                    make_dg_term("albania"),            # 7
+                                make_dg_term("kosovo"),                 # 6
+                                make_dg_term("montenegro"),             # 6
+                                make_dg_term("bosnia_and_herzegovina"), # 6
+                            make_dg_term("croatia"),                    # 5
+                        make_dg_term("slovenia"),                       # 4
+                        make_dg_term("liechtenstein"),                  # 4
+                    make_dg_term("switzerland"),                        # 3
+        ],
+        id="netherlands_max_ref_depth_7",
+    ),
+    pytest.param(
+        shared.term.Options(max_ref_depth=8),
+        ("netherlands",),
+        make_dg_term_lookup(),
+        [
+            make_dg_term("netherlands"),                                # 1
+                make_dg_term("belgium"),                                # 2
+                    make_dg_term("france"),                             # 3
+                        make_dg_term("italy"),                          # 4
+                            make_dg_term("san_marino"),                 # 5
+                            make_dg_term("vatican_city"),               # 5
+                        make_dg_term("monaco"),                         # 4
+                        make_dg_term("andorra"),                        # 4
+                        make_dg_term("spain"),                          # 4
+                            make_dg_term("portugal"),                   # 5
+                    make_dg_term("luxembourg"),                         # 3
+                make_dg_term("europe"),                                 # 2
+                make_dg_term("germany"),                                # 2
+                    make_dg_term("denmark"),                            # 3
+                    make_dg_term("poland"),                             # 3
+                        make_dg_term("slovakia"),                       # 4
+                        make_dg_term("ukraine"),                        # 4
+                            make_dg_term("romania"),                    # 5
+                                make_dg_term("bulgaria"),               # 6
+                                    make_dg_term("greece"),             # 7
+                            make_dg_term("moldova"),                    # 5
+                        make_dg_term("belarus"),                        # 4
+                            make_dg_term("latvia"),                     # 5
+                        make_dg_term("lithuania"),                      # 4
+                        make_dg_term("russia"),                         # 4
+                            make_dg_term("norway"),                     # 5
+                                make_dg_term("sweden"),                 # 6
+                            make_dg_term("finland"),                    # 5
+                            make_dg_term("estonia"),                    # 5
+                            make_dg_term("georgia"),                    # 5
+                                make_dg_term("armenia"),                # 6
+                                make_dg_term("turkey"),                 # 6
+                            make_dg_term("azerbaijan"),                 # 5
+                            make_dg_term("kazakhstan"),                 # 5
+                    make_dg_term("czechia"),                            # 3
+                    make_dg_term("austria"),                            # 3
+                        make_dg_term("hungary"),                        # 4
+                            make_dg_term("serbia"),                     # 5
+                                make_dg_term("north_macedonia"),        # 6
+                                    make_dg_term("albania"),            # 7
+                                make_dg_term("kosovo"),                 # 6
+                                make_dg_term("montenegro"),             # 6
+                                make_dg_term("bosnia_and_herzegovina"), # 6
+                            make_dg_term("croatia"),                    # 5
+                        make_dg_term("slovenia"),                       # 4
+                        make_dg_term("liechtenstein"),                  # 4
+                    make_dg_term("switzerland"),                        # 3
+        ],
+        id="netherlands_max_ref_depth_8",
+    ),
+    #   Portugal + Armenia
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+    pytest.param(
+        shared.term.Options(max_ref_depth=1),
+        ("armenia", "portugal"),
+        make_dg_term_lookup(),
+        [
+            make_dg_term("armenia"),  # 1
+            make_dg_term("portugal"), # 1
+        ],
+        id="armenia_portugal_max_ref_depth_1",
+    ),
+    pytest.param(
+        shared.term.Options(max_ref_depth=2),
+        ("armenia", "portugal"),
+        make_dg_term_lookup(),
+        [
+            make_dg_term("armenia"),        # 1
+                make_dg_term("europe"),     # 2
+                make_dg_term("turkey"),     # 2
+                make_dg_term("azerbaijan"), # 2
+                make_dg_term("georgia"),    # 2
+            make_dg_term("portugal"),       # 1
+                make_dg_term("spain"),      # 2
+        ],
+        id="armenia_portugal_max_ref_depth_2",
+    ),
+    pytest.param(
+        shared.term.Options(max_ref_depth=3),
+        ("armenia", "portugal"),
+        make_dg_term_lookup(),
+        [
+            make_dg_term("armenia"),          # 1
+                make_dg_term("europe"),       # 2
+                make_dg_term("turkey"),       # 2
+                    make_dg_term("greece"),   # 3
+                    make_dg_term("bulgaria"), # 3
+                make_dg_term("azerbaijan"),   # 2
+                    make_dg_term("russia"),   # 3
+                make_dg_term("georgia"),      # 2
+            make_dg_term("portugal"),         # 1
+                make_dg_term("spain"),        # 2
+                    make_dg_term("france"),   # 3
+                    make_dg_term("andorra"),  # 3
+        ],
+        id="armenia_portugal_max_ref_depth_3",
+    ),
+    pytest.param(
+        shared.term.Options(max_ref_depth=4),
+        ("armenia", "portugal"),
+        make_dg_term_lookup(),
+        [
+            make_dg_term("armenia"),                     # 1
+                make_dg_term("europe"),                  # 2
+                make_dg_term("turkey"),                  # 2
+                    make_dg_term("greece"),              # 3
+                        make_dg_term("albania"),         # 4
+                        make_dg_term("north_macedonia"), # 4
+                    make_dg_term("bulgaria"),            # 3
+                        make_dg_term("romania"),         # 4
+                        make_dg_term("serbia"),          # 4
+                make_dg_term("azerbaijan"),              # 2
+                    make_dg_term("russia"),              # 3
+                        make_dg_term("norway"),          # 4
+                        make_dg_term("finland"),         # 4
+                        make_dg_term("estonia"),         # 4
+                        make_dg_term("latvia"),          # 4
+                        make_dg_term("lithuania"),       # 4
+                        make_dg_term("poland"),          # 4
+                        make_dg_term("belarus"),         # 4
+                        make_dg_term("ukraine"),         # 4
+                        make_dg_term("kazakhstan"),      # 4
+                make_dg_term("georgia"),                 # 2
+            make_dg_term("portugal"),                    # 1
+                make_dg_term("spain"),                   # 2
+                    make_dg_term("france"),              # 3
+                        make_dg_term("belgium"),         # 4
+                        make_dg_term("luxembourg"),      # 4
+                        make_dg_term("germany"),         # 4
+                        make_dg_term("switzerland"),     # 4
+                        make_dg_term("italy"),           # 4
+                        make_dg_term("monaco"),          # 4
+                    make_dg_term("andorra"),             # 3
+        ],
+        id="armenia_portugal_max_ref_depth_4",
+    ),
+    pytest.param(
+        shared.term.Options(max_ref_depth=5),
+        ("armenia", "portugal"),
+        make_dg_term_lookup(),
+        [
+            make_dg_term("armenia"),                                # 1
+                make_dg_term("europe"),                             # 2
+                make_dg_term("turkey"),                             # 2
+                    make_dg_term("greece"),                         # 3
+                        make_dg_term("albania"),                    # 4
+                            make_dg_term("montenegro"),             # 5
+                            make_dg_term("kosovo"),                 # 5
+                        make_dg_term("north_macedonia"),            # 4
+                    make_dg_term("bulgaria"),                       # 3
+                        make_dg_term("romania"),                    # 4
+                            make_dg_term("moldova"),                # 5
+                            make_dg_term("hungary"),                # 5
+                        make_dg_term("serbia"),                     # 4
+                            make_dg_term("bosnia_and_herzegovina"), # 5
+                            make_dg_term("croatia"),                # 5
+                make_dg_term("azerbaijan"),                         # 2
+                    make_dg_term("russia"),                         # 3
+                        make_dg_term("norway"),                     # 4
+                            make_dg_term("sweden"),                 # 5
+                        make_dg_term("finland"),                    # 4
+                        make_dg_term("estonia"),                    # 4
+                        make_dg_term("latvia"),                     # 4
+                        make_dg_term("lithuania"),                  # 4
+                        make_dg_term("poland"),                     # 4
+                            make_dg_term("czechia"),                # 5
+                            make_dg_term("slovakia"),               # 5
+                        make_dg_term("belarus"),                    # 4
+                        make_dg_term("ukraine"),                    # 4
+                        make_dg_term("kazakhstan"),                 # 4
+                make_dg_term("georgia"),                            # 2
+            make_dg_term("portugal"),                               # 1
+                make_dg_term("spain"),                              # 2
+                    make_dg_term("france"),                         # 3
+                        make_dg_term("belgium"),                    # 4
+                            make_dg_term("netherlands"),            # 5
+                        make_dg_term("luxembourg"),                 # 4
+                        make_dg_term("germany"),                    # 4
+                            make_dg_term("denmark"),                # 5
+                            make_dg_term("austria"),                # 5
+                        make_dg_term("switzerland"),                # 4
+                            make_dg_term("liechtenstein"),          # 5
+                        make_dg_term("italy"),                      # 4
+                            make_dg_term("slovenia"),               # 5
+                            make_dg_term("san_marino"),             # 5
+                            make_dg_term("vatican_city"),           # 5
+                        make_dg_term("monaco"),                     # 4
+                    make_dg_term("andorra"),                        # 3
+        ],
+        id="armenia_portugal_max_ref_depth_5",
+    ),
+    pytest.param(
+        shared.term.Options(max_ref_depth=6),
+        ("armenia", "portugal"),
+        make_dg_term_lookup(),
+        [
+            make_dg_term("armenia"),                                # 1
+                make_dg_term("europe"),                             # 2
+                make_dg_term("turkey"),                             # 2
+                    make_dg_term("greece"),                         # 3
+                        make_dg_term("albania"),                    # 4
+                            make_dg_term("montenegro"),             # 5
+                            make_dg_term("kosovo"),                 # 5
+                        make_dg_term("north_macedonia"),            # 4
+                    make_dg_term("bulgaria"),                       # 3
+                        make_dg_term("romania"),                    # 4
+                            make_dg_term("moldova"),                # 5
+                            make_dg_term("hungary"),                # 5
+                        make_dg_term("serbia"),                     # 4
+                            make_dg_term("bosnia_and_herzegovina"), # 5
+                            make_dg_term("croatia"),                # 5
+                make_dg_term("azerbaijan"),                         # 2
+                    make_dg_term("russia"),                         # 3
+                        make_dg_term("norway"),                     # 4
+                            make_dg_term("sweden"),                 # 5
+                        make_dg_term("finland"),                    # 4
+                        make_dg_term("estonia"),                    # 4
+                        make_dg_term("latvia"),                     # 4
+                        make_dg_term("lithuania"),                  # 4
+                        make_dg_term("poland"),                     # 4
+                            make_dg_term("czechia"),                # 5
+                            make_dg_term("slovakia"),               # 5
+                        make_dg_term("belarus"),                    # 4
+                        make_dg_term("ukraine"),                    # 4
+                        make_dg_term("kazakhstan"),                 # 4
+                make_dg_term("georgia"),                            # 2
+            make_dg_term("portugal"),                               # 1
+                make_dg_term("spain"),                              # 2
+                    make_dg_term("france"),                         # 3
+                        make_dg_term("belgium"),                    # 4
+                            make_dg_term("netherlands"),            # 5
+                        make_dg_term("luxembourg"),                 # 4
+                        make_dg_term("germany"),                    # 4
+                            make_dg_term("denmark"),                # 5
+                            make_dg_term("austria"),                # 5
+                        make_dg_term("switzerland"),                # 4
+                            make_dg_term("liechtenstein"),          # 5
+                        make_dg_term("italy"),                      # 4
+                            make_dg_term("slovenia"),               # 5
+                            make_dg_term("san_marino"),             # 5
+                            make_dg_term("vatican_city"),           # 5
+                        make_dg_term("monaco"),                     # 4
+                    make_dg_term("andorra"),                        # 3
+        ],
+        id="armenia_portugal_max_ref_depth_6",
+    ),
+])
+def test_extract_referenced_terms_max_ref_depth(
+        input_options: shared.term.Options,
+        input_term_ids: typing.Sequence[str],
+        input_term_lookup: dict[str, shared.term.Term],
+        expected_terms: typing.Sequence[shared.term.Term]) -> None:
+
+    output_terms = shared.term.extract_referenced_terms(
+        input_options, input_term_ids, input_term_lookup)
+
+    assert_term_trees_equal(output_terms, expected_terms)
