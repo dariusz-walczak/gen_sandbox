@@ -1109,7 +1109,7 @@ def make_dg_term(id: str, *children: shared.term.Term) -> shared.term.Term:
             )
         case "finland":
             term = shared.term.Term(
-                id="finland", title="finland",
+                id="finland", title="Finland",
                 path=os.path.join(base_path, "europe", "finland.md"),
                 definition=[
                     "__Finland__ is a country in [Europe](#europe) that borders [Sweden](#sweden),"
@@ -1573,7 +1573,7 @@ def make_dg_term_lookup() -> dict[str, shared.term.Term]:
             make_dg_term("cyprus"),
             make_dg_term("iceland"),
         ],
-        id="cyprus_ireland_max_ref_depth_1",
+        id="cyprus_iceland_max_ref_depth_1",
     ),
     pytest.param(
         shared.term.Options(max_ref_depth=2),
@@ -1584,7 +1584,7 @@ def make_dg_term_lookup() -> dict[str, shared.term.Term]:
             make_dg_term("europe"),
             make_dg_term("iceland"),
         ],
-        id="cyprus_ireland_max_ref_depth_2",
+        id="cyprus_iceland_max_ref_depth_2",
     ),
     pytest.param(
         shared.term.Options(max_ref_depth=3),
@@ -1595,7 +1595,7 @@ def make_dg_term_lookup() -> dict[str, shared.term.Term]:
             make_dg_term("europe"),
             make_dg_term("iceland"),
         ],
-        id="cyprus_ireland_max_ref_depth_3",
+        id="cyprus_iceland_max_ref_depth_3",
     ),
     pytest.param(
         shared.term.Options(),
@@ -1606,7 +1606,7 @@ def make_dg_term_lookup() -> dict[str, shared.term.Term]:
             make_dg_term("europe"),
             make_dg_term("iceland"),
         ],
-        id="cyprus_ireland_max_ref_depth_unlimited",
+        id="cyprus_iceland_max_ref_depth_unlimited",
     ),
     #   Netherlands
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
