@@ -29,6 +29,7 @@ HARD_DEPTH_LIMIT = sys.getrecursionlimit() // 4
 
 class Options(pydantic.BaseModel):
     max_tree_depth: int | None = None
+    max_ref_depth: int | None = None
 
 # Local function call tree:
 #
@@ -39,6 +40,10 @@ class Options(pydantic.BaseModel):
 #           -> strip_empty_lines
 #     -> process_term_directory
 #        -> [process_input_path_inner]
+# extract_referenced_terms
+# -> extract_referenced_terms_inner
+#    -> extract_term_references
+#    -> [extract_referenced_terms_inner]
 
 def process_input_path(
         options: Options,
@@ -189,3 +194,76 @@ def strip_empty_lines(lines: list[str]) -> list[str]:
     assert back_non_empty_offset is not None # Excluded by the front_non_empty_offset is None check
 
     return lines[front_non_empty_offset : len(lines) - back_non_empty_offset]
+
+
+def extract_referenced_terms(
+        options: Options,
+        term_ids: typing.Sequence[str],
+        term_lookup: dict[str, Term],
+        seen_terms: set[str] | None = None) -> list[Term]:
+
+    if options.max_ref_depth is None:
+        max_depth = HARD_DEPTH_LIMIT
+    else:
+        max_depth = min(options.max_ref_depth, HARD_DEPTH_LIMIT)
+
+    return extract_referenced_terms_inner(max_depth, term_ids, term_lookup, seen_terms)
+
+
+def extract_referenced_terms_inner(
+        remaining_ref_depth: int,
+        term_ids: typing.Sequence[str],
+        term_lookup: dict[str, Term],
+        seen_terms: set[str] | None = None) -> list[Term]:
+
+    if remaining_ref_depth <= 0:
+        _LOG.debug("Max reference depth reached - skipping references resolution")
+        return []
+
+    if seen_terms is None:
+        seen_terms = set()
+
+    extracted_terms = []
+
+    for term_id in term_ids:
+        _LOG.info(f"term_id={term_id}, remaining_ref_depth={remaining_ref_depth}")
+
+        if term_id not in term_lookup:
+            _LOG.warning(f"Requested term ({term_id}) wasn't found in the specified term trees")
+
+            continue
+
+        term = term_lookup[term_id]
+
+        if term_id in seen_terms:
+            _LOG.debug(f"Term ({term_id}) already extracted")
+        else:
+            # Make a shallow copy of `term` with the `children` list cleared to not pollute the
+            #  result list with unreferenced subterms of a referenced term:
+            extracted_terms.append(term.model_copy(update={"children": []}))
+            seen_terms.add(term_id)
+
+        # References are followed even for already-seen terms because the tree traversal is
+        #  depth-first. If a term was first reached via a path that consumed more of the depth
+        #  budget, fewer levels remained for its transitive references. Re-processing via a
+        #  shallower path ensures all reachable referenced terms are included.
+        # If this solution's performance becomes an issue, a more sophisticated algorithm may need
+        #  to be implemented.
+        referenced_terms = extract_term_references(term)
+        _LOG.info(
+            f"Terms referenced by the {term.id} definition: "
+            f"{', '.join(referenced_terms)}")
+        extracted_terms += extract_referenced_terms_inner(
+            remaining_ref_depth-1, referenced_terms, term_lookup, seen_terms)
+
+    return extracted_terms
+
+
+def extract_term_references(term: Term) -> list[str]:
+    name_pattern_str = TERM_NAME_MULTILINE_PATTERN_STRING
+    id_pattern_str = TERM_ID_PATTERN_STRING
+
+    definition_text = "\n".join(term.definition)
+    term_id_pattern = re.compile(
+        rf"\[(?:{name_pattern_str})\]\(#(?P<id>{id_pattern_str})\)")
+    return [m.group("id") for m in term_id_pattern.finditer(definition_text)]

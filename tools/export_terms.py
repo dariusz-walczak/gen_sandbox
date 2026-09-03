@@ -4,9 +4,7 @@ import argparse
 import json
 import logging
 import os
-import re
 import sys
-import typing
 
 import rich.box
 import rich.console
@@ -135,7 +133,7 @@ def parse_options(args: list[str]) -> argparse.Namespace:
             " path (default: <unlimited>)"))
 
     parser.add_argument(
-        OptionNames.MAX_REF_DEPTH, action="store", metavar="LEVEL", dest="max_cref_depth",
+        OptionNames.MAX_REF_DEPTH, action="store", metavar="LEVEL", dest="max_ref_depth",
         type=shared.argparse_types.positive_int,
         help=(
             "Maximum number of term reference LEVELs to be processed starting from each specified"
@@ -150,58 +148,20 @@ def parse_options(args: list[str]) -> argparse.Namespace:
     return parser.parse_args(args)
 
 
-def extract_term_references(term: shared.term.Term) -> list[str]:
-    name_pattern_str = shared.term.TERM_NAME_MULTILINE_PATTERN_STRING
-    id_pattern_str = shared.term.TERM_ID_PATTERN_STRING
-
-    definition_text = "\n".join(term.definition)
-    term_id_pattern = re.compile(
-        rf"\[(?:{name_pattern_str})\]\(#(?P<id>{id_pattern_str})\)")
-    return [m.group("id") for m in term_id_pattern.finditer(definition_text)]
-
-
-def extract_referenced_terms(
-        term_ids: typing.Sequence[str],
-        terms_lookup: dict[str, shared.term.Term],
-        seen_terms: set[str] | None = None
-) -> list[shared.term.Term]:
-
-    extracted_terms = []
-    if seen_terms is None:
-        seen_terms = set()
-
-    for term_id in term_ids:
-        if term_id in seen_terms:
-            _LOG.debug(f"Term ({term_id}) already extracted")
-        elif term_id not in terms_lookup:
-            _LOG.warning(f"Requested term ({term_id}) wasn't found in the specified term trees")
-        else:
-            term = terms_lookup[term_id]
-            # Make a shallow copy of `term` with the `children` list cleared to not pollute the
-            #  result list with unreferenced subterms of a referenced term:
-            extracted_terms.append(term.model_copy(update={"children": []}))
-            seen_terms.add(term_id)
-            referenced_terms = extract_term_references(term)
-            _LOG.info(
-                f"Terms referenced by the {term.id} definition: "
-                f"{', '.join(referenced_terms)}")
-            extracted_terms += extract_referenced_terms(
-                referenced_terms, terms_lookup, seen_terms)
-
-    return extracted_terms
-
-
 def main(options: argparse.Namespace) -> int:
     # The terms lookup table is used for de-duplication when passed to the process_input_path.
     # It is later reused for term reference resolution when passed to the extract_referenced_terms.
     terms_lookup: dict[str, shared.term.Term] = {}
 
-    term_options = shared.term.Options(max_tree_depth=options.max_tree_depth)
+    term_options = shared.term.Options(
+        max_tree_depth=options.max_tree_depth,
+        max_ref_depth=options.max_ref_depth)
     term_trees: list[shared.term.Term] = shared.term.process_input_path(
         term_options, terms_lookup, options.input_path)
 
     if options.term_ids:
-        terms_collection = extract_referenced_terms(options.term_ids, terms_lookup)
+        terms_collection = shared.term.extract_referenced_terms(
+            term_options, options.term_ids, terms_lookup)
         print(json.dumps(terms_collection, indent=2, default=shared.json.default_cb))
     else:
         print(json.dumps(term_trees, indent=2, default=shared.json.default_cb))
