@@ -55,7 +55,10 @@ def process_input_path(
     else:
         max_depth = min(options.max_tree_depth, HARD_DEPTH_LIMIT)
 
-    return process_input_path_inner(max_depth, seen_terms, term_path)
+    if os.path.isdir(term_path):
+        return process_term_directory(max_depth, seen_terms, term_path)
+    else:
+        return process_input_path_inner(max_depth-1, seen_terms, term_path)
 
 
 def process_input_path_inner(

@@ -892,60 +892,161 @@ def make_dt_expected(
                     ),
                 ]
 
-@pytest.mark.parametrize("input_options,expected_seen_terms,expected_term_trees", [
+@pytest.mark.parametrize("input_options,input_path,expected_seen_terms,expected_term_trees", [
     pytest.param(
         shared.term.Options(max_tree_depth=1),
+        os.path.join(_DATA_ROOT, "term", "deep-tree"),
         make_dt_expected("seen_terms", 1),
         make_dt_expected("term_trees", 1),
         id="max_tree_depth_1",
     ),
     pytest.param(
         shared.term.Options(max_tree_depth=2),
+        os.path.join(_DATA_ROOT, "term", "deep-tree"),
         make_dt_expected("seen_terms", 2),
         make_dt_expected("term_trees", 2),
         id="max_tree_depth_2",
     ),
     pytest.param(
         shared.term.Options(max_tree_depth=3),
+        os.path.join(_DATA_ROOT, "term", "deep-tree"),
         make_dt_expected("seen_terms", 3),
         make_dt_expected("term_trees", 3),
         id="max_tree_depth_3",
     ),
     pytest.param(
         shared.term.Options(max_tree_depth=4),
+        os.path.join(_DATA_ROOT, "term", "deep-tree"),
         make_dt_expected("seen_terms", 4),
         make_dt_expected("term_trees", 4),
         id="max_tree_depth_4",
     ),
     pytest.param(
         shared.term.Options(max_tree_depth=5),
+        os.path.join(_DATA_ROOT, "term", "deep-tree"),
         make_dt_expected("seen_terms", 5),
         make_dt_expected("term_trees", 5),
         id="max_tree_depth_5",
     ),
     pytest.param(
         shared.term.Options(max_tree_depth=6),
+        os.path.join(_DATA_ROOT, "term", "deep-tree"),
         make_dt_expected("seen_terms", 5), # Level 5 is the greatest level in the input tree
         make_dt_expected("term_trees", 5),
         id="max_tree_depth_6",
     ),
     pytest.param(
         shared.term.Options(),
+        os.path.join(_DATA_ROOT, "term", "deep-tree"),
         make_dt_expected("seen_terms", 5), # Level 5 is the greatest level in the input tree
         make_dt_expected("term_trees", 5),
         id="max_tree_depth_unlimited",
     ),
+    pytest.param(
+        shared.term.Options(max_tree_depth=1),
+        os.path.join(_DATA_ROOT, "term", "deep-tree", "africa.md"),
+        {
+            "africa": make_dt_term("africa"),
+        },
+        [
+            make_dt_term("africa"),
+        ],
+        id="africa_md_max_tree_depth_1",
+    ),
+    pytest.param(
+        shared.term.Options(max_tree_depth=2),
+        os.path.join(_DATA_ROOT, "term", "deep-tree", "africa.md"),
+        {
+            "africa":       make_dt_term("africa"),       # 1
+            "burkina_faso": make_dt_term("burkina_faso"), # 2
+            "ethiopia":     make_dt_term("ethiopia"),     # 2
+            "lesotho":      make_dt_term("lesotho"),      # 2
+        },
+        [
+            make_dt_term(
+                "africa",                     # 1
+                make_dt_term("burkina_faso"), # 2
+                make_dt_term("ethiopia"),     # 2
+                make_dt_term("lesotho"),      # 2
+            ),
+        ],
+        id="africa_md_max_tree_depth_2",
+    ),
+    pytest.param(
+        shared.term.Options(max_tree_depth=3),
+        os.path.join(_DATA_ROOT, "term", "deep-tree", "africa.md"),
+        {
+            "africa":                    make_dt_term("africa"),                    # 1
+            "burkina_faso":              make_dt_term("burkina_faso"),              # 2
+            "ethiopia":                  make_dt_term("ethiopia"),                  # 2
+            "lesotho":                   make_dt_term("lesotho"),                   # 2
+            "berea_district":            make_dt_term("berea_district"),            # 3
+            "mokhotlong_district":       make_dt_term("mokhotlong_district"),       # 3
+        },
+        [
+            make_dt_term(
+                "africa",                                 # 1
+                make_dt_term(
+                    "burkina_faso"),                      # 2
+                make_dt_term(
+                    "ethiopia"),                          # 2
+                make_dt_term(
+                    "lesotho",                            # 2
+                    make_dt_term("berea_district"),       # 3
+                    make_dt_term("mokhotlong_district"),  # 3
+                ),
+            ),
+        ],
+        id="africa_md_max_tree_depth_3",
+    ),
+    pytest.param(
+        shared.term.Options(),
+        os.path.join(_DATA_ROOT, "term", "deep-tree", "africa.md"),
+        {
+            "africa":                    make_dt_term("africa"),                    # 1
+            "burkina_faso":              make_dt_term("burkina_faso"),              # 2
+            "ethiopia":                  make_dt_term("ethiopia"),                  # 2
+            "lesotho":                   make_dt_term("lesotho"),                   # 2
+            "berea_district":            make_dt_term("berea_district"),            # 3
+            "kueneng_community_council": make_dt_term("kueneng_community_council"), # 4
+            "bela_bela":                 make_dt_term("bela_bela"),                 # 5
+            "ha_rajone":                 make_dt_term("ha_rajone"),                 # 5
+            "mokhotlong_district":       make_dt_term("mokhotlong_district"),       # 3
+        },
+        [
+            make_dt_term(
+                "africa",                                 # 1
+                make_dt_term(
+                    "burkina_faso"),                      # 2
+                make_dt_term(
+                    "ethiopia"),                          # 2
+                make_dt_term(
+                    "lesotho",                            # 2
+                    make_dt_term(
+                        "berea_district",                 # 3
+                        make_dt_term(
+                            "kueneng_community_council",  # 4
+                            make_dt_term("bela_bela"),    # 5
+                            make_dt_term("ha_rajone"),    # 5
+                        ),
+                    ),
+                    make_dt_term("mokhotlong_district"),  # 3
+                ),
+            ),
+        ],
+        id="africa_md_max_tree_depth_unlimited",
+    ),
 ])
 def test_process_input_path_max_tree_depth(
         input_options: shared.term.Options,
+        input_path: str,
         expected_seen_terms: dict[str, shared.term.Term],
         expected_term_trees: list[shared.term.Term]) -> None:
 
-    input_term_path = os.path.join(_DATA_ROOT, "term", "deep-tree")
     output_seen_terms: dict[str, shared.term.Term] = {}
 
     output_term_trees = shared.term.process_input_path(
-        input_options, output_seen_terms, input_term_path)
+        input_options, output_seen_terms, input_path)
 
     # Terms returned in the `output_seen_terms` lookup table may or may not include children (i.e.,
     # hierarchy) information, as it is currently not needed for anything. Consequently, this test
