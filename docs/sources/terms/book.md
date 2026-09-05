@@ -1,4 +1,3 @@
-<!-- See docs/conventions/terms-and-definitions.md for authoring conventions. -->
 # Book {#book}
 
 A __Book__ is a physical or digital volume consisting of multiple __[Book Leaves](#book_leaf)__ bound together, used for recording, preserving, or presenting information.
