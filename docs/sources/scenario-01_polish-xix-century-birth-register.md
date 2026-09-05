@@ -1,21 +1,19 @@
-# Source Scenario 01: Polish XIX-Century Birth Registry {#sources_scenario_01}
-
-Rename to "Source Scenario: Polish XIX-Century Birth Register"
+# Source Scenario: Polish XIX-Century Birth Register {#sources_scenario_01}
 
 ## Overview
 
 This document describes a specific type of genealogical data source: a **Polish XIX-century**
-**birth registry**. The genealogical data extracted from a specific registry, along with metadata
-describing the registry and its contents, are stored as RDF triples in a unified knowledge base,
+**birth register**. The genealogical data extracted from a specific register, along with metadata
+describing the register and its contents, are stored as RDF triples in a unified knowledge base,
 structured according to the schema and validation rules of the gen/sandbox RDF model. This document
 serves as the foundation for defining the functional requirements of the gen/sandbox model.
 
-## Birth Registry Description
+## Birth Register Description
 
 **Note**: In the scope of the description section:
 
 * A [Register Book](#register_book) means a Polish XIX-century register book that includes a [Birth Register](#birth_register).
-* A _registry book entry_ means an entry in such a book.
+* A _register book entry_ means an entry in such a book.
 
 ### Typical XIX-Century Birth Register
 
@@ -89,9 +87,9 @@ serves as the foundation for defining the functional requirements of the gen/san
 * ✅ Some signatures, including the signature of the [Registrar](#registrar), are unreadable.
 
 * A digitized form of the [Register Entry](#register_entry) may be referenced directly using a public URL.
-* A digitized form of the registry book may be available as an offline resource (provided by the organization keeping it).
+* A digitized form of the register book may be available as an offline resource (provided by the organization keeping it).
 * A (birth) [Register Entry](#register_entry) may include marginal notes which provide information on the [Primary Participant](#primary_participant) marriages.
-* Some registry book entries may be associated with transcription and translation artifacts.
+* Some register book entries may be associated with transcription and translation artifacts.
 
 ### Typical Trancription Artifact
 
@@ -99,24 +97,24 @@ serves as the foundation for defining the functional requirements of the gen/san
 
 
 
-## Birth Registry Model Requirements
+## Birth Register Model Requirements
 
 ### Register Book Language
 
-* When a registry book has a single primary language, that language is the default for all its
+* When a register book has a single primary language, that language is the default for all its
   entries.
 * A [Register Entry](#register_entry) has one primary language.
 * A [Register Entry](#register_entry) has zero, one, or more secondary languages.
-* When a registry book has two or more primary languages (e.g., Polish and Russian in an 1868 book
+* When a register book has two or more primary languages (e.g., Polish and Russian in an 1868 book
   from the Russian Partition), every entry must explicitly state its language.
-* When a [Register Entry](#register_entry) language is not explicitly stated, it is derived from the registry book's single
+* When a [Register Entry](#register_entry) language is not explicitly stated, it is derived from the register book's single
   primary language. <!-- This is part of the data model design already -->
 
 ### Book Properties
 
-* A registry book has one or more types (birth, death, marriage)
+* A register book has one or more types (birth, death, marriage)
 
 ### Entry Properties
 
 * A [Register Entry](#register_entry) has one primary type
-* A [Register Entry](#register_entry) type is derived from the registry book type if the book has only one type
+* A [Register Entry](#register_entry) type is derived from the register book type if the book has only one type
