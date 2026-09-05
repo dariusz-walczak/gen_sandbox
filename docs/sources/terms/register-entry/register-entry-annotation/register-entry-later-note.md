@@ -1,4 +1,3 @@
-<!-- See docs/conventions/terms-and-definitions.md for authoring conventions. -->
 
 <!--
   TODO: Remaining issues to resolve
