@@ -12,7 +12,7 @@ serves as the foundation for defining the functional requirements of the gen/san
 
 **Note**: In the scope of the description section:
 
-* A [Register Book](#register_book) means a _Polish 19th Century_ **Register Book** that includes a [Birth Register](#birth_register).
+* A [Register Book](#register_book) means a _Polish 19th Century_ [Russian Partition](#russian_partition) **Register Book** that includes at least a [Birth Register](#birth_register) or a [Heterogeneous Register](#heterogeneous_register) that includes [Birth Entries](#birth_entry).
 * A **Register Book Entry** means an entry in such a book.
 
 ### Typical 19th Century Birth Register
@@ -30,22 +30,22 @@ serves as the foundation for defining the functional requirements of the gen/san
 * \refined A single [Register Book](#register_book) [Page](#book_page) may include one or more [Register Entries](#register_entry), either complete or partial (started or continued on adjacent **Pages**).
 * \refined Typically, all [Register Book Entries](#register_entry) use the same [Primary Entry Language](#primary_entry_language).
 * \refined Sometimes, different subsets of [Register Book Entries](#register_book_entries) use different [Primary Entry Languages](#primary_entry_language).
+* \draft A typical [Register Book](#register_book) contains one or more [Homogeneous Registers](#homogeneous_register).
+* \draft A [Register Book](#register_book) may occassionally contain a single [Heterogeneous Register](#heterogeneous_register) (especially at the beginning of the 19th century).
 
 ##### Other
 
 * \draft A [Register Book](#register_book) may include [Register Book Supplementary Content](#register_book_supplementary_content).
 * \draft A typical [Register Book](#register_book) includes an index of [Register Entries](#register_entry) for each included [Register](#register).
-* -> Mixed Register -> Some _birth register books_ may be shared with the death, and marriage registers (e.g., at
-  the beginning of the 19th century).
 * \draft [Register Book Supplementary Content](#register_book_supplementary_content) may be written in languages different from the [Register Entry](#register_entry) languages.
 
 #### Online Repository
 
-* An [Archive](#archive) may provide an [Online Repository](#online_repository)
-* An [Online Repository](#online_repository) may provide a [Digitized Register Books](#digitized_register_book)
-* \draft A digitized [Register Book](#register_book) may be provided by an [Online Repository](#online_repository) and referenced using a public URL.
-* \draft A typical [Online Repository](#online_repository) allows referencing a specific page of a digitized [Register Book](#register_book) using a public URL.
-* \draft An [Online Repository](#online_repository) may allow referencing a specific [Register Entry](#register_entry) using a public URL.
+* \refined An [Archive](#archive) may provide an [Online Repository](#online_repository).
+* \refined An [Online Repository](#online_repository) may provide a collection of [Digitized Register Books](#digitized_register_book).
+* \draft An [Online Repository](#online_repository) may allow referencing a [Digitized Register Book](#digitized_register_book) using a unique public URL.
+* \draft An [Online Repository](#online_repository) may allow referencing a [Page](#book_page) of a [Digitized Register Book](#digitized_register_book) using a unique public URL.
+* \draft An [Online Repository](#online_repository) may allow referencing a [Page Region](#book_page_region) of a [Digitized Register Book](#digitized_register_book) using a unique public URL.
 
 #### Register Entry
 
@@ -76,7 +76,7 @@ serves as the foundation for defining the functional requirements of the gen/san
 
 #### Birth Entry
 
-* \draft A [Birth Entry](#birth_entry) describes a single [Birth Event](#birth_event).
+* \draft A [Single Birth Event](#single_birth_event) is described by a single [Birth Entry](#birth_entry).
 * \draft A [Multiple Birth Event](#multiple_birth_event) may be described by one or more [Birth Entries](#birth_entry).
 * \draft A [Birth Entry](#birth_entry) that describes a [Single Birth Event](#single_birth_event) has one [Primary Participant](#primary_participant).
 * \draft A [Birth Entry](#birth_entry) that is the only entry describing a [Multiple Birth Event](#multiple_birth_event) has multiple [Primary Participants](#primary_participant).
