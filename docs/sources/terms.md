@@ -3,6 +3,7 @@
 - \subpage administrative_scope
 - \subpage archive
 - \subpage book
+- \subpage digitized_register_book
 - \subpage event
 - \subpage language
 - \subpage register
