@@ -43,9 +43,9 @@ serves as the foundation for defining the functional requirements of the gen/san
 
 * \refined An [Archive](#archive) may provide an [Online Repository](#online_repository).
 * \refined An [Online Repository](#online_repository) may provide a collection of [Digitized Register Books](#digitized_register_book).
-* \draft An [Online Repository](#online_repository) may allow referencing a [Digitized Register Book](#digitized_register_book) using a unique public URL.
-* \draft An [Online Repository](#online_repository) may allow referencing a [Page](#book_page) of a [Digitized Register Book](#digitized_register_book) using a unique public URL.
-* \draft An [Online Repository](#online_repository) may allow referencing a [Page Region](#book_page_region) of a [Digitized Register Book](#digitized_register_book) using a unique public URL.
+* \draft An [Online Repository](#online_repository) may support referencing a [Digitized Register Book](#digitized_register_book) using a unique public URL.
+* \draft An [Online Repository](#online_repository) may support referencing a [Digitized Register Book Page](#digitized_register_book_page) using a unique public URL.
+* \draft An [Online Repository](#online_repository) may support referencing a [Digitized Register Book Page Region](#digitized_register_book_page_region) using a unique public URL.
 
 #### Register Entry
 
