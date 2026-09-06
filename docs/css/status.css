@@ -1,0 +1,34 @@
+/* Status badges for facts and requirements.
+ *
+ * Usage (in Doxygen-processed markdown):
+ *   \draft      — D red          — work in progress, not yet reviewed
+ *   \refined    — R orange       — ready for initial review
+ *   \confirmed  — C yellow-green — verified by research or review
+ *   \approved   — A dark green   — formally accepted
+ *   \obsolete   — X blue-grey    — no longer valid
+ *   \superseded — S purple       — superseded by another item
+ */
+
+.status-badge {
+    display: inline-block;
+    min-width: 1.4em;
+    padding: 0.1em 0.35em;
+    border-radius: 3px;
+    font-weight: bold;
+    font-size: 0.72em;
+    font-family: monospace, monospace;
+    color: white;
+    vertical-align: middle;
+    line-height: 1.5;
+    cursor: default;
+    user-select: none;
+    text-align: center;
+    text-decoration: none;
+}
+
+.status-draft      { background-color: #C62828; } /* red          */
+.status-refined    { background-color: #E64A19; } /* orange       */
+.status-confirmed  { background-color: #7CB342; } /* fresh green  */
+.status-approved   { background-color: #2E7D32; } /* dark green   */
+.status-obsolete   { background-color: #37474F; } /* charcoal     */
+.status-superseded { background-color: #6A1B9A; } /* purple       */
