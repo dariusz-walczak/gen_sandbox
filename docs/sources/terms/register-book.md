@@ -7,5 +7,4 @@ A __Register Book__ is a physical or digital volume containing one or more __[Re
 - \subpage digitized_register_book
 - \subpage general_register_book
 - \subpage register_book_entries
-- \subpage register_book_leaf
 - \subpage register_book_supplementary_content

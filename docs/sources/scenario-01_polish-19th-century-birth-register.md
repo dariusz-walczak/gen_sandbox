@@ -23,7 +23,7 @@ serves as the foundation for defining the functional requirements of the gen/san
 * \refined A typical [Register Book](#register_book) is preserved and provided by an [Archive](#archive).
 * \refined A [Register Book](#register_book) may be a [Digitized Register Book](#digitized_register_book).
 * \refined A [Register Book](#register_book) consists of multiple [Pages](#book_page).
-* \refined The [Register Book](#register_book) [Pages](#book_page) or [Leafs](#book_leaf) are almost always numbered.
+* \refined The [Register Book](#register_book) [Pages](#book_page) or [Leaves](#book_leaf) are almost always numbered.
 * \refined A typical [Russian Partition](#russian_partition) [Register Book](#register_book) consists of a series of [Narrative Register Entries](#narrative_register_entry).
 * \refined A [Russian Partition](#russian_partition) [Register Book](#register_book) may, in the early 19th century, consist of a series of [Tabular Register Entries](#tabular_register_entry).
 * \refined A series of [Register Entries](#register_entry) may take a concise tabular form.
@@ -33,35 +33,34 @@ serves as the foundation for defining the functional requirements of the gen/san
 
 ##### Other
 
-* ✅ A [Register Book](#register_book) may include [Register Book Supplementary Content](#register_book_supplementary_content).
-* ✅ A typical [Register Book](#register_book) includes an index of [Register Entries](#register_entry) for each included [Register](#register).
+* \draft A [Register Book](#register_book) may include [Register Book Supplementary Content](#register_book_supplementary_content).
+* \draft A typical [Register Book](#register_book) includes an index of [Register Entries](#register_entry) for each included [Register](#register).
 * -> Mixed Register -> Some _birth register books_ may be shared with the death, and marriage registers (e.g., at
   the beginning of the 19th century).
-* ✅ [Register Book Suplementary Content](#register_book_supplementary_content) may be written in languages different from the [Register Entry](#register_entry) languages.
+* \draft [Register Book Supplementary Content](#register_book_supplementary_content) may be written in languages different from the [Register Entry](#register_entry) languages.
 
 #### Online Repository
 
 * An [Archive](#archive) may provide an [Online Repository](#online_repository)
-* An [Online Repository](#online_repository) may provide a [Digitized Register Books](#digitized_register_books)
-* ✅ A digitized [Register Book](#register_book) may be provided by an [Online Repository](#online_repository) and referenced using a public URL.
-* ✅ A typical [Online Repository](#online_repository) allows referencing a specific page of a digitized [Register Book](#register_book) using a public URL.
-* ✅ An [Online Repository](#online_repository) may allow referencing a specific [Register Entry](#register_entry) using a public URL.
+* An [Online Repository](#online_repository) may provide a [Digitized Register Books](#digitized_register_book)
+* \draft A digitized [Register Book](#register_book) may be provided by an [Online Repository](#online_repository) and referenced using a public URL.
+* \draft A typical [Online Repository](#online_repository) allows referencing a specific page of a digitized [Register Book](#register_book) using a public URL.
+* \draft An [Online Repository](#online_repository) may allow referencing a specific [Register Entry](#register_entry) using a public URL.
 
 #### Register Entry
 
-* ✅ A typical [Register Entry](#register_entry) is written in one primary language.
-* ✅ A typical [Register Entry](#register_entry) consists 
-* ✅ Parts of a [Register Entry](#register_entry) may written in secondary languages (e.g. names transliteration, marginal notes).
-* ✅ [Register Entries](#register_entry) languages vary across registries and periods (e.g. Latin, Polish, Russian, German),
+* \draft A typical [Register Entry](#register_entry) is written in one primary language.
+* \draft Parts of a [Register Entry](#register_entry) may be written in secondary languages (e.g. names transliteration, marginal notes).
+* \draft [Register Entries](#register_entry) languages vary across registries and periods (e.g. Latin, Polish, Russian, German),
   reflecting the country and year of creation.
-* ✅ A typical [Register Entry](#register_entry) is a prose describing the documented event.
-* ✅ The [Register Entries](#register_entry) are typically explicitly and unambiguously numbered.
-* ✅ A [Register Entry](#register_entry) may span one or more pages.
+* \draft A typical [Register Entry](#register_entry) is a prose describing the documented event.
+* \draft The [Register Entries](#register_entry) are typically explicitly and unambiguously numbered.
+* \draft A [Register Entry](#register_entry) may span one or more pages.
 * Parts of a [Register Entry](#register_entry) may be ambiguous, unreadable, or even missing due to physical damages.
 * A typical [Register Entry](#register_entry) has date of creation (registration).
 * A [Register Entry](#register_entry) may have one or more marginal notes.
 * A marginal note may share the date of creation and the registrar with the 
-* Parts of a [Register Entry](#register_entry) may have a different date of registrationcreation and authorship (e.g. marginal notes).
+* Parts of a [Register Entry](#register_entry) may have a different date of registration/creation and authorship (e.g., marginal notes).
 * In some entries, the date of creation may be imprecise -- for example, when Gregorian and Julian
   calendar dates recorded in the same entry are contradictory.
 * A [Register Entry](#register_entry) may include [Register Entry Annotations](#register_entry_annotation).
@@ -69,29 +68,30 @@ serves as the foundation for defining the functional requirements of the gen/san
 
 #### Register Entry Annotation
 
-* A [Register Entry Annotation](#register_entry_annotation) can be created together with the [Register Entry](#register_entry).
-* A [Register Entry Annotation](#register_entry_annotation) can be created after the [Register Entry](#register_entry) is created.
-* A [Register Entry Annotation](#register_entry_annotation) authorship may be different than the [Register Entry](#register_entry) authorship.
-* A [Register Entry Correction](#register_entry_correction) may be undated.
+* \refined A [Register Entry Annotation](#register_entry_annotation) can be created during or after the creation of the [Register Entry](#register_entry).
+* \refined A [Register Entry Correction Note](#register_entry_correction_note) is typically created during or shortly after the creation of the [Register Entry](#register_entry).
+* \refined A [Register Entry Annotation](#register_entry_annotation) may be undated.
+* \refined A [Register Entry Annotation](#register_entry_annotation) is typically created by the [Registrar](#registrar) responsible for the [Register](#register) at the time the **Annotation** is created.
+* \refined A [Register Entry Annotation](#register_entry_annotation) authorship may differ from that of the [Register Entry](#register_entry).
 
 #### Birth Entry
 
-* ✅ A [Birth Entry](#birth_entry) describes a single [Birth Event](#birth_event).
-* ✅ A [Multiple Birth Event](#multiple_birth_event) may be described by one or more [Birth Entries](#birth_entry).
-* ✅ A [Birth Entry](#birth_entry) that describes a [Single Birth Event](#single_birth_event) has one [Primary Participant](#primary_participant).
-* ✅ A [Birth Entry](#birth_entry) that is the only entry describing a [Multiple Birth Event](#multiple_birth_event) has multiple [Primary Participants](#primary_participant).
-* ✅ A [Birth Entry](#birth_entry) that is one of many entries describing a [Multiple Birth Event](#multiple_birth_event) has one [Primary Participant](#primary_participant).
-* ✅ A [Birth Entry](#birth_entry) may be associated with zero, one, or more [Secondary Participants](#secondary_participant).
-* ✅ A typical [Birth Entry](#birth_entry) is signed by the [Birth Event](#birth_event) [Registrar](#registrar), typically a Parish Priest, Parish Administrator, or other official.
-* ✅ Some [Birth Entries](#birth_entry) are signed by [Witnesses](#witness), in addition to the signature of the [Registrar](#registrar).
-* ✅ Some signatures, including the signature of the [Registrar](#registrar), are unreadable.
+* \draft A [Birth Entry](#birth_entry) describes a single [Birth Event](#birth_event).
+* \draft A [Multiple Birth Event](#multiple_birth_event) may be described by one or more [Birth Entries](#birth_entry).
+* \draft A [Birth Entry](#birth_entry) that describes a [Single Birth Event](#single_birth_event) has one [Primary Participant](#primary_participant).
+* \draft A [Birth Entry](#birth_entry) that is the only entry describing a [Multiple Birth Event](#multiple_birth_event) has multiple [Primary Participants](#primary_participant).
+* \draft A [Birth Entry](#birth_entry) that is one of many entries describing a [Multiple Birth Event](#multiple_birth_event) has one [Primary Participant](#primary_participant).
+* \draft A [Birth Entry](#birth_entry) may be associated with zero, one, or more [Secondary Participants](#secondary_participant).
+* \draft A typical [Birth Entry](#birth_entry) is signed by the [Birth Event](#birth_event) [Registrar](#registrar), typically a Parish Priest, Parish Administrator, or other official.
+* \draft Some [Birth Entries](#birth_entry) are signed by [Witnesses](#witness), in addition to the signature of the [Registrar](#registrar).
+* \draft Some signatures, including the signature of the [Registrar](#registrar), are unreadable.
 
 * A digitized form of the [Register Entry](#register_entry) may be referenced directly using a public URL.
 * A digitized form of the register book may be available as an offline resource (provided by the organization keeping it).
 * A (birth) [Register Entry](#register_entry) may include marginal notes which provide information on the [Primary Participant](#primary_participant) marriages.
 * Some register book entries may be associated with transcription and translation artifacts.
 
-### Typical Trancription Artifact
+### Typical Transcription Artifact
 
 ### Typical Translation Artifact
 
