@@ -1,9 +1,9 @@
-# Source Scenario: Polish XIX-Century Birth Register {#sources_scenario_01}
+# Source Scenario: Polish 19th Century Birth Register {#sources_scenario_01}
 
 ## Overview
 
-This document describes a specific type of genealogical data source: a **Polish XIX-century**
-**birth register**. The genealogical data extracted from a specific register, along with metadata
+This document describes a specific type of genealogical data source: a **Polish 19th Century**
+**Birth Register**. The genealogical data extracted from a specific register, along with metadata
 describing the register and its contents, are stored as RDF triples in a unified knowledge base,
 structured according to the schema and validation rules of the gen/sandbox RDF model. This document
 serves as the foundation for defining the functional requirements of the gen/sandbox model.
@@ -12,10 +12,10 @@ serves as the foundation for defining the functional requirements of the gen/san
 
 **Note**: In the scope of the description section:
 
-* A [Register Book](#register_book) means a Polish XIX-century register book that includes a [Birth Register](#birth_register).
-* A _register book entry_ means an entry in such a book.
+* A [Register Book](#register_book) means a _Polish 19th Century_ **Register Book** that includes a [Birth Register](#birth_register).
+* A **Register Book Entry** means an entry in such a book.
 
-### Typical XIX-Century Birth Register
+### Typical 19th Century Birth Register
 
 #### Register Book
 
@@ -25,7 +25,7 @@ serves as the foundation for defining the functional requirements of the gen/san
 * \refined A [Register Book](#register_book) consists of multiple [Pages](#book_page).
 * \refined The [Register Book](#register_book) [Pages](#book_page) or [Leafs](#book_leaf) are almost always numbered.
 * \refined A typical [Russian Partition](#russian_partition) [Register Book](#register_book) consists of a series of [Narrative Register Entries](#narrative_register_entry).
-* \refined A [Russian Partition](#russian_partition) [Register Book](#register_book) may, in the early XIX century, consist of a series of [Tabular Register Entries](#tabular_register_entry).
+* \refined A [Russian Partition](#russian_partition) [Register Book](#register_book) may, in the early 19th century, consist of a series of [Tabular Register Entries](#tabular_register_entry).
 * \refined A series of [Register Entries](#register_entry) may take a concise tabular form.
 * \refined A single [Register Book](#register_book) [Page](#book_page) may include one or more [Register Entries](#register_entry), either complete or partial (started or continued on adjacent **Pages**).
 * \refined Typically, all [Register Book Entries](#register_entry) use the same [Primary Entry Language](#primary_entry_language).
@@ -35,7 +35,7 @@ serves as the foundation for defining the functional requirements of the gen/san
 
 * ✅ A [Register Book](#register_book) may include [Register Book Supplementary Content](#register_book_supplementary_content).
 * ✅ A typical [Register Book](#register_book) includes an index of [Register Entries](#register_entry) for each included [Register](#register).
-* -> Mixed Register -> Some _birth register books_ may be shared with the deaths, and marriages registers (e.g., at
+* -> Mixed Register -> Some _birth register books_ may be shared with the death, and marriage registers (e.g., at
   the beginning of the 19th century).
 * ✅ [Register Book Suplementary Content](#register_book_supplementary_content) may be written in languages different from the [Register Entry](#register_entry) languages.
 
