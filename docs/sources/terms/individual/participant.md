@@ -1,6 +1,6 @@
 # Participant {#participant}
 
-A __Participant__ is a person who takes part in an __[Event](#event)__.
+A __Participant__ is an __[Individual](#individual)__ who takes part in an __[Event](#event)__.
 
 ## Subterms
 
