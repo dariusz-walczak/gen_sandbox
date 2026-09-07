@@ -5,4 +5,3 @@ An __Event__ is an occurrence in which one or more __[Participants](#participant
 ## Subterms
 
 - \subpage birth_event
-- \subpage participant
