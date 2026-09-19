@@ -1,23 +1,16 @@
-# Source Scenario: Polish 19th Century Birth Register {#sources_scenario_01}
+# Polish 19th Century Russian Partition Register Facts {#polish_19th_century_russian_partition_register_facts}
 
 ## Overview
 
-This document describes a specific type of genealogical data source: a **Polish 19th Century**
-**Birth Register**. The genealogical data extracted from a specific register, along with metadata
-describing the register and its contents, are stored as RDF triples in a unified knowledge base,
-structured according to the schema and validation rules of the gen/sandbox RDF model. This document
-serves as the foundation for defining the functional requirements of the gen/sandbox model.
-
-## Birth Register Description
+This document describes a specific type of genealogical data sources: __[Birth](#birth_register)__, __[Death](#death_register)__, and __[Marriage](#marriage_register)__ __[Registers](#register)__ created in the __[Russian Partition](#russian_partition)__ around the 19th century.
 
 **Note**: In the scope of the description section:
 
-* A [Register Book](#register_book) means a _Polish 19th Century_ [Russian Partition](#russian_partition) **Register Book** that includes at least a [Birth Register](#birth_register) or a [Heterogeneous Register](#heterogeneous_register) that includes [Birth Entries](#birth_entry).
-* A **Register Book Entry** means an entry in such a book.
+* A [Register Book](#register_book) means a _Polish 19th Century_ [Russian Partition](#russian_partition) **Register Book**.
 
-### Typical 19th Century Birth Register
+## Facts
 
-#### Register Book
+### Register Book
 
 * \refined A typical [Register Book](#register_book) is handwritten.
 * \refined A typical [Register Book](#register_book) is preserved and provided by an [Archive](#archive).
@@ -33,13 +26,13 @@ serves as the foundation for defining the functional requirements of the gen/san
 * \draft A typical [Register Book](#register_book) contains one or more [Homogeneous Registers](#homogeneous_register).
 * \draft A [Register Book](#register_book) may occassionally contain a single [Heterogeneous Register](#heterogeneous_register) (especially at the beginning of the 19th century).
 
-##### Other
+#### Other Facts
 
 * \draft A [Register Book](#register_book) may include [Register Book Supplementary Content](#register_book_supplementary_content).
 * \draft A typical [Register Book](#register_book) includes an index of [Register Entries](#register_entry) for each included [Register](#register).
 * \draft [Register Book Supplementary Content](#register_book_supplementary_content) may be written in languages different from the [Register Entry](#register_entry) languages.
 
-#### Online Repository
+### Online Repository
 
 * \refined An [Archive](#archive) may provide an [Online Repository](#online_repository).
 * \refined An [Online Repository](#online_repository) may provide a collection of [Digitized Register Books](#digitized_register_book).
@@ -47,7 +40,7 @@ serves as the foundation for defining the functional requirements of the gen/san
 * \refined An [Online Repository](#online_repository) may support referencing a [Digitized Register Book Page](#digitized_register_book_page) using a unique public URL.
 * \refined An [Online Repository](#online_repository) may support referencing a [Digitized Register Book Page Region](#digitized_register_book_page_region) using a unique public URL.
 
-#### Register Entry
+### Register Entry
 
 * \draft A [Register Entry](#register_entry) is written in one [Primary Entry Language](#primary_entry_language).
 * \draft Parts of a [Register Entry](#register_entry) may be written in [Secondary Entry Languages](#secondary_entry_language) (e.g. names transliteration, marginal notes).
@@ -68,7 +61,7 @@ serves as the foundation for defining the functional requirements of the gen/san
 * A [Register Entry](#register_entry) may include [Register Entry Annotations](#register_entry_annotation).
 * A [Register Entry Annotation](#register_entry_annotation) may be written in a [Language](#language) different from the [Primary Entry Language](#primary_entry_language).
 
-#### Register Entry Annotation
+### Register Entry Annotation
 
 * \refined A [Register Entry Annotation](#register_entry_annotation) can be created during or after the creation of the [Register Entry](#register_entry).
 * \refined A [Register Entry Correction Note](#register_entry_correction_note) is typically created during or shortly after the creation of the [Register Entry](#register_entry).
@@ -76,7 +69,7 @@ serves as the foundation for defining the functional requirements of the gen/san
 * \refined A [Register Entry Annotation](#register_entry_annotation) is typically created by the [Registrar](#registrar) responsible for the [Register](#register) at the time the **Annotation** is created.
 * \refined A [Register Entry Annotation](#register_entry_annotation) authorship may differ from that of the [Register Entry](#register_entry).
 
-#### Birth Entry
+### Birth Entry
 
 * \draft A [Single Birth Event](#single_birth_event) is described by a single [Birth Entry](#birth_entry).
 * \draft A [Multiple Birth Event](#multiple_birth_event) may be described by one or more [Birth Entries](#birth_entry).
@@ -92,31 +85,3 @@ serves as the foundation for defining the functional requirements of the gen/san
 * A digitized form of the register book may be available as an offline resource (provided by the organization keeping it).
 * A (birth) [Register Entry](#register_entry) may include marginal notes which provide information on the [Primary Participant](#primary_participant) marriages.
 * Some register book entries may be associated with transcription and translation artifacts.
-
-### Typical Transcription Artifact
-
-### Typical Translation Artifact
-
-
-
-## Birth Register Model Requirements
-
-### Register Book Language
-
-* When a register book has a single primary language, that language is the default for all its
-  entries.
-* A [Register Entry](#register_entry) has one primary language.
-* A [Register Entry](#register_entry) has zero, one, or more secondary languages.
-* When a register book has two or more primary languages (e.g., Polish and Russian in an 1868 book
-  from the Russian Partition), every entry must explicitly state its language.
-* When a [Register Entry](#register_entry) language is not explicitly stated, it is derived from the register book's single
-  primary language. <!-- This is part of the data model design already -->
-
-### Book Properties
-
-* A register book has one or more types (birth, death, marriage)
-
-### Entry Properties
-
-* A [Register Entry](#register_entry) has one primary type
-* A [Register Entry](#register_entry) type is derived from the register book type if the book has only one type
