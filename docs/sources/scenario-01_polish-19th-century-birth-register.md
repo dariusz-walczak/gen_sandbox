@@ -43,23 +43,25 @@ serves as the foundation for defining the functional requirements of the gen/san
 
 * \refined An [Archive](#archive) may provide an [Online Repository](#online_repository).
 * \refined An [Online Repository](#online_repository) may provide a collection of [Digitized Register Books](#digitized_register_book).
-* \draft An [Online Repository](#online_repository) may support referencing a [Digitized Register Book](#digitized_register_book) using a unique public URL.
-* \draft An [Online Repository](#online_repository) may support referencing a [Digitized Register Book Page](#digitized_register_book_page) using a unique public URL.
-* \draft An [Online Repository](#online_repository) may support referencing a [Digitized Register Book Page Region](#digitized_register_book_page_region) using a unique public URL.
+* \refined An [Online Repository](#online_repository) may support referencing a [Digitized Register Book](#digitized_register_book) using a unique public URL.
+* \refined An [Online Repository](#online_repository) may support referencing a [Digitized Register Book Page](#digitized_register_book_page) using a unique public URL.
+* \refined An [Online Repository](#online_repository) may support referencing a [Digitized Register Book Page Region](#digitized_register_book_page_region) using a unique public URL.
 
 #### Register Entry
 
-* \draft A typical [Register Entry](#register_entry) is written in one primary language.
-* \draft Parts of a [Register Entry](#register_entry) may be written in secondary languages (e.g. names transliteration, marginal notes).
-* \draft [Register Entries](#register_entry) languages vary across registries and periods (e.g. Latin, Polish, Russian, German),
-  reflecting the country and year of creation.
+* \draft A [Register Entry](#register_entry) is written in one [Primary Entry Language](#primary_entry_language).
+* \draft Parts of a [Register Entry](#register_entry) may be written in [Secondary Entry Languages](#secondary_entry_language) (e.g. names transliteration, marginal notes).
+* \draft [Register Entry Languages](#register_entry_language) vary across [Registries](#register) and periods (e.g., Latin, Polish, Russian, German),
+  typically depending on the country and year of the [Register Entry](#register_entry) creation.
 * \draft A typical [Register Entry](#register_entry) is a prose describing the documented event.
 * \draft The [Register Entries](#register_entry) are typically explicitly and unambiguously numbered.
 * \draft A [Register Entry](#register_entry) may span one or more pages.
-* Parts of a [Register Entry](#register_entry) may be ambiguous, unreadable, or even missing due to physical damages.
-* A typical [Register Entry](#register_entry) has date of creation (registration).
-* A [Register Entry](#register_entry) may have one or more marginal notes.
-* A marginal note may share the date of creation and the registrar with the 
+* \draft Parts of a [Register Entry](#register_entry) may be ambiguous, unreadable, or even missing due to physical damages.
+* \draft A typical [Register Entry](#register_entry) includes the date of its creation (i.e., the date of the documented [Event](#event) registration).
+* A [Register Entry](#register_entry) may have one or more [Annotations](#register_entry_annotation).
+* A [Register Entry Correction Note](#register_entry_correction_note) typically shares the date of creation and the [Registrar](#registrar) with the [Register Entry](#register_entry).
+* A [Register Entry Later Note](#register_entry_later_note) may not share the [Registrar](#registrar) with the [Register Entry](#register_entry).
+* A [Register Entry Later Note](#register_entry_later_note) is created after the [Register Entry](#register_entry).
 * Parts of a [Register Entry](#register_entry) may have a different date of registration/creation and authorship (e.g., marginal notes).
 * In some entries, the date of creation may be imprecise -- for example, when Gregorian and Julian
   calendar dates recorded in the same entry are contradictory.
