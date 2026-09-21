@@ -1,6 +1,7 @@
 import argparse
-import pytest
 import re
+
+import pytest
 
 import shared.argparse_types
 import shared.error
@@ -8,7 +9,8 @@ import shared.error
 
 def test_ranged_int_input_contract_violation() -> None:
     msg_pattern = re.compile(r"The min_val \(\d+\) mustn't be greater than the max_val \(\d+\)")
-    code_check = lambda e: e.code == shared.error.AppError.Codes.InputContractError
+    def code_check(exception: shared.error.AppError) -> bool:
+        return exception.code == shared.error.AppError.Codes.InputContractError
 
     with pytest.raises(shared.error.AppError, match=msg_pattern, check=code_check):
         shared.argparse_types.make_ranged_int(5, 4)
