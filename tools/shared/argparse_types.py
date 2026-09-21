@@ -1,6 +1,8 @@
 import argparse
 import logging
+import typing
 
+import shared.error
 import shared.output
 
 
@@ -22,6 +24,24 @@ def positive_int(raw_val: str) -> int:
     if int_val <= 0:
         raise argparse.ArgumentTypeError(f"{raw_val} is not a positive integer")
     return int_val
+
+def make_ranged_int(min_val: int, max_val: int) -> typing.Callable[[str], int]:
+    if min_val > max_val:
+        raise shared.error.AppError(
+            shared.error.AppError.Codes.InputContractError,
+            f"The min_val ({min_val}) mustn't be greater than the max_val ({max_val})")
+
+    def _ranged_int(raw_val: str) -> int:
+        try:
+            int_val = int(raw_val)
+        except ValueError:
+            raise argparse.ArgumentTypeError(f"{repr(raw_val)} is not a valid integer")
+        if int_val < min_val or int_val > max_val:
+            raise argparse.ArgumentTypeError(
+                f"{raw_val} is not from the [{min_val}, {max_val}] range")
+        return int_val
+
+    return _ranged_int
 
 
 def logging_level(raw_val: str) -> str:
