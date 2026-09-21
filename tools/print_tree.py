@@ -25,6 +25,7 @@ logging.basicConfig(
 
 _LOG = logging.getLogger()
 
+
 def parse_options(args: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser()
 
@@ -51,6 +52,7 @@ def parse_options(args: list[str]) -> argparse.Namespace:
         help=f"Logging level (default: {default_log_level})")
 
     return parser.parse_args(args)
+
 
 def parse_std_input_json() -> typing.Any:
     try:
@@ -132,6 +134,7 @@ def print_terms_human_int(
 
     return lines
 
+
 def print_terms_human(
         options: argparse.Namespace,
         terms: typing.Sequence[shared.term.Term]
@@ -140,10 +143,12 @@ def print_terms_human(
     lines = print_terms_human_int(options, terms)
     render_console_markdown(options, '\n'.join(lines))
 
+
 def print_terms_machine(terms : typing.Sequence[shared.term.Term]) -> None:
     minimized = json.dumps(
         terms, indent=None, separators=(",", ":"), default=shared.json.default_cb)
     print(minimized)
+
 
 def make_gen_ai_friendly_definition(term: shared.term.Term) -> str:
     if term.definition:
@@ -152,6 +157,7 @@ def make_gen_ai_friendly_definition(term: shared.term.Term) -> str:
         definition_lines = ["[MISSING DEFINITION]"]
     definition_raw = "\n".join(definition_lines)
     return shared.markdown.genai_friendly_format(definition_raw)
+
 
 def print_terms_symbolic_int(terms: typing.Sequence[shared.term.Term]) -> list[list[typing.Any]]:
     output = []

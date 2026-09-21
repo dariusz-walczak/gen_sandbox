@@ -33,6 +33,7 @@ def assert_term_equal(actual: shared.term.Term, expected: shared.term.Term) -> N
 # > shared.term.load_from_file test
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 
+
 @pytest.mark.parametrize("text,expected", [
     # Minimal valid term — anchor header only, no definition
     (
@@ -106,6 +107,7 @@ def test_load_from_file(text: str, expected: shared.term.Term | None) -> None:
 
 # > shared.term.process_input_path > flat list cases
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+
 
 @pytest.mark.parametrize("input_options,input_path,expected_seen_terms,expected_term_trees", [
     # The path locates a directory which is includes few non-term files only (it is not a term
@@ -892,6 +894,7 @@ def make_dt_expected(
                     ),
                 ]
 
+
 @pytest.mark.parametrize("input_options,input_path,expected_seen_terms,expected_term_trees", [
     pytest.param(
         shared.term.Options(max_tree_depth=1),
@@ -1566,6 +1569,7 @@ def make_dg_term(id: str, *children: shared.term.Term) -> shared.term.Term:
 
     return term
 
+
 def make_dg_term_lookup() -> dict[str, shared.term.Term]:
     return {
         "albania":                make_dg_term("albania"),
@@ -1621,6 +1625,7 @@ def make_dg_term_lookup() -> dict[str, shared.term.Term]:
         "united_kingdom":         make_dg_term("united_kingdom"),
         "vatican_city":           make_dg_term("vatican_city")
     }
+
 
 @pytest.mark.parametrize("input_options,input_term_ids,input_term_lookup,expected_terms", [
     #   Malta

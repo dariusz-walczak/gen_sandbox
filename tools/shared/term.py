@@ -27,9 +27,11 @@ class Term(pydantic.BaseModel):
 
 HARD_DEPTH_LIMIT = sys.getrecursionlimit() // 4
 
+
 class Options(pydantic.BaseModel):
     max_tree_depth: int | None = None
     max_ref_depth: int | None = None
+
 
 # Local function call tree:
 #
@@ -44,6 +46,7 @@ class Options(pydantic.BaseModel):
 # -> extract_referenced_terms_inner
 #    -> extract_term_references
 #    -> [extract_referenced_terms_inner]
+
 
 def process_input_path(
         options: Options,
