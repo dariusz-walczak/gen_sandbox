@@ -9,7 +9,10 @@ import shared.error
 
 def test_ranged_int_input_contract_violation() -> None:
     msg_pattern = re.compile(r"The min_val \(\d+\) mustn't be greater than the max_val \(\d+\)")
-    def code_check(exception: shared.error.AppError) -> bool:
+
+    def code_check(exception: BaseException) -> bool:
+        assert isinstance(exception, shared.error.AppError)
+
         return exception.code == shared.error.AppError.Codes.InputContractError
 
     with pytest.raises(shared.error.AppError, match=msg_pattern, check=code_check):
