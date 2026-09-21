@@ -30,11 +30,13 @@ def get_default_input_path() -> str:
     terms_dir = os.path.join(tools_dir, "../docs/sources/terms")
     return os.path.relpath(terms_dir)
 
+
 class OptionNames:
     HIERARCHY: str = "--root"
     TERM: str = "--term"
     MAX_REF_DEPTH: str = "--max-reference-depth"
     MAX_TREE_DEPTH: str = "--max-tree-depth"
+
 
 def render_argparse_description() -> str:
     custom_theme = rich.theme.Theme({

@@ -25,6 +25,7 @@ def positive_int(raw_val: str) -> int:
         raise argparse.ArgumentTypeError(f"{raw_val} is not a positive integer")
     return int_val
 
+
 def make_ranged_int(min_val: int, max_val: int) -> typing.Callable[[str], int]:
     if min_val > max_val:
         raise shared.error.AppError(
