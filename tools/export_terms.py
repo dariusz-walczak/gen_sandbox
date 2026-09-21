@@ -125,12 +125,15 @@ def parse_options(args: list[str]) -> argparse.Namespace:
         "-t", OptionNames.TERM, nargs="+", action="extend", metavar="ID", dest="term_ids",
         default=[], help="IDs of root terms to be included in the exported term list")
 
+    default_max_tree_depth = shared.term.HARD_DEPTH_LIMIT
     parser.add_argument(
         OptionNames.MAX_TREE_DEPTH, action="store", metavar="LEVEL", dest="max_tree_depth",
-        type=shared.argparse_types.positive_int,
+        default=default_max_tree_depth,
+        type=shared.argparse_types.make_ranged_int(1, shared.term.HARD_DEPTH_LIMIT),
         help=(
             "Maximum number of term tree LEVELs to be processed starting from the specified input"
-            " path (default: <unlimited>)"))
+            f" path (min: 1, max: {shared.term.HARD_DEPTH_LIMIT}, default:"
+            f" {default_max_tree_depth})"))
 
     default_max_ref_depth = min(3, shared.term.HARD_DEPTH_LIMIT)
     parser.add_argument(
