@@ -283,7 +283,13 @@ TAB_SIZE               = 4
 # with the commands \{ and \} for these it is advised to use the version @{ and
 # @} or use a double escape (\\{ and \\})
 
-ALIASES                =
+ALIASES                = \
+    "draft=\htmlonly<abbr class='status-badge status-draft' title='Draft'>D</abbr>\endhtmlonly\latexonly[D]\endlatexonly" \
+    "refined=\htmlonly<abbr class='status-badge status-refined' title='Refined'>R</abbr>\endhtmlonly\latexonly[R]\endlatexonly" \
+    "confirmed=\htmlonly<abbr class='status-badge status-confirmed' title='Confirmed'>C</abbr>\endhtmlonly\latexonly[C]\endlatexonly" \
+    "approved=\htmlonly<abbr class='status-badge status-approved' title='Approved'>A</abbr>\endhtmlonly\latexonly[A]\endlatexonly" \
+    "obsolete=\htmlonly<abbr class='status-badge status-obsolete' title='Obsolete'>X</abbr>\endhtmlonly\latexonly[O]\endlatexonly" \
+    "superseded=\htmlonly<abbr class='status-badge status-superseded' title='Superseded'>S</abbr>\endhtmlonly\latexonly[S]\endlatexonly"
 
 # Set the OPTIMIZE_OUTPUT_FOR_C tag to YES if your project consists of C sources
 # only. Doxygen will then generate output that is more tailored for C. For
@@ -1397,7 +1403,7 @@ HTML_STYLESHEET        =
 # documentation.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_EXTRA_STYLESHEET  =
+HTML_EXTRA_STYLESHEET  = css/status.css
 
 # The HTML_EXTRA_FILES tag can be used to specify one or more extra images or
 # other source files which should be copied to the HTML output directory. Note
