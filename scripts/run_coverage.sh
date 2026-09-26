@@ -40,53 +40,62 @@ cache_lookup() {
   awk -F= -v needle="$key" '$1 == needle {print $2; exit}' "$CMAKE_CACHE"
 }
 
-CXX_COMPILER_ID=$(cache_lookup "CMAKE_CXX_COMPILER_ID:STRING")
 CXX_COMPILER_PATH=$(cache_lookup "CMAKE_CXX_COMPILER:FILEPATH")
-CXX_COMPILER_VERSION=$(cache_lookup "CMAKE_CXX_COMPILER_VERSION:STRING")
 
-if [[ -z "$CXX_COMPILER_ID" ]]; then
+if [[ -z "$CXX_COMPILER_PATH" ]]; then
   echo "Unable to determine the configured C++ compiler from $CMAKE_CACHE" >&2
   exit 1
 fi
 
-GCOV_EXECUTABLE=(gcov)
-if [[ "$CXX_COMPILER_ID" == "Clang" ]]; then
-  find_llvm_cov() {
-    local -n _result=$1
-    shift
-    local candidate
-    for candidate in "$@"; do
-      [[ -z "$candidate" ]] && continue
+# The compiler ID and version are not recorded in the CMake cache; query the
+# compiler itself. Resolve symlinks so that alternatives-based wrappers
+# (e.g. /usr/bin/c++ -> g++-14) point at the real toolchain binary.
+CXX_COMPILER_REAL=$(readlink -f "$CXX_COMPILER_PATH")
+COMPILER_VERSION_OUTPUT=$("$CXX_COMPILER_REAL" --version)
 
-      if [[ "$candidate" == */* ]]; then
-        if [[ -x "$candidate" ]]; then
-          _result="$candidate"
-          return 0
-        fi
-      elif command -v "$candidate" >/dev/null 2>&1; then
-        _result=$(command -v "$candidate")
+CXX_COMPILER_ID=GNU
+if grep -qi 'clang version' <<<"$COMPILER_VERSION_OUTPUT"; then
+  CXX_COMPILER_ID=Clang
+fi
+
+find_executable() {
+  local -n _result=$1
+  shift
+  local candidate
+  for candidate in "$@"; do
+    [[ -z "$candidate" ]] && continue
+
+    if [[ "$candidate" == */* ]]; then
+      if [[ -x "$candidate" ]]; then
+        _result="$candidate"
         return 0
       fi
-    done
-    return 1
-  }
+    elif command -v "$candidate" >/dev/null 2>&1; then
+      _result=$(command -v "$candidate")
+      return 0
+    fi
+  done
+  return 1
+}
+
+GCOV_EXECUTABLE=(gcov)
+if [[ "$CXX_COMPILER_ID" == "Clang" ]]; then
+  CXX_COMPILER_VERSION=$(head -n1 <<<"$COMPILER_VERSION_OUTPUT" | grep -oE '[0-9]+(\.[0-9]+)+' | head -n1)
 
   llvm_cov_candidates=()
 
-  if [[ -n "$CXX_COMPILER_PATH" ]]; then
-    compiler_dir=$(dirname "$CXX_COMPILER_PATH")
-    llvm_cov_candidates+=("$compiler_dir/llvm-cov")
+  compiler_dir=$(dirname "$CXX_COMPILER_REAL")
+  llvm_cov_candidates+=("$compiler_dir/llvm-cov")
 
-    compiler_basename=$(basename "$CXX_COMPILER_PATH")
-    if [[ "$compiler_basename" == clang++-* ]]; then
-      suffix=${compiler_basename#clang++-}
-      llvm_cov_candidates+=("$compiler_dir/llvm-cov-$suffix")
-    fi
+  compiler_basename=$(basename "$CXX_COMPILER_REAL")
+  if [[ "$compiler_basename" == clang++-* ]]; then
+    suffix=${compiler_basename#clang++-}
+    llvm_cov_candidates+=("$compiler_dir/llvm-cov-$suffix")
+  fi
 
-    if [[ -d "$compiler_dir" ]]; then
-      toolchain_root=$(dirname "$compiler_dir")
-      llvm_cov_candidates+=("$toolchain_root/bin/llvm-cov")
-    fi
+  if [[ -d "$compiler_dir" ]]; then
+    toolchain_root=$(dirname "$compiler_dir")
+    llvm_cov_candidates+=("$toolchain_root/bin/llvm-cov")
   fi
 
   if [[ -n "$CXX_COMPILER_VERSION" ]]; then
@@ -101,13 +110,38 @@ if [[ "$CXX_COMPILER_ID" == "Clang" ]]; then
 
   llvm_cov_candidates+=("llvm-cov")
 
-  if find_llvm_cov llvm_cov_path "${llvm_cov_candidates[@]}"; then
+  if find_executable llvm_cov_path "${llvm_cov_candidates[@]}"; then
     GCOV_EXECUTABLE=("$llvm_cov_path" gcov)
   else
     {
       echo "Failed to locate a suitable llvm-cov executable needed to process clang coverage data."
       echo "Checked the following candidates:"
       printf '  - %s\n' "${llvm_cov_candidates[@]}"
+    } >&2
+    exit 1
+  fi
+else
+  CXX_COMPILER_VERSION=$("$CXX_COMPILER_REAL" -dumpfullversion 2>/dev/null || "$CXX_COMPILER_REAL" -dumpversion)
+  IFS=. read -r version_major _ <<<"$CXX_COMPILER_VERSION"
+  compiler_dir=$(dirname "$CXX_COMPILER_REAL")
+
+  # The gcov tool version must match the compiler that produced the coverage
+  # data. Plain `gcov` may point at a different major version than the
+  # configured compiler (e.g. GCC 14 with the distro default gcov 13), which
+  # makes gcov fail on the recorded data.
+  gcov_candidates=("$compiler_dir/gcov-$version_major" "gcov-$version_major")
+
+  if find_executable gcov_path "${gcov_candidates[@]}"; then
+    GCOV_EXECUTABLE=("$gcov_path")
+  elif command -v gcov >/dev/null 2>&1 \
+      && [[ "$(gcov --version | grep -oE '[0-9]+(\.[0-9]+)+' | head -n1 | cut -d. -f1)" == "$version_major" ]]; then
+    GCOV_EXECUTABLE=(gcov)
+  else
+    {
+      echo "Failed to locate a gcov executable matching the $CXX_COMPILER_VERSION compiler."
+      echo "Checked the following candidates:"
+      printf '  - %s\n' "${gcov_candidates[@]}"
+      echo "  - gcov (system default)"
     } >&2
     exit 1
   fi
