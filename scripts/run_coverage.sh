@@ -78,7 +78,7 @@ find_executable() {
   return 1
 }
 
-GCOV_EXECUTABLE=(gcov)
+GCOV_EXECUTABLE=gcov
 if [[ "$CXX_COMPILER_ID" == "Clang" ]]; then
   CXX_COMPILER_VERSION=$(head -n1 <<<"$COMPILER_VERSION_OUTPUT" | grep -oE '[0-9]+(\.[0-9]+)+' | head -n1)
 
@@ -111,7 +111,7 @@ if [[ "$CXX_COMPILER_ID" == "Clang" ]]; then
   llvm_cov_candidates+=("llvm-cov")
 
   if find_executable llvm_cov_path "${llvm_cov_candidates[@]}"; then
-    GCOV_EXECUTABLE=("$llvm_cov_path" gcov)
+    GCOV_EXECUTABLE="$llvm_cov_path gcov"
   else
     {
       echo "Failed to locate a suitable llvm-cov executable needed to process clang coverage data."
@@ -132,10 +132,10 @@ else
   gcov_candidates=("$compiler_dir/gcov-$version_major" "gcov-$version_major")
 
   if find_executable gcov_path "${gcov_candidates[@]}"; then
-    GCOV_EXECUTABLE=("$gcov_path")
+    GCOV_EXECUTABLE="$gcov_path"
   elif command -v gcov >/dev/null 2>&1 \
       && [[ "$(gcov --version | grep -oE '[0-9]+(\.[0-9]+)+' | head -n1 | cut -d. -f1)" == "$version_major" ]]; then
-    GCOV_EXECUTABLE=(gcov)
+    GCOV_EXECUTABLE=gcov
   else
     {
       echo "Failed to locate a gcov executable matching the $CXX_COMPILER_VERSION compiler."
@@ -161,7 +161,9 @@ GCOVR_ARGS=(
   --exclude '.*test/.*'
 )
 
-GCOVR_ARGS+=(--gcov-executable "${GCOV_EXECUTABLE[@]}")
+# gcovr expects a single command string, possibly containing arguments
+# (e.g. 'llvm-cov gcov'); extra tokens would be parsed as report filters.
+GCOVR_ARGS+=(--gcov-executable "$GCOV_EXECUTABLE")
 
 # Combined coverage for both libraries
 GCOMBINED_FILTER='code/(common|person)/(src|include)/'
