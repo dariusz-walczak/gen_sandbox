@@ -54,6 +54,17 @@ class Options(pydantic.BaseModel):
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 
 def find_term_file_path(term_tree_root: str, term_id: str) -> str | None:
+    """Search the term tree for a specific term
+
+    The term tree is walked depth-first starting from the root path. Sub-directories are descended
+    into only when they correspond to a term file in the current directory (e.g. `parent/child/`
+    is entered only if `parent/child.md` exists).
+
+    :param term_tree_root: the root path of the term tree to be searched
+    :param term_id: the identifier of the term to be searched for
+    :returns: the term tree root relative path to the term file or None if it was not found
+    """
+
     _LOG.info(f"Searching for the term ({term_id}) starting from the root path ({term_tree_root})")
 
     for curr_dir_path, curr_dir_names, curr_file_names in os.walk(term_tree_root):
@@ -66,7 +77,7 @@ def find_term_file_path(term_tree_root: str, term_id: str) -> str | None:
 
             if term is not None:
                 if term.id == term_id:
-                    return term_path  # Term found
+                    return os.path.relpath(term_path, term_tree_root)  # Term found
                 else:
                     acceptable_dir_names.add(markdown_file_name.removesuffix(".md"))
 
