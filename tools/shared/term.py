@@ -35,6 +35,9 @@ class Options(pydantic.BaseModel):
 
 # Local function call tree:
 #
+# find_term_file_path
+# -> load_from_path
+#
 # process_input_path
 # -> process_input_path_inner
 #    -> load_from_path
@@ -42,16 +45,40 @@ class Options(pydantic.BaseModel):
 #           -> strip_empty_lines
 #     -> process_term_directory
 #        -> [process_input_path_inner]
+#
 # extract_referenced_terms
 # -> extract_referenced_terms_inner
 #    -> extract_term_references
 #    -> [extract_referenced_terms_inner]
 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+
+def find_term_file_path(term_tree_root: str, term_id: str) -> str | None:
+    _LOG.info(f"Searching for the term ({term_id}) starting from the root path ({term_tree_root})")
+
+    for curr_dir_path, curr_dir_names, curr_file_names in os.walk(term_tree_root):
+        markdown_file_names = [fn for fn in curr_file_names if fn.endswith(".md")]
+        acceptable_dir_names = set()
+
+        for markdown_file_name in markdown_file_names:
+            term_path = os.path.join(curr_dir_path, markdown_file_name)
+            term = load_from_path(term_path)
+
+            if term is not None:
+                if term.id == term_id:
+                    return term_path  # Term found
+                else:
+                    acceptable_dir_names.add(markdown_file_name.removesuffix(".md"))
+
+        curr_dir_names[:] = [dn for dn in curr_dir_names if dn in acceptable_dir_names]
+
+    return None  # Term not found
+
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 
 def process_input_path(
-        options: Options,
-        seen_terms: dict[str, Term],
-        term_path: str) -> list[Term]:
+        options: Options, seen_terms: dict[str, Term], term_path: str) -> list[Term]:
 
     if options.max_tree_depth is None:
         max_depth = HARD_DEPTH_LIMIT
@@ -65,9 +92,7 @@ def process_input_path(
 
 
 def process_input_path_inner(
-        remaining_tree_depth: int,
-        seen_terms: dict[str, Term],
-        term_path: str) -> list[Term]:
+        remaining_tree_depth: int, seen_terms: dict[str, Term], term_path: str) -> list[Term]:
 
     _LOG.info(f"Processing term path: {term_path}")
 
