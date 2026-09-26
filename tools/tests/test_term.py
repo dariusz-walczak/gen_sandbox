@@ -105,6 +105,56 @@ def test_load_from_file(text: str, expected: shared.term.Term | None) -> None:
     result = shared.term.load_from_file(io.StringIO(text), "<test>")
     assert result == expected
 
+# > shared.term.find_term_file_path > success cases
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+
+
+@pytest.mark.parametrize("input_term_id,expected_term_file_path", [
+    # Level 1: Continents
+    ("africa", "africa.md"),
+    ("europe", "europe.md"),
+    # Level 2: Countries
+    ("burkina_faso", "africa/burkina_faso.md"),
+    ("ethiopia", "africa/ethiopia.md"),
+    ("france", "europe/france.md"),
+    ("lesotho", "africa/lesotho.md"),
+    ("moldova", "europe/moldova.md"),
+    # Level 3: Regions and Districts
+    ("berea_district", "africa/lesotho/berea.md"),
+    ("mokhotlong_district", "africa/lesotho/mokhotlong.md"),
+    ("ile_de_france", "europe/france/ile_de_france.md"),
+    ("nouvelle_aquitaine", "europe/france/nouvelle_aquitaine.md"),
+    ("cahul_district", "europe/moldova/cahul.md"),
+    ("hincesti_district", "europe/moldova/hincesti.md"),
+    ("singerei_district", "europe/moldova/singerei.md"),
+    ("ungheni_district", "europe/moldova/ungheni.md"),
+    # Level 4: Departments, Community Councils, and Districts
+    ("kueneng_community_council", "africa/lesotho/berea/kueneng.md"),
+    ("essonne", "europe/france/ile_de_france/essonne.md"),
+    ("seine_saint_denis", "europe/france/ile_de_france/seine_saint_denis.md"),
+    ("dordogne", "europe/france/nouvelle_aquitaine/dordogne.md"),
+    ("gironde", "europe/france/nouvelle_aquitaine/gironde.md"),
+    ("cahul", "europe/moldova/cahul/cahul.md"),
+    ("lebedenco", "europe/moldova/cahul/lebedenco.md"),
+    # Level 5: Communes and Villages
+    ("bela_bela", "africa/lesotho/berea/kueneng/bela_bela.md"),
+    ("ha_rajone", "africa/lesotho/berea/kueneng/ha_rajone.md"),
+    ("corbeil_essonnes", "europe/france/ile_de_france/essonne/corbeil_essonnes.md"),
+    ("evry_courcouronnes", "europe/france/ile_de_france/essonne/evry_courcouronnes.md"),
+    ("palaiseau", "europe/france/ile_de_france/essonne/palaiseau.md"),
+    ("montreuil", "europe/france/ile_de_france/seine_saint_denis/montreuil.md"),
+    ("noisy_le_grand", "europe/france/ile_de_france/seine_saint_denis/noisy_le_grand.md"),
+    ("bergerac", "europe/france/nouvelle_aquitaine/dordogne/bergerac.md"),
+    ("perigueux", "europe/france/nouvelle_aquitaine/dordogne/perigueux.md"),
+    ("trelissac", "europe/france/nouvelle_aquitaine/dordogne/trelissac.md"),
+])
+def test_find_term_file_path_success(input_term_id: str, expected_term_file_path: str) -> None:
+    term_tree_root = os.path.join(_DATA_ROOT, "term", "deep-tree")
+
+    output_term_path = shared.term.find_term_file_path(term_tree_root, input_term_id)
+
+    assert output_term_path == expected_term_file_path
+
 # > shared.term.process_input_path > flat list cases
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 
