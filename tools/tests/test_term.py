@@ -155,6 +155,99 @@ def test_find_term_file_path_success(input_term_id: str, expected_term_file_path
 
     assert output_term_path == expected_term_file_path
 
+
+# > shared.term.find_term_file_path > error cases
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+
+# Tests Plan:
+#
+# 1) Subtree cut-off cases
+# 1.1) A directory without the matching term file and valid, searched term file inside
+# 1.2) A directory with matching but invalid term file and valid, searched term file inside
+# 1.3) A directory with not-name-matching, valid term file and valid, searched term inside
+# 1.4) A directory with name matching the term id instead of the valid term file name, searched
+#      term inside
+# 1.5) Three levels of directories, the middle one misses the term file, searched term inside
+#      (proves pruning propagates)
+# 2) Invalid searched term file:
+# 2.1) The searched term file is invalid
+# 2.2) A valid term file but with invalid extension (e.g. `txt`)
+# 2.3) A valid term file but with invalid uppercase extension (i.e. `MD`)
+# 3) Filesystem-type confusion — the expected term file target.md is a directory instead of a file;
+#      the searched term file is valid and located inside target/. The search returns None because
+#      a directory named target.md is neither loaded as a term file nor used to unlock the target/
+#      subdirectory. .gitkeep inside the target.md directory
+
+# Term Tree Plan:
+#
+# find-term-error-cases
+# + level-1_valid.md
+# + level-1_valid
+# | + level-1-1_invalid [missing term file]
+# | | + level-1-1-1_valid
+# | | + level-1-1-1_valid.md [case 1.1]
+# | + level-1-2_invalid.md [invalid term file]
+# | + level-1-2_invalid
+# | | + level-1-2-1_valid.md [noise]
+# | | + level-1-2-2_valid.md [case 1.2]
+# | | + level-1-2-3_valid.md [noise]
+# | + level-1-3_invalid-a.md
+# | + level-1-3_invalid-b [term file name mismatch]
+# | | + level-1-3-1_valid.md [case 1.3]
+# | | + level-1-3-2_valid.md [noise]
+# | | + level-1-3-3_valid.md [noise]
+# | | + level-1-3-3_valid [noise]
+# | |   + level-1-3-3-1_valid.md [noise]
+# | + level-1-4_invalid.md [term id is level_1_4_invalid]
+# | + level_1_4_invalid [matches term id instead of file name]
+# | | + level-1-4-1_valid.md [case 1.4]
+# | + level-1-5_invalid [missing term file]
+# |   + level-1-5-1_valid.md [noise]
+# |   + level-1-5-2_valid.md
+# |   + level-1-5-2_valid
+# |     + level-1-5-2-1_valid.md [case 1.5]
+# + level-2_valid.md
+# + level-2_valid
+# | + level-2-1_valid.md [noise]
+# | + level-2-2_invalid.md [case 2.1]
+# | + level-2-3_invalid.txt [case 2.2]
+# | + level-2-3_invalid.MD [case 2.3]
+# + level-3_valid.md
+# + level-3_valid
+#   + level-3-1_invalid.md [directory instead of file]
+#   |   + .gitkeep
+#   + level-3-1_invalid
+#     + level-3-1-1_valid.md [case 3]
+
+@pytest.mark.parametrize("input_term_id", [
+    # 1) Subtree cut-off cases
+    # 1.1) A directory without the matching term file and valid, searched term file inside
+    pytest.param("level_1_1_1_valid", id="subtree_cut_off_missing_term_file"),
+    # 1.2) A directory with matching but invalid term file and valid, searched term file inside
+    pytest.param("level_1_2_2_valid", id="subtree_cut_off_invalid_term_file"),
+    # 1.3) A directory with not-name-matching, valid term file and valid, searched term inside
+    pytest.param("level_1_3_1_valid", id="subtree_cut_off_term_file_name_mismatch"),
+    # 1.4) A directory with name matching the term id instead of the valid term file name
+    pytest.param("level_1_4_1_valid", id="subtree_cut_off_term_id_dir_name_match"),
+    # 1.5) Three levels of directories, the middle one misses the term file, searched term inside
+    pytest.param("level_1_5_2_1_valid", id="subtree_cut_off_intermediate_level"),
+    # 2) Invalid searched term file:
+    # 2.1) The searched term file is invalid
+    pytest.param("level_2_2_invalid", id="invalid_searched_term_file"),
+    # 2.2) A valid term file but with invalid extension (e.g. `txt`)
+    pytest.param("level_2_3_invalid", id="invalid_extension_txt"),
+    # 2.3) A valid term file but with invalid uppercase extension (i.e. `MD`)
+    pytest.param("level_2_3_invalid", id="invalid_extension_MD"),
+    # 3) Filesystem-type confusion — the expected term file is a directory instead of a file
+    pytest.param("level_3_1_1_valid", id="term_file_is_directory"),
+])
+def test_find_term_file_path_error(input_term_id: str) -> None:
+    term_tree_root = os.path.join(_DATA_ROOT, "term", "find-term-error-cases")
+
+    output_term_path = shared.term.find_term_file_path(term_tree_root, input_term_id)
+
+    assert output_term_path is None
+
 # > shared.term.process_input_path > flat list cases
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 
