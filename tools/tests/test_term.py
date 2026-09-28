@@ -1,9 +1,11 @@
 import io
 import os
+import re
 import typing
 
 import pytest
 
+import shared.error
 import shared.term
 
 _DATA_ROOT = os.path.join(os.path.dirname(__file__), "data")
@@ -29,6 +31,20 @@ def assert_term_equal(actual: shared.term.Term, expected: shared.term.Term) -> N
     assert actual.path == expected.path
     assert actual.definition == expected.definition
     assert_term_trees_equal(actual.children, expected.children)
+
+
+def expect_input_contract_error(
+        msg_pattern: str,
+        func: typing.Callable[..., typing.Any],
+        *args: typing.Any) -> None:
+
+    def code_check(exception: BaseException) -> bool:
+        assert isinstance(exception, shared.error.AppError)
+
+        return exception.code == shared.error.AppError.Codes.InputContractError
+
+    with pytest.raises(shared.error.AppError, match=msg_pattern, check=code_check):
+        func(*args)
 
 # > shared.term.load_from_file test
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
@@ -247,6 +263,53 @@ def test_find_term_file_path_error(input_term_id: str) -> None:
     output_term_path = shared.term.find_term_file_path(term_tree_root, input_term_id)
 
     assert output_term_path is None
+
+
+# The term identifier is not specified (empty string)
+def test_find_term_file_path_error_empty_term_id() -> None:
+    expect_input_contract_error(
+        r"The term identifier is not specified",
+        shared.term.find_term_file_path,
+        os.path.join(_DATA_ROOT, "term", "find-term-error-cases"), "")
+
+# The term identifier is invalid (violates TERM_ID_PATTERN_STRING anywhere in the identifier)
+def test_find_term_file_path_error_invalid_term_id() -> None:
+    expect_input_contract_error(
+        r"The term identifier \(-invalid_term_id\) is invalid",
+        shared.term.find_term_file_path,
+        os.path.join(_DATA_ROOT, "term", "find-term-error-cases"), "-invalid_term_id")
+
+
+# The identifier has a valid prefix, but the hyphen is invalid in the middle - a prefix-only
+#  pattern match (re.match) wouldn't catch it
+def test_find_term_file_path_error_invalid_term_id_midstring() -> None:
+    expect_input_contract_error(
+        r"The term identifier \(level-1_valid\) is invalid",
+        shared.term.find_term_file_path,
+        os.path.join(_DATA_ROOT, "term", "find-term-error-cases"), "level-1_valid")
+
+# The term tree root path is not specified (empty string)
+def test_find_term_file_path_error_empty_tree_root() -> None:
+    expect_input_contract_error(
+        r"The term tree root path is not specified",
+        shared.term.find_term_file_path, "", "level_1_valid")
+
+# The term tree root path doesn't exist (find-term-missing-tree-root)
+def test_find_term_file_path_error_missing_tree_root() -> None:
+    missing_tree_root = os.path.join(_DATA_ROOT, "term", "find-term-missing-tree-root")
+
+    expect_input_contract_error(
+        fr"The term tree root path \({re.escape(missing_tree_root)}\) doesn't exist",
+        shared.term.find_term_file_path, missing_tree_root, "level_1_valid")
+
+# The term tree root path is not a directory (find-term-invalid-tree-root.file)
+def test_find_term_file_path_error_tree_root_not_a_directory() -> None:
+    file_tree_root = os.path.join(_DATA_ROOT, "term", "find-term-invalid-tree-root.file")
+
+    expect_input_contract_error(
+        fr"The term tree root path \({re.escape(file_tree_root)}\) is not a directory",
+        shared.term.find_term_file_path, file_tree_root, "level_1_valid")
+
 
 # > shared.term.process_input_path > flat list cases
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
