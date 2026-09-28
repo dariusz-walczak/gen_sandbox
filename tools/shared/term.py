@@ -7,6 +7,8 @@ import typing
 
 import pydantic
 
+import shared.error
+
 # NOTE: Keep the TERM_NAME_SINGLELINE_PATTERN_STRING and the TERM_NAME_MULTILINE_PATTERN_STRING
 #       constants consistent in terms of all non-whitespace characters.
 #       When the pattern changes, update its copy in the docs/conventions/terms-and-definitions.md
@@ -66,6 +68,35 @@ def find_term_file_path(term_tree_root: str, term_id: str) -> str | None:
     """
 
     _LOG.info(f"Searching for the term ({term_id}) starting from the root path ({term_tree_root})")
+
+    # Input Contract Enforcement:
+
+    if not term_id:
+        raise shared.error.AppError(
+            shared.error.AppError.Codes.InputContractError,
+            "The term identifier is not specified")
+
+    if not re.fullmatch(TERM_ID_PATTERN_STRING, term_id):
+        raise shared.error.AppError(
+            shared.error.AppError.Codes.InputContractError,
+            f"The term identifier ({term_id}) is invalid")
+
+    if not term_tree_root:
+        raise shared.error.AppError(
+            shared.error.AppError.Codes.InputContractError,
+            "The term tree root path is not specified")
+
+    if not os.path.exists(term_tree_root):
+        raise shared.error.AppError(
+            shared.error.AppError.Codes.InputContractError,
+            f"The term tree root path ({term_tree_root}) doesn't exist")
+
+    if not os.path.isdir(term_tree_root):
+        raise shared.error.AppError(
+            shared.error.AppError.Codes.InputContractError,
+            f"The term tree root path ({term_tree_root}) is not a directory")
+
+    # Function Implementation:
 
     for curr_dir_path, curr_dir_names, curr_file_names in os.walk(term_tree_root):
         markdown_file_names = [fn for fn in curr_file_names if fn.endswith(".md")]
