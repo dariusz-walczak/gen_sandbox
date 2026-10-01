@@ -311,6 +311,85 @@ def test_find_term_file_path_error_tree_root_not_a_directory() -> None:
         shared.term.find_term_file_path, file_tree_root, "level_1_valid")
 
 
+# > shared.term.find_term_file_paths tests
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+
+# Tests Plan:
+#
+# 1) The found term file paths are returned in the input order (not the tree traversal order) and
+#    the not found term ids are filtered out (the term tree is walked once per term id)
+# 2) A term id duplicated in the input sequence results in a duplicated term file path
+# 3) None of the requested terms is found
+# 4) The term id sequence is empty
+# 5) An input contract violation of a single term id search propagates out of the function
+#    (the function doesn't swallow the underlying errors)
+
+
+# 1) Mixed found / not found term ids: the not found term ids are filtered out and the found term
+#    file paths are returned in the input order (not the tree traversal order)
+def test_find_term_file_paths_success() -> None:
+    term_tree_root = os.path.join(_DATA_ROOT, "term", "deep-tree")
+
+    input_term_ids = [
+        "trelissac",  # found (level 5, Europe subtree)
+        "asia",       # not found (valid term id, absent in the tree)
+        "lesotho",    # found (level 2, Africa subtree)
+        "africa",     # found (level 1)
+        "atlantis",   # not found
+        "cahul",      # found (level 5, Europe subtree)
+    ]
+
+    output_term_file_paths = shared.term.find_term_file_paths(term_tree_root, input_term_ids)
+
+    assert output_term_file_paths == [
+        "europe/france/nouvelle_aquitaine/dordogne/trelissac.md",
+        "africa/lesotho.md",
+        "africa.md",
+        "europe/moldova/cahul/cahul.md",
+    ]
+
+
+# 2) A term id duplicated in the input sequence results in a duplicated term file path
+#    (no implicit deduplication happens)
+def test_find_term_file_paths_duplicate_term_ids() -> None:
+    term_tree_root = os.path.join(_DATA_ROOT, "term", "deep-tree")
+
+    output_term_file_paths = shared.term.find_term_file_paths(
+        term_tree_root, ["africa", "europe", "africa"])
+
+    assert output_term_file_paths == ["africa.md", "europe.md", "africa.md"]
+
+
+# 3) None of the requested terms is found: an empty path list is produced
+def test_find_term_file_paths_all_not_found() -> None:
+    term_tree_root = os.path.join(_DATA_ROOT, "term", "deep-tree")
+
+    output_term_file_paths = shared.term.find_term_file_paths(
+        term_tree_root, ["asia", "atlantis"])
+
+    assert output_term_file_paths == []
+
+
+# 4) The term id sequence is empty: an empty path list is produced without any tree walk
+def test_find_term_file_paths_empty_term_ids() -> None:
+    term_tree_root = os.path.join(_DATA_ROOT, "term", "deep-tree")
+
+    output_term_file_paths = shared.term.find_term_file_paths(term_tree_root, [])
+
+    assert output_term_file_paths == []
+
+
+# 5) An input contract violation of a single term id search propagates out of the function
+#    (the function doesn't swallow the underlying errors)
+def test_find_term_file_paths_error_propagation() -> None:
+    term_tree_root = os.path.join(_DATA_ROOT, "term", "deep-tree")
+
+    expect_input_contract_error(
+        r"The term identifier \(-invalid_term_id\) is invalid",
+        shared.term.find_term_file_paths,
+        term_tree_root, ["africa", "-invalid_term_id"])
+
+
 # > shared.term.process_input_path > flat list cases
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 

@@ -1,6 +1,7 @@
 #!/usr/bin/env -S uv run
 
 import argparse
+import itertools
 import json
 import logging
 import os
@@ -22,7 +23,7 @@ logging.basicConfig(
     format="[%(levelname)s] %(message)s",
     stream=sys.stderr)
 
-_LOG = logging.getLogger()
+_LOG = logging.getLogger(__name__)
 
 
 def get_default_input_path() -> str:
@@ -127,6 +128,14 @@ def parse_options(args: list[str]) -> argparse.Namespace:
         "-t", OptionNames.TERM, nargs="+", action="extend", metavar="ID", dest="term_ids",
         default=[], help="IDs of root terms to be included in the exported term list")
 
+    mode_group = parser.add_mutually_exclusive_group(required=False)
+    mode_group.add_argument(
+        "-H", "--hierarchy", action="store_true", dest="hierarchy_mode",
+        help="Trigger the Hierarchy Mode (default)")
+    mode_group.add_argument(
+        "-R", "--reference", action="store_true", dest="reference_mode",
+        help="Trigger the Reference Mode")
+
     default_max_tree_depth = shared.term.HARD_DEPTH_LIMIT
     parser.add_argument(
         OptionNames.MAX_TREE_DEPTH, action="store", metavar="LEVEL", dest="max_tree_depth",
@@ -153,10 +162,17 @@ def parse_options(args: list[str]) -> argparse.Namespace:
         type=shared.argparse_types.logging_level, default=default_log_level,
         help=f"Logging level (default: {default_log_level})")
 
-    return parser.parse_args(args)
+    options = parser.parse_args(args)
+
+    if not options.hierarchy_mode and not options.reference_mode:
+        options.hierarchy_mode = True
+
+    return options
 
 
 def main(options: argparse.Namespace) -> int:
+    _LOG.debug(f"hierarchy_mode={options.hierarchy_mode}, reference_mode={options.reference_mode}")
+
     # The terms lookup table is used for de-duplication when passed to the process_input_path.
     # It is later reused for term reference resolution when passed to the extract_referenced_terms.
     terms_lookup: dict[str, shared.term.Term] = {}
@@ -164,10 +180,23 @@ def main(options: argparse.Namespace) -> int:
     term_options = shared.term.Options(
         max_tree_depth=options.max_tree_depth,
         max_ref_depth=options.max_ref_depth)
-    term_trees: list[shared.term.Term] = shared.term.process_input_path(
-        term_options, terms_lookup, options.input_path)
 
-    if options.term_ids:
+    term_paths: list[str] = []
+
+    if options.hierarchy_mode and options.term_ids:
+        relative_term_paths = shared.term.find_term_file_paths(
+            options.input_path, options.term_ids)
+        term_paths.extend(
+            os.path.join(options.input_path, term_path) for term_path in relative_term_paths)
+    else:
+        term_paths.append(options.input_path)
+
+    term_trees: list[shared.term.Term] = list(
+        itertools.chain.from_iterable(
+            shared.term.process_input_path(term_options, terms_lookup, term_path)
+            for term_path in term_paths))
+
+    if options.reference_mode:
         terms_collection = shared.term.extract_referenced_terms(
             term_options, options.term_ids, terms_lookup)
         print(json.dumps(terms_collection, indent=2, default=shared.json.default_cb))
