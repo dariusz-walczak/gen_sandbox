@@ -20,6 +20,7 @@
 # Term Information Representation
 
 * __Term__ definitions carry the __Term Dependency Information__.
+* __Term__ definitions reference other __Terms__ by their unique identifiers.
 * The __Filesystem Term Repository__ represents the __Term Information__ as a hierarchy of files and directories.
 * The __JSON Document__ represents the __Term Information__ in JSON format.
 
@@ -34,21 +35,24 @@
 ** The __Start Term__ is at depth 1 of both the __Term Subtree__ and the __Term Graph__ traversals.
 * A __Reference Path__ is a sequence of __Reference Relations__ starting at a __Start Term__.
 * The __Hierarchy Mode__ is the default.
-* In the __Hierarchy Mode__ the script exports the __Term Hierarchy Information__.
+* In the __Hierarchy Mode__, the script exports the __Term Hierarchy Information__.
 ** The __Hierarchy Mode__ is triggered by the `--hierarchy` option.
 ** The __Term Hierarchy Information__ scope is controlled using __Start Terms__ and the __Tree Depth Limit__.
 ** The __Tree Depth Limit__ is specified using the `--max-tree-depth` option.
-** In the __Hierarchy Mode__ the script traverses one or more __Term Subtrees__ using __Parent-Child Relations__.
-** In the __Hierarchy Mode__ __Term Subtrees__ start at the specified __Start Terms__.
-** In the __Hierarchy Mode__ the __Term Subtree__ starts at the __Tree Root__ when no __Start Term__ is specified.
-** In the __Hierarchy Mode__ the script stops the traversal of a __Term Subtree__ when the __Tree Depth Limit__ is reached.
-** In the __Hierarchy Mode__ the script outputs one or more __Term Subtrees__.
-* In the __Dependency Mode__ the script exports the __Term Dependency Information__.
+** In the __Hierarchy Mode__, the script traverses one or more __Term Subtrees__ using __Parent-Child Relations__.
+** In the __Hierarchy Mode__, __Term Subtrees__ start at the specified __Start Terms__.
+** In the __Hierarchy Mode__, the __Term Subtree__ starts at the __Tree Root__ when no __Start Term__ is specified.
+** In the __Hierarchy Mode__, the script stops the traversal of a __Term Subtree__ when the __Tree Depth Limit__ is reached.
+** In the __Hierarchy Mode__, the script outputs one or more __Term Subtrees__.
+** In the __Hierarchy Mode__, the script represents __Parent-Child Relations__ by nesting the child __Term Data__ in its parent __Term Data__.
+* In the __Dependency Mode__, the script exports the __Term Dependency Information__.
 ** The __Dependency Mode__ is triggered by the `--dependency` option.
 ** The __Term Dependency Information__ scope is controlled using __Start Terms__ and the __Reference Depth Limit__.
 ** The __Reference Depth Limit__ is specified using the `--max-reference-depth` option.
-** In the __Dependency Mode__ the script traverses one or more __Reference Paths__ using __Reference Relations__.
-** In the __Dependency Mode__ __Reference Paths__ start at the specified __Start Terms__.
-** In the __Dependency Mode__ the script stops the traversal of a __Reference Path__ when the __Reference Depth Limit__ is reached.
-** In the __Dependency Mode__ at least one __Start Term__ has to be specified.
-** In the __Dependency Mode__ the script outputs a flat list of __Terms__.
+** In the __Dependency Mode__, the script traverses one or more __Reference Paths__ using __Reference Relations__.
+** In the __Dependency Mode__, __Reference Paths__ start at the specified __Start Terms__.
+** In the __Dependency Mode__, the script stops the traversal of a __Reference Path__ when the __Reference Depth Limit__ is reached.
+** In the __Dependency Mode__, at least one __Start Term__ has to be specified.
+** In the __Dependency Mode__, the script outputs a flat list of __Terms__.
+** In the __Dependency Mode__, each __Term__ appears at most once in the __Term__ list.
+** In the __Dependency Mode__, the __Term__ list follows the sequence in which the __Terms__ are visited during the traversal.
