@@ -7,6 +7,8 @@ import typing
 
 import pydantic
 
+import shared.error
+
 # NOTE: Keep the TERM_NAME_SINGLELINE_PATTERN_STRING and the TERM_NAME_MULTILINE_PATTERN_STRING
 #       constants consistent in terms of all non-whitespace characters.
 #       When the pattern changes, update its copy in the docs/conventions/terms-and-definitions.md
@@ -35,6 +37,9 @@ class Options(pydantic.BaseModel):
 
 # Local function call tree:
 #
+# find_term_file_path
+# -> load_from_path
+#
 # process_input_path
 # -> process_input_path_inner
 #    -> load_from_path
@@ -42,16 +47,86 @@ class Options(pydantic.BaseModel):
 #           -> strip_empty_lines
 #     -> process_term_directory
 #        -> [process_input_path_inner]
+#
 # extract_referenced_terms
 # -> extract_referenced_terms_inner
 #    -> extract_term_references
 #    -> [extract_referenced_terms_inner]
 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+
+def find_term_file_paths(term_tree_root: str, term_ids: typing.Sequence[str]) -> list[str]:
+    unfiltered_paths: list[str | None] = [
+        find_term_file_path(term_tree_root, term_id) for term_id in term_ids]
+    return [p for p in unfiltered_paths if p is not None]
+
+
+def find_term_file_path(term_tree_root: str, term_id: str) -> str | None:
+    """Search the term tree for a specific term
+
+    The term tree is walked depth-first starting from the root path. Sub-directories are descended
+    into only when they correspond to a term file in the current directory (e.g. `parent/child/`
+    is entered only if `parent/child.md` exists).
+
+    :param term_tree_root: the root path of the term tree to be searched
+    :param term_id: the identifier of the term to be searched for
+    :returns: the term tree root relative path to the term file or None if it was not found
+    """
+
+    _LOG.info(f"Searching for the term ({term_id}) starting from the root path ({term_tree_root})")
+
+    # Input Contract Enforcement:
+
+    if not term_id:
+        raise shared.error.AppError(
+            shared.error.AppError.Codes.InputContractError,
+            "The term identifier is not specified")
+
+    if not re.fullmatch(TERM_ID_PATTERN_STRING, term_id):
+        raise shared.error.AppError(
+            shared.error.AppError.Codes.InputContractError,
+            f"The term identifier ({term_id}) is invalid")
+
+    if not term_tree_root:
+        raise shared.error.AppError(
+            shared.error.AppError.Codes.InputContractError,
+            "The term tree root path is not specified")
+
+    if not os.path.exists(term_tree_root):
+        raise shared.error.AppError(
+            shared.error.AppError.Codes.InputContractError,
+            f"The term tree root path ({term_tree_root}) doesn't exist")
+
+    if not os.path.isdir(term_tree_root):
+        raise shared.error.AppError(
+            shared.error.AppError.Codes.InputContractError,
+            f"The term tree root path ({term_tree_root}) is not a directory")
+
+    # Function Implementation:
+
+    for curr_dir_path, curr_dir_names, curr_file_names in os.walk(term_tree_root):
+        markdown_file_names = [fn for fn in curr_file_names if fn.endswith(".md")]
+        acceptable_dir_names = set()
+
+        for markdown_file_name in markdown_file_names:
+            term_path = os.path.join(curr_dir_path, markdown_file_name)
+            term = load_from_path(term_path)
+
+            if term is not None:
+                if term.id == term_id:
+                    return os.path.relpath(term_path, term_tree_root)  # Term found
+                else:
+                    acceptable_dir_names.add(markdown_file_name.removesuffix(".md"))
+
+        curr_dir_names[:] = [dn for dn in curr_dir_names if dn in acceptable_dir_names]
+
+    return None  # Term not found
+
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 
 def process_input_path(
-        options: Options,
-        seen_terms: dict[str, Term],
-        term_path: str) -> list[Term]:
+        options: Options, seen_terms: dict[str, Term], term_path: str) -> list[Term]:
 
     if options.max_tree_depth is None:
         max_depth = HARD_DEPTH_LIMIT
@@ -65,9 +140,7 @@ def process_input_path(
 
 
 def process_input_path_inner(
-        remaining_tree_depth: int,
-        seen_terms: dict[str, Term],
-        term_path: str) -> list[Term]:
+        remaining_tree_depth: int, seen_terms: dict[str, Term], term_path: str) -> list[Term]:
 
     _LOG.info(f"Processing term path: {term_path}")
 

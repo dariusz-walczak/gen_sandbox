@@ -1,9 +1,11 @@
 import io
 import os
+import re
 import typing
 
 import pytest
 
+import shared.error
 import shared.term
 
 _DATA_ROOT = os.path.join(os.path.dirname(__file__), "data")
@@ -29,6 +31,20 @@ def assert_term_equal(actual: shared.term.Term, expected: shared.term.Term) -> N
     assert actual.path == expected.path
     assert actual.definition == expected.definition
     assert_term_trees_equal(actual.children, expected.children)
+
+
+def expect_input_contract_error(
+        msg_pattern: str,
+        func: typing.Callable[..., typing.Any],
+        *args: typing.Any) -> None:
+
+    def code_check(exception: BaseException) -> bool:
+        assert isinstance(exception, shared.error.AppError)
+
+        return exception.code == shared.error.AppError.Codes.InputContractError
+
+    with pytest.raises(shared.error.AppError, match=msg_pattern, check=code_check):
+        func(*args)
 
 # > shared.term.load_from_file test
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
@@ -104,6 +120,310 @@ def assert_term_equal(actual: shared.term.Term, expected: shared.term.Term) -> N
 def test_load_from_file(text: str, expected: shared.term.Term | None) -> None:
     result = shared.term.load_from_file(io.StringIO(text), "<test>")
     assert result == expected
+
+# > shared.term.find_term_file_path > success cases
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+
+
+@pytest.mark.parametrize("input_term_id,expected_term_file_path", [
+    # Level 1: Continents
+    ("africa", "africa.md"),
+    ("europe", "europe.md"),
+    # Level 2: Countries
+    ("burkina_faso", "africa/burkina_faso.md"),
+    ("ethiopia", "africa/ethiopia.md"),
+    ("france", "europe/france.md"),
+    ("lesotho", "africa/lesotho.md"),
+    ("moldova", "europe/moldova.md"),
+    # Level 3: Regions and Districts
+    ("berea_district", "africa/lesotho/berea.md"),
+    ("mokhotlong_district", "africa/lesotho/mokhotlong.md"),
+    ("ile_de_france", "europe/france/ile_de_france.md"),
+    ("nouvelle_aquitaine", "europe/france/nouvelle_aquitaine.md"),
+    ("cahul_district", "europe/moldova/cahul.md"),
+    ("hincesti_district", "europe/moldova/hincesti.md"),
+    ("singerei_district", "europe/moldova/singerei.md"),
+    ("ungheni_district", "europe/moldova/ungheni.md"),
+    # Level 4: Departments, Community Councils, and Districts
+    ("kueneng_community_council", "africa/lesotho/berea/kueneng.md"),
+    ("essonne", "europe/france/ile_de_france/essonne.md"),
+    ("seine_saint_denis", "europe/france/ile_de_france/seine_saint_denis.md"),
+    ("dordogne", "europe/france/nouvelle_aquitaine/dordogne.md"),
+    ("gironde", "europe/france/nouvelle_aquitaine/gironde.md"),
+    ("cahul", "europe/moldova/cahul/cahul.md"),
+    ("lebedenco", "europe/moldova/cahul/lebedenco.md"),
+    # Level 5: Communes and Villages
+    ("bela_bela", "africa/lesotho/berea/kueneng/bela_bela.md"),
+    ("ha_rajone", "africa/lesotho/berea/kueneng/ha_rajone.md"),
+    ("corbeil_essonnes", "europe/france/ile_de_france/essonne/corbeil_essonnes.md"),
+    ("evry_courcouronnes", "europe/france/ile_de_france/essonne/evry_courcouronnes.md"),
+    ("palaiseau", "europe/france/ile_de_france/essonne/palaiseau.md"),
+    ("montreuil", "europe/france/ile_de_france/seine_saint_denis/montreuil.md"),
+    ("noisy_le_grand", "europe/france/ile_de_france/seine_saint_denis/noisy_le_grand.md"),
+    ("bergerac", "europe/france/nouvelle_aquitaine/dordogne/bergerac.md"),
+    ("perigueux", "europe/france/nouvelle_aquitaine/dordogne/perigueux.md"),
+    ("trelissac", "europe/france/nouvelle_aquitaine/dordogne/trelissac.md"),
+])
+def test_find_term_file_path_success(input_term_id: str, expected_term_file_path: str) -> None:
+    term_tree_root = os.path.join(_DATA_ROOT, "term", "deep-tree")
+
+    output_term_path = shared.term.find_term_file_path(term_tree_root, input_term_id)
+
+    assert output_term_path == expected_term_file_path
+
+
+# > shared.term.find_term_file_path > error cases
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+
+# Tests Plan:
+#
+# 1) Subtree cut-off cases
+# 1.1) A directory without the matching term file and valid, searched term file inside
+# 1.2) A directory with matching but invalid term file and valid, searched term file inside
+# 1.3) A directory with not-name-matching, valid term file and valid, searched term inside
+# 1.4) A directory with name matching the term id instead of the valid term file name, searched
+#      term inside
+# 1.5) Three levels of directories, the middle one misses the term file, searched term inside
+#      (proves pruning propagates)
+# 2) Invalid searched term file:
+# 2.1) The searched term file is invalid
+# 2.2) A valid term file but with invalid extension (e.g. `txt`)
+# 2.3) A valid term file but with invalid uppercase extension (i.e. `MD`)
+# 3) Filesystem-type confusion — the expected term file target.md is a directory instead of a file;
+#      the searched term file is valid and located inside target/. The search returns None because
+#      a directory named target.md is neither loaded as a term file nor used to unlock the target/
+#      subdirectory. .gitkeep inside the target.md directory
+
+# Term Tree Plan:
+#
+# find-term-error-cases
+# + level-1_valid.md
+# + level-1_valid
+# | + level-1-1_invalid [missing term file]
+# | | + level-1-1-1_valid
+# | | + level-1-1-1_valid.md [case 1.1]
+# | + level-1-2_invalid.md [invalid term file]
+# | + level-1-2_invalid
+# | | + level-1-2-1_valid.md [noise]
+# | | + level-1-2-2_valid.md [case 1.2]
+# | | + level-1-2-3_valid.md [noise]
+# | + level-1-3_invalid-a.md
+# | + level-1-3_invalid-b [term file name mismatch]
+# | | + level-1-3-1_valid.md [case 1.3]
+# | | + level-1-3-2_valid.md [noise]
+# | | + level-1-3-3_valid.md [noise]
+# | | + level-1-3-3_valid [noise]
+# | |   + level-1-3-3-1_valid.md [noise]
+# | + level-1-4_invalid.md [term id is level_1_4_invalid]
+# | + level_1_4_invalid [matches term id instead of file name]
+# | | + level-1-4-1_valid.md [case 1.4]
+# | + level-1-5_invalid [missing term file]
+# |   + level-1-5-1_valid.md [noise]
+# |   + level-1-5-2_valid.md
+# |   + level-1-5-2_valid
+# |     + level-1-5-2-1_valid.md [case 1.5]
+# + level-2_valid.md
+# + level-2_valid
+# | + level-2-1_valid.md [noise]
+# | + level-2-2_invalid.md [case 2.1]
+# | + level-2-3_invalid.txt [case 2.2]
+# | + level-2-3_invalid.MD [case 2.3]
+# + level-3_valid.md
+# + level-3_valid
+#   + level-3-1_invalid.md [directory instead of file]
+#   |   + .gitkeep
+#   + level-3-1_invalid
+#     + level-3-1-1_valid.md [case 3]
+
+@pytest.mark.parametrize("input_term_id", [
+    # 1) Subtree cut-off cases
+    # 1.1) A directory without the matching term file and valid, searched term file inside
+    pytest.param("level_1_1_1_valid", id="subtree_cut_off_missing_term_file"),
+    # 1.2) A directory with matching but invalid term file and valid, searched term file inside
+    pytest.param("level_1_2_2_valid", id="subtree_cut_off_invalid_term_file"),
+    # 1.3) A directory with not-name-matching, valid term file and valid, searched term inside
+    pytest.param("level_1_3_1_valid", id="subtree_cut_off_term_file_name_mismatch"),
+    # 1.4) A directory with name matching the term id instead of the valid term file name
+    pytest.param("level_1_4_1_valid", id="subtree_cut_off_term_id_dir_name_match"),
+    # 1.5) Three levels of directories, the middle one misses the term file, searched term inside
+    pytest.param("level_1_5_2_1_valid", id="subtree_cut_off_intermediate_level"),
+    # 2) Invalid searched term file:
+    # 2.1) The searched term file is invalid
+    pytest.param("level_2_2_invalid", id="invalid_searched_term_file"),
+    # 2.2) A valid term file but with invalid extension (e.g. `txt`)
+    pytest.param("level_2_3_invalid", id="invalid_extension_txt"),
+    # 2.3) A valid term file but with invalid uppercase extension (i.e. `MD`)
+    pytest.param("level_2_3_invalid", id="invalid_extension_MD"),
+    # 3) Filesystem-type confusion — the expected term file is a directory instead of a file
+    pytest.param("level_3_1_1_valid", id="term_file_is_directory"),
+])
+def test_find_term_file_path_error(input_term_id: str) -> None:
+    term_tree_root = os.path.join(_DATA_ROOT, "term", "find-term-error-cases")
+
+    output_term_path = shared.term.find_term_file_path(term_tree_root, input_term_id)
+
+    assert output_term_path is None
+
+
+# The term identifier is not specified (empty string)
+def test_find_term_file_path_error_empty_term_id() -> None:
+    expect_input_contract_error(
+        r"The term identifier is not specified",
+        shared.term.find_term_file_path,
+        os.path.join(_DATA_ROOT, "term", "find-term-error-cases"), "")
+
+# The term identifier is invalid (violates TERM_ID_PATTERN_STRING anywhere in the identifier)
+def test_find_term_file_path_error_invalid_term_id() -> None:
+    expect_input_contract_error(
+        r"The term identifier \(-invalid_term_id\) is invalid",
+        shared.term.find_term_file_path,
+        os.path.join(_DATA_ROOT, "term", "find-term-error-cases"), "-invalid_term_id")
+
+
+# The identifier has a valid prefix, but the hyphen is invalid in the middle - a prefix-only
+#  pattern match (re.match) wouldn't catch it
+def test_find_term_file_path_error_invalid_term_id_midstring() -> None:
+    expect_input_contract_error(
+        r"The term identifier \(level-1_valid\) is invalid",
+        shared.term.find_term_file_path,
+        os.path.join(_DATA_ROOT, "term", "find-term-error-cases"), "level-1_valid")
+
+# The term tree root path is not specified (empty string)
+def test_find_term_file_path_error_empty_tree_root() -> None:
+    expect_input_contract_error(
+        r"The term tree root path is not specified",
+        shared.term.find_term_file_path, "", "level_1_valid")
+
+# The term tree root path doesn't exist (find-term-missing-tree-root)
+def test_find_term_file_path_error_missing_tree_root() -> None:
+    missing_tree_root = os.path.join(_DATA_ROOT, "term", "find-term-missing-tree-root")
+
+    expect_input_contract_error(
+        fr"The term tree root path \({re.escape(missing_tree_root)}\) doesn't exist",
+        shared.term.find_term_file_path, missing_tree_root, "level_1_valid")
+
+# The term tree root path is not a directory (find-term-invalid-tree-root.file)
+def test_find_term_file_path_error_tree_root_not_a_directory() -> None:
+    file_tree_root = os.path.join(_DATA_ROOT, "term", "find-term-invalid-tree-root.file")
+
+    expect_input_contract_error(
+        fr"The term tree root path \({re.escape(file_tree_root)}\) is not a directory",
+        shared.term.find_term_file_path, file_tree_root, "level_1_valid")
+
+
+# Test input contract enforcement condition of the find_term_file_path function.
+
+_missing_tree_root = os.path.join(_DATA_ROOT, "term", "find-term-missing-tree-root")
+_file_tree_root = os.path.join(_DATA_ROOT, "term", "find-term-invalid-tree-root.file")
+
+@pytest.mark.parametrize("input_term_tree_root,input_term_id,msg_pattern", [
+    # The term identifier is not specified (empty string)
+    pytest.param(
+        os.path.join(_DATA_ROOT, "term", "deep-tree"),
+        "",
+        r"The term identifier is not specified",
+        id="empty_term_id"),
+    # The term identifier is invalid (violates TERM_ID_PATTERN_STRING); a valid term id precedes
+    #  it to prove the violation raises mid-iteration
+    pytest.param(
+        os.path.join(_DATA_ROOT, "term", "deep-tree"),
+        "invalid-term-id",
+        r"The term identifier \(invalid-term-id\) is invalid",
+        id="invalid_term_id"),
+    # The term tree root path is not specified (empty string)
+    pytest.param(
+        "",
+        "africa",
+        r"The term tree root path is not specified",
+        id="empty_tree_root"),
+    # The term tree root path doesn't exist (find-term-missing-tree-root)
+    pytest.param(
+        _missing_tree_root,
+        "africa",
+        fr"The term tree root path \({re.escape(_missing_tree_root)}\) doesn't exist",
+        id="missing_tree_root"),
+    # The term tree root path is not a directory (find-term-invalid-tree-root.file)
+    pytest.param(
+        _file_tree_root,
+        "africa",
+        fr"The term tree root path \({re.escape(_file_tree_root)}\) is not a directory",
+        id="tree_root_not_a_directory"),
+])
+def test_find_term_file_paths_input_contract_errors(
+        input_term_tree_root: str,
+        input_term_id: str,
+        msg_pattern: str) -> None:
+    expect_input_contract_error(
+        msg_pattern,
+        shared.term.find_term_file_path,
+        input_term_tree_root, input_term_id)
+
+
+# > shared.term.find_term_file_paths tests
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+
+# Tests Plan:
+#
+# 1) The found term file paths are returned in the input order (not the tree traversal order) and
+#    the not found term ids are filtered out (the term tree is walked once per term id)
+# 2) A term id duplicated in the input sequence results in a duplicated term file path
+# 3) None of the requested terms is found
+# 4) The term id sequence is empty
+
+
+# 1) Mixed found / not found term ids: the not found term ids are filtered out and the found term
+#    file paths are returned in the input order (not the tree traversal order)
+def test_find_term_file_paths_success() -> None:
+    term_tree_root = os.path.join(_DATA_ROOT, "term", "deep-tree")
+
+    input_term_ids = [
+        "trelissac",  # found (level 5, Europe subtree)
+        "asia",       # not found (valid term id, absent in the tree)
+        "lesotho",    # found (level 2, Africa subtree)
+        "africa",     # found (level 1)
+        "atlantis",   # not found
+        "cahul",      # found (level 5, Europe subtree)
+    ]
+
+    output_term_file_paths = shared.term.find_term_file_paths(term_tree_root, input_term_ids)
+
+    assert output_term_file_paths == [
+        "europe/france/nouvelle_aquitaine/dordogne/trelissac.md",
+        "africa/lesotho.md",
+        "africa.md",
+        "europe/moldova/cahul/cahul.md",
+    ]
+
+
+# 2) A term id duplicated in the input sequence results in a duplicated term file path
+#    (no implicit deduplication happens)
+def test_find_term_file_paths_duplicate_term_ids() -> None:
+    term_tree_root = os.path.join(_DATA_ROOT, "term", "deep-tree")
+
+    output_term_file_paths = shared.term.find_term_file_paths(
+        term_tree_root, ["africa", "europe", "africa"])
+
+    assert output_term_file_paths == ["africa.md", "europe.md", "africa.md"]
+
+
+# 3) None of the requested terms is found: an empty path list is produced
+def test_find_term_file_paths_all_not_found() -> None:
+    term_tree_root = os.path.join(_DATA_ROOT, "term", "deep-tree")
+
+    output_term_file_paths = shared.term.find_term_file_paths(
+        term_tree_root, ["asia", "atlantis"])
+
+    assert output_term_file_paths == []
+
+
+# 4) The term id sequence is empty: an empty path list is produced without any tree walk
+def test_find_term_file_paths_empty_term_ids() -> None:
+    term_tree_root = os.path.join(_DATA_ROOT, "term", "deep-tree")
+
+    output_term_file_paths = shared.term.find_term_file_paths(term_tree_root, [])
+
+    assert output_term_file_paths == []
+
 
 # > shared.term.process_input_path > flat list cases
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
