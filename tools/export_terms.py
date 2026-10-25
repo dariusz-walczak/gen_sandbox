@@ -127,10 +127,10 @@ def parse_options(args: list[str]) -> argparse.Namespace:
 
     mode_group = parser.add_mutually_exclusive_group(required=False)
     mode_group.add_argument(
-        "-H", "--hierarchy", action="store_true", dest="hierarchy_mode",
+        "-H", OptionNames.HIERARCHY_MODE, action="store_true", dest="hierarchy_mode",
         help="Trigger the Hierarchy Mode (default)")
     mode_group.add_argument(
-        "-D", "--dependency", action="store_true", dest="reference_mode",
+        "-D", OptionNames.DEPENDENCY_MODE, action="store_true", dest="dependency_mode",
         help="Trigger the Dependency Mode")
 
     default_max_tree_depth = shared.term.HARD_DEPTH_LIMIT
@@ -141,7 +141,7 @@ def parse_options(args: list[str]) -> argparse.Namespace:
         help=(
             "Tree Depth Limit: maximum number of levels in Term Subtree traversal"
             f" (min: 1, max: {shared.term.HARD_DEPTH_LIMIT}, default:"
-            f" {default_max_tree_depth})"))
+            f" {default_max_tree_depth}). This option is ineffective in the Dependency Mode"))
 
     default_max_ref_depth = min(3, shared.term.HARD_DEPTH_LIMIT)
     parser.add_argument(
@@ -151,7 +151,7 @@ def parse_options(args: list[str]) -> argparse.Namespace:
         help=(
             "Reference Depth Limit: maximum number of levels in Reference Path traversal"
             f" (min: 1, max: {shared.term.HARD_DEPTH_LIMIT}, default:"
-            f" {default_max_ref_depth})"))
+            f" {default_max_ref_depth}). This option is ineffective in the Hierarchy Mode"))
 
     default_log_level = "WARNING"
     parser.add_argument(
@@ -161,14 +161,36 @@ def parse_options(args: list[str]) -> argparse.Namespace:
 
     options = parser.parse_args(args)
 
-    if not options.hierarchy_mode and not options.reference_mode:
+    # Apply the log level optionally provided through command line argument:
+    level = logging.getLevelNamesMapping().get(options.log_level, logging.NOTSET)
+    logging.getLogger().setLevel(level)
+
+    # Select the default mode when no mode is selected:
+    if not options.hierarchy_mode and not options.dependency_mode:
+        _LOG.debug("No mode flag provided, assuming Hierarchy Mode")
         options.hierarchy_mode = True
+
+    # Prevent the value of the max tree depth to be overridden when the dependency mode is
+    #  selected:
+    if options.dependency_mode and options.max_tree_depth != default_max_tree_depth:
+        _LOG.warning(
+            f"The {OptionNames.MAX_TREE_DEPTH} option change is ineffective in the Dependency Mode"
+            f" (the limit stays at its default {default_max_tree_depth})")
+        options.max_tree_depth = default_max_tree_depth
+
+    # Print a warning just for UX and consistency with the max tree depth option:
+    if options.hierarchy_mode and options.max_ref_depth != default_max_ref_depth:
+        _LOG.warning(
+            f"The {OptionNames.MAX_REF_DEPTH} option change is ineffective in the Hierarchy Mode"
+            f" (the limit stays at its default {default_max_ref_depth})")
+        options.max_ref_depth = default_max_ref_depth
 
     return options
 
 
 def main(options: argparse.Namespace) -> int:
-    _LOG.debug(f"hierarchy_mode={options.hierarchy_mode}, reference_mode={options.reference_mode}")
+    _LOG.debug(
+        f"hierarchy_mode={options.hierarchy_mode}, dependency_mode={options.dependency_mode}")
 
     # The terms lookup table is used for de-duplication when passed to the process_input_path.
     # It is later reused for term reference resolution when passed to the extract_referenced_terms.
@@ -193,7 +215,7 @@ def main(options: argparse.Namespace) -> int:
             shared.term.process_input_path(term_options, terms_lookup, term_path)
             for term_path in term_paths))
 
-    if options.reference_mode:
+    if options.dependency_mode:
         terms_collection = shared.term.extract_referenced_terms(
             term_options, options.term_ids, terms_lookup)
         print(json.dumps(terms_collection, indent=2, default=shared.json.default_cb))
@@ -205,10 +227,6 @@ def main(options: argparse.Namespace) -> int:
 
 if __name__ == '__main__':
     options = parse_options(sys.argv[1:])
-
-    # Apply the log level optionally provided through command line argument:
-    level = logging.getLevelNamesMapping().get(options.log_level, logging.NOTSET)
-    logging.getLogger().setLevel(level)
 
     try:
         sys.exit(main(options))
