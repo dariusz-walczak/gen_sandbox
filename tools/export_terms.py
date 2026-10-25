@@ -192,6 +192,12 @@ def main(options: argparse.Namespace) -> int:
     _LOG.debug(
         f"hierarchy_mode={options.hierarchy_mode}, dependency_mode={options.dependency_mode}")
 
+    if options.dependency_mode and not options.term_ids:
+        raise shared.error.AppError(
+            shared.error.AppError.Codes.UserError,
+            f"Dependency Mode requires at least one Start Term (use the {OptionNames.TREE_ROOT}"
+            " option)")
+
     # The terms lookup table is used for de-duplication when passed to the process_input_path.
     # It is later reused for term reference resolution when passed to the extract_referenced_terms.
     terms_lookup: dict[str, shared.term.Term] = {}
