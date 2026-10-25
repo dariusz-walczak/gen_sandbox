@@ -117,7 +117,7 @@ def parse_options(args: list[str]) -> argparse.Namespace:
 
     default_input_path = get_default_input_path()
     parser.add_argument(
-        "-i", OptionNames.TREE_ROOT, action="store", metavar="PATH", dest="input_path",
+        "-r", OptionNames.TREE_ROOT, action="store", metavar="PATH", dest="input_path",
         default=default_input_path,
         help=(f"PATH to the Term Tree root file or directory (default: {default_input_path})"))
 
