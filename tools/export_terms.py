@@ -195,7 +195,7 @@ def main(options: argparse.Namespace) -> int:
     if options.dependency_mode and not options.term_ids:
         raise shared.error.AppError(
             shared.error.AppError.Codes.UserError,
-            f"Dependency Mode requires at least one Start Term (use the {OptionNames.TREE_ROOT}"
+            f"Dependency Mode requires at least one Start Term (use the {OptionNames.TERM}"
             " option)")
 
     # The terms lookup table is used for de-duplication when passed to the process_input_path.
