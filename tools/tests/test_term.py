@@ -1,5 +1,6 @@
 import io
 import os
+import pathlib
 import re
 import typing
 
@@ -265,56 +266,9 @@ def test_find_term_file_path_error(input_term_id: str) -> None:
     assert output_term_path is None
 
 
-# The term identifier is not specified (empty string)
-def test_find_term_file_path_error_empty_term_id() -> None:
-    expect_input_contract_error(
-        r"The term identifier is not specified",
-        shared.term.find_term_file_path,
-        os.path.join(_DATA_ROOT, "term", "find-term-error-cases"), "")
-
-# The term identifier is invalid (violates TERM_ID_PATTERN_STRING anywhere in the identifier)
-def test_find_term_file_path_error_invalid_term_id() -> None:
-    expect_input_contract_error(
-        r"The term identifier \(-invalid_term_id\) is invalid",
-        shared.term.find_term_file_path,
-        os.path.join(_DATA_ROOT, "term", "find-term-error-cases"), "-invalid_term_id")
-
-
-# The identifier has a valid prefix, but the hyphen is invalid in the middle - a prefix-only
-#  pattern match (re.match) wouldn't catch it
-def test_find_term_file_path_error_invalid_term_id_midstring() -> None:
-    expect_input_contract_error(
-        r"The term identifier \(level-1_valid\) is invalid",
-        shared.term.find_term_file_path,
-        os.path.join(_DATA_ROOT, "term", "find-term-error-cases"), "level-1_valid")
-
-# The term tree root path is not specified (empty string)
-def test_find_term_file_path_error_empty_tree_root() -> None:
-    expect_input_contract_error(
-        r"The term tree root path is not specified",
-        shared.term.find_term_file_path, "", "level_1_valid")
-
-# The term tree root path doesn't exist (find-term-missing-tree-root)
-def test_find_term_file_path_error_missing_tree_root() -> None:
-    missing_tree_root = os.path.join(_DATA_ROOT, "term", "find-term-missing-tree-root")
-
-    expect_input_contract_error(
-        fr"The term tree root path \({re.escape(missing_tree_root)}\) doesn't exist",
-        shared.term.find_term_file_path, missing_tree_root, "level_1_valid")
-
-# The term tree root path is not a directory (find-term-invalid-tree-root.file)
-def test_find_term_file_path_error_tree_root_not_a_directory() -> None:
-    file_tree_root = os.path.join(_DATA_ROOT, "term", "find-term-invalid-tree-root.file")
-
-    expect_input_contract_error(
-        fr"The term tree root path \({re.escape(file_tree_root)}\) is not a directory",
-        shared.term.find_term_file_path, file_tree_root, "level_1_valid")
-
-
 # Test input contract enforcement condition of the find_term_file_path function.
 
 _missing_tree_root = os.path.join(_DATA_ROOT, "term", "find-term-missing-tree-root")
-_file_tree_root = os.path.join(_DATA_ROOT, "term", "find-term-invalid-tree-root.file")
 
 @pytest.mark.parametrize("input_term_tree_root,input_term_id,msg_pattern", [
     # The term identifier is not specified (empty string)
@@ -323,8 +277,8 @@ _file_tree_root = os.path.join(_DATA_ROOT, "term", "find-term-invalid-tree-root.
         "",
         r"The term identifier is not specified",
         id="empty_term_id"),
-    # The term identifier is invalid (violates TERM_ID_PATTERN_STRING); a valid term id precedes
-    #  it to prove the violation raises mid-iteration
+    # The term identifier is invalid (violates TERM_ID_PATTERN_STRING); the hyphen in the middle
+    #  proves the check is a full match (re.fullmatch), not a prefix match (re.match)
     pytest.param(
         os.path.join(_DATA_ROOT, "term", "deep-tree"),
         "invalid-term-id",
@@ -342,14 +296,8 @@ _file_tree_root = os.path.join(_DATA_ROOT, "term", "find-term-invalid-tree-root.
         "africa",
         fr"The term tree root path \({re.escape(_missing_tree_root)}\) doesn't exist",
         id="missing_tree_root"),
-    # The term tree root path is not a directory (find-term-invalid-tree-root.file)
-    pytest.param(
-        _file_tree_root,
-        "africa",
-        fr"The term tree root path \({re.escape(_file_tree_root)}\) is not a directory",
-        id="tree_root_not_a_directory"),
 ])
-def test_find_term_file_paths_input_contract_errors(
+def test_find_term_file_path_input_contract_errors(
         input_term_tree_root: str,
         input_term_id: str,
         msg_pattern: str) -> None:
@@ -357,6 +305,18 @@ def test_find_term_file_paths_input_contract_errors(
         msg_pattern,
         shared.term.find_term_file_path,
         input_term_tree_root, input_term_id)
+
+
+# The term tree root path exists but is neither a file nor a directory (a FIFO) - a regular
+#  file is intercepted earlier by the term file extension check
+def test_find_term_file_path_input_contract_error_tree_root_not_a_directory(
+        tmp_path: pathlib.Path) -> None:
+    fifo_tree_root = os.path.join(tmp_path, "term-tree-root.fifo")
+    os.mkfifo(fifo_tree_root)
+
+    expect_input_contract_error(
+        fr"The term tree root path \({re.escape(fifo_tree_root)}\) is not a directory",
+        shared.term.find_term_file_path, fifo_tree_root, "level_1_valid")
 
 
 # > shared.term.find_term_file_paths tests
