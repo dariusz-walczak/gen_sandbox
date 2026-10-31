@@ -177,6 +177,7 @@ def test_find_term_file_path_success(input_term_id: str, expected_term_file_rel_
     term_tree_root = os.path.join(_DATA_ROOT, "term", "deep-tree")
 
     output_term_abs_path = shared.term.find_term_file_path(term_tree_root, input_term_id)
+    assert output_term_abs_path is not None
     output_term_rel_path = os.path.relpath(output_term_abs_path, term_tree_root)
 
     assert output_term_rel_path == expected_term_file_rel_path
