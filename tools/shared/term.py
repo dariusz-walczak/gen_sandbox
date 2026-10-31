@@ -127,8 +127,6 @@ def find_term_file_path(term_tree_root: str, term_id: str) -> str | None:
             shared.error.AppError.Codes.InputContractError,
             f"The term tree root path ({term_tree_root}) is not a directory")
 
-
-
     # Tests needed:
     # 1. root specified as a path to a root term file
     # 1.1. the term_id is the root term file
@@ -151,7 +149,7 @@ def find_term_file_path(term_tree_root: str, term_id: str) -> str | None:
 
             if term is not None:
                 if term.id == term_id:
-                    return os.path.relpath(term_path, term_tree_root)  # Term found
+                    return term_path  # Term found
                 else:
                     acceptable_dir_names.add(markdown_file_name.removesuffix(TERM_FILE_EXTENSION))
 

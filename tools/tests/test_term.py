@@ -126,7 +126,7 @@ def test_load_from_file(text: str, expected: shared.term.Term | None) -> None:
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 
 
-@pytest.mark.parametrize("input_term_id,expected_term_file_path", [
+@pytest.mark.parametrize("input_term_id,expected_term_file_rel_path", [
     # Level 1: Continents
     ("africa", "africa.md"),
     ("europe", "europe.md"),
@@ -165,12 +165,13 @@ def test_load_from_file(text: str, expected: shared.term.Term | None) -> None:
     ("perigueux", "europe/france/nouvelle_aquitaine/dordogne/perigueux.md"),
     ("trelissac", "europe/france/nouvelle_aquitaine/dordogne/trelissac.md"),
 ])
-def test_find_term_file_path_success(input_term_id: str, expected_term_file_path: str) -> None:
+def test_find_term_file_path_success(input_term_id: str, expected_term_file_rel_path: str) -> None:
     term_tree_root = os.path.join(_DATA_ROOT, "term", "deep-tree")
 
-    output_term_path = shared.term.find_term_file_path(term_tree_root, input_term_id)
+    output_term_abs_path = shared.term.find_term_file_path(term_tree_root, input_term_id)
+    output_term_rel_path = os.path.relpath(output_term_abs_path, term_tree_root)
 
-    assert output_term_path == expected_term_file_path
+    assert output_term_rel_path == expected_term_file_rel_path
 
 
 # > shared.term.find_term_file_path > error cases
@@ -345,9 +346,11 @@ def test_find_term_file_paths_success() -> None:
         "cahul",      # found (level 5, Europe subtree)
     ]
 
-    output_term_file_paths = shared.term.find_term_file_paths(term_tree_root, input_term_ids)
+    output_term_file_abs_paths = shared.term.find_term_file_paths(term_tree_root, input_term_ids)
+    output_term_file_rel_paths = [
+        os.path.relpath(abs_path, term_tree_root) for abs_path in output_term_file_abs_paths]
 
-    assert output_term_file_paths == [
+    assert output_term_file_rel_paths == [
         "europe/france/nouvelle_aquitaine/dordogne/trelissac.md",
         "africa/lesotho.md",
         "africa.md",
@@ -360,10 +363,12 @@ def test_find_term_file_paths_success() -> None:
 def test_find_term_file_paths_duplicate_term_ids() -> None:
     term_tree_root = os.path.join(_DATA_ROOT, "term", "deep-tree")
 
-    output_term_file_paths = shared.term.find_term_file_paths(
+    output_term_file_abs_paths = shared.term.find_term_file_paths(
         term_tree_root, ["africa", "europe", "africa"])
+    output_term_file_rel_paths = [
+        os.path.relpath(abs_path, term_tree_root) for abs_path in output_term_file_abs_paths]
 
-    assert output_term_file_paths == ["africa.md", "europe.md", "africa.md"]
+    assert output_term_file_rel_paths == ["africa.md", "europe.md", "africa.md"]
 
 
 # 3) None of the requested terms is found: an empty path list is produced
