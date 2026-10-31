@@ -417,10 +417,6 @@ def test_find_term_file_path_term_file_root(
 
 
 # 3) The term tree root is a term file without a sibling directory (a flat term list)
-@pytest.mark.xfail(
-    strict=True,
-    reason="find_term_file_path recurses into the non-existent sibling directory of a term file"
-           " root and raises InputContractError instead of returning None")
 def test_find_term_file_path_term_file_root_without_sibling_dir() -> None:
     term_file_root = os.path.join(_DATA_ROOT, "term", "flat-term-list", "abuja.md")
 
