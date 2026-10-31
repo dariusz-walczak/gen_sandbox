@@ -198,6 +198,11 @@ def main(options: argparse.Namespace) -> int:
             f"Dependency Mode requires at least one Start Term (use the {OptionNames.TERM}"
             " option)")
 
+    if not os.path.exists(options.input_path):
+        raise shared.error.AppError(
+            shared.error.AppError.Codes.UserError,
+            f"The Term Tree root path ({options.input_path}) doesn't exist")
+
     # The terms lookup table is used for de-duplication when passed to the process_input_path.
     # It is later reused for term reference resolution when passed to the extract_referenced_terms.
     terms_lookup: dict[str, shared.term.Term] = {}
@@ -209,10 +214,9 @@ def main(options: argparse.Namespace) -> int:
     term_paths: list[str] = []
 
     if options.hierarchy_mode and options.term_ids:
-        relative_term_paths = shared.term.find_term_file_paths(
-            options.input_path, options.term_ids)
         term_paths.extend(
-            os.path.join(options.input_path, term_path) for term_path in relative_term_paths)
+            shared.term.find_term_file_paths(
+                options.input_path, options.term_ids))
     else:
         term_paths.append(options.input_path)
 
