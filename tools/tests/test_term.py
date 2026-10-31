@@ -34,7 +34,8 @@ def assert_term_equal(actual: shared.term.Term, expected: shared.term.Term) -> N
     assert_term_trees_equal(actual.children, expected.children)
 
 
-def expect_input_contract_error(
+def expect_app_error(
+        code: shared.error.AppError.Codes,
         msg_pattern: str,
         func: typing.Callable[..., typing.Any],
         *args: typing.Any) -> None:
@@ -42,10 +43,17 @@ def expect_input_contract_error(
     def code_check(exception: BaseException) -> bool:
         assert isinstance(exception, shared.error.AppError)
 
-        return exception.code == shared.error.AppError.Codes.InputContractError
+        return exception.code == code
 
     with pytest.raises(shared.error.AppError, match=msg_pattern, check=code_check):
         func(*args)
+
+
+def expect_input_contract_error(
+        msg_pattern: str,
+        func: typing.Callable[..., typing.Any],
+        *args: typing.Any) -> None:
+    expect_app_error(shared.error.AppError.Codes.InputContractError, msg_pattern, func, *args)
 
 # > shared.term.load_from_file test
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
@@ -318,6 +326,138 @@ def test_find_term_file_path_input_contract_error_tree_root_not_a_directory(
     expect_input_contract_error(
         fr"The term tree root path \({re.escape(fifo_tree_root)}\) is not a directory",
         shared.term.find_term_file_path, fifo_tree_root, "level_1_valid")
+
+
+# > shared.term.find_term_file_path > term file root cases
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+
+# Tests Plan:
+#
+# 1) The term tree root is a path to a root term file (e.g. deep-tree/africa.md)
+# 1.1) The searched term id is the root term file's id — the input path is returned verbatim
+# 1.2) The searched term id is one of the descendants — the recursive call walks the sibling
+#      directory of the root term file (the .md suffix is stripped from the root path)
+# 1.3) The searched term id is unknown in the entire tree — None is returned
+# 2) The term tree root is a path to a descendant term file (effectively selecting a subtree)
+# 2.1) The searched term id is the subtree root's id — the input path is returned verbatim
+# 2.2) The searched term id is one of the subtree root's descendants — the recursive call walks
+#      the subtree directory
+# 2.3) The searched term id is unknown in the entire tree — None is returned
+# 2.4) The searched term id is unknown in the subtree but exists in the entire tree — None is
+#      returned (the search does not escape the selected subtree)
+# 3) The term tree root is a term file without a sibling directory (a flat term list) — None is
+#    expected (and an empty list via find_term_file_paths). Currently an InputContractError is
+#    raised because the recursive call uses the non-existent stripped path — xfail until fixed
+# 4) Error cases of a term file root:
+# 4.1) A .md file that is not a valid term file — InvalidInput "is not a valid term file"
+# 4.2) A file with a non-.md extension (e.g. txt) — InvalidInput "Invalid term tree root file
+#      ... extension (expected: .md)"
+# 4.3) A file with an uppercase .MD extension — the same as 4.2 (the extension check is
+#      case-sensitive)
+
+_deep_tree_root = os.path.join(_DATA_ROOT, "term", "deep-tree")
+
+@pytest.mark.parametrize("input_term_tree_root,input_term_id,expected_output", [
+    # 1.1) The searched term id is the root term file's id — the input path is returned verbatim
+    pytest.param(
+        os.path.join(_deep_tree_root, "africa.md"),
+        "africa",
+        "africa.md",
+        id="root_file_own_term"),
+    # 1.2) The searched term id is one of the descendants
+    pytest.param(
+        os.path.join(_deep_tree_root, "africa.md"),
+        "bela_bela",
+        os.path.join("africa", "lesotho", "berea", "kueneng", "bela_bela.md"),
+        id="root_file_descendant"),
+    # 1.3) The searched term id is unknown in the entire tree
+    pytest.param(
+        os.path.join(_deep_tree_root, "africa.md"),
+        "atlantis",
+        None,
+        id="root_file_unknown_term"),
+    # 2.1) The searched term id is the subtree root's id — the input path is returned verbatim
+    pytest.param(
+        os.path.join(_deep_tree_root, "africa", "lesotho.md"),
+        "lesotho",
+        os.path.join("africa", "lesotho.md"),
+        id="subtree_file_own_term"),
+    # 2.2) The searched term id is one of the subtree root's descendants
+    pytest.param(
+        os.path.join(_deep_tree_root, "africa", "lesotho.md"),
+        "berea_district",
+        os.path.join("africa", "lesotho", "berea.md"),
+        id="subtree_file_descendant"),
+    # 2.3) The searched term id is unknown in the entire tree
+    pytest.param(
+        os.path.join(_deep_tree_root, "africa", "lesotho.md"),
+        "atlantis",
+        None,
+        id="subtree_file_unknown_term"),
+    # 2.4) The searched term id is unknown in the subtree but exists in the entire tree
+    pytest.param(
+        os.path.join(_deep_tree_root, "africa", "lesotho.md"),
+        "europe",
+        None,
+        id="subtree_file_term_outside_subtree"),
+])
+def test_find_term_file_path_term_file_root(
+        input_term_tree_root: str,
+        input_term_id: str,
+        expected_output: str | None) -> None:
+
+    output_term_path = shared.term.find_term_file_path(input_term_tree_root, input_term_id)
+
+    # The found path is returned as walked from the root, so it is normalized to a deep-tree
+    #  relative path before the comparison (same as in test_find_term_file_path_success)
+    if output_term_path is None:
+        assert expected_output is None
+    else:
+        assert os.path.relpath(output_term_path, _deep_tree_root) == expected_output
+
+
+# 3) The term tree root is a term file without a sibling directory (a flat term list)
+@pytest.mark.xfail(
+    strict=True,
+    reason="find_term_file_path recurses into the non-existent sibling directory of a term file"
+           " root and raises InputContractError instead of returning None")
+def test_find_term_file_path_term_file_root_without_sibling_dir() -> None:
+    term_file_root = os.path.join(_DATA_ROOT, "term", "flat-term-list", "abuja.md")
+
+    assert shared.term.find_term_file_path(term_file_root, "accra") is None
+    assert shared.term.find_term_file_paths(term_file_root, ["accra"]) == []
+
+
+_error_cases_root = os.path.join(_DATA_ROOT, "term", "find-term-error-cases")
+_invalid_md_root = os.path.join(_error_cases_root, "level-2_valid", "level-2-2_invalid.md")
+_txt_root = os.path.join(_error_cases_root, "level-2_valid", "level-2-3_invalid.txt")
+_MD_root = os.path.join(_error_cases_root, "level-2_valid", "level-2-3_invalid.MD")
+
+@pytest.mark.parametrize("input_term_tree_root,msg_pattern", [
+    # 4.1) A .md file that is not a valid term file
+    pytest.param(
+        _invalid_md_root,
+        fr"The term tree root file \({re.escape(_invalid_md_root)}\) is not a valid term file",
+        id="invalid_term_file"),
+    # 4.2) A file with a non-.md extension (e.g. txt)
+    pytest.param(
+        _txt_root,
+        fr"Invalid term tree root file \({re.escape(_txt_root)}\) extension \(expected: \.md\)",
+        id="invalid_extension_txt"),
+    # 4.3) A file with an uppercase .MD extension — the extension check is case-sensitive
+    pytest.param(
+        _MD_root,
+        fr"Invalid term tree root file \({re.escape(_MD_root)}\) extension \(expected: \.md\)",
+        id="invalid_extension_MD"),
+])
+def test_find_term_file_path_term_file_root_errors(
+        input_term_tree_root: str,
+        msg_pattern: str) -> None:
+    expect_app_error(
+        shared.error.AppError.Codes.InvalidInput,
+        msg_pattern,
+        shared.term.find_term_file_path,
+        input_term_tree_root, "level_2_valid")
 
 
 # > shared.term.find_term_file_paths tests

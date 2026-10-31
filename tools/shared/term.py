@@ -105,7 +105,6 @@ def find_term_file_path(term_tree_root: str, term_id: str) -> str | None:
             term = load_from_path(term_tree_root)
 
             if term is None:
-                # TC needed
                 raise shared.error.AppError(
                     shared.error.AppError.Codes.InvalidInput,
                     f"The term tree root file ({term_tree_root}) is not a valid term file")
@@ -126,18 +125,6 @@ def find_term_file_path(term_tree_root: str, term_id: str) -> str | None:
         raise shared.error.AppError(
             shared.error.AppError.Codes.InputContractError,
             f"The term tree root path ({term_tree_root}) is not a directory")
-
-    # Tests needed:
-    # 1. root specified as a path to a root term file
-    # 1.1. the term_id is the root term file
-    # 1.2. the term_id is one of the descendants
-    # 1.3. the term_id is unknown in the entire tree
-    # 2. root specified as a path to a descendant term (non-root term) effectively selecting
-    #    a subtree
-    # 2.1. the term_id is the subtree root
-    # 2.2. the term_id is one of the subtree root's descendants
-    # 2.3. the term_id is unknown in the entire tree
-    # 2.4. the term_id is unknown in the subtree but exists in the entire tree
 
     for curr_dir_path, curr_dir_names, curr_file_names in os.walk(term_tree_root):
         markdown_file_names = [fn for fn in curr_file_names if fn.endswith(TERM_FILE_EXTENSION)]
