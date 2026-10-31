@@ -131,7 +131,8 @@ def find_term_file_path(term_tree_root: str, term_id: str) -> str | None:
             f"The term tree root path ({term_tree_root}) is not a directory")
 
     for curr_dir_path, curr_dir_names, curr_file_names in os.walk(term_tree_root):
-        markdown_file_names = [fn for fn in curr_file_names if fn.endswith(TERM_FILE_EXTENSION)]
+        markdown_file_names = [
+            fn for fn in sorted(curr_file_names) if fn.endswith(TERM_FILE_EXTENSION)]
         acceptable_dir_names = set()
 
         for markdown_file_name in markdown_file_names:
@@ -144,7 +145,7 @@ def find_term_file_path(term_tree_root: str, term_id: str) -> str | None:
                 else:
                     acceptable_dir_names.add(markdown_file_name.removesuffix(TERM_FILE_EXTENSION))
 
-        curr_dir_names[:] = [dn for dn in curr_dir_names if dn in acceptable_dir_names]
+        curr_dir_names[:] = [dn for dn in sorted(curr_dir_names) if dn in acceptable_dir_names]
 
     return None  # Term not found
 
