@@ -109,10 +109,14 @@ def find_term_file_path(term_tree_root: str, term_id: str) -> str | None:
                     shared.error.AppError.Codes.InvalidInput,
                     f"The term tree root file ({term_tree_root}) is not a valid term file")
             elif term.id == term_id:
-                return term_tree_root
+                return term_tree_root  # The root term is the one searched for
             else:
-                return find_term_file_path(
-                    term_tree_root.removesuffix(TERM_FILE_EXTENSION), term_id)
+                term_tree_root_dir = term_tree_root.removesuffix(TERM_FILE_EXTENSION)
+
+                if os.path.exists(term_tree_root_dir):
+                    return find_term_file_path(term_tree_root_dir, term_id)
+                else:
+                    return None  # The term tree root is a non-matching term without children
         else:
             raise shared.error.AppError(
                 shared.error.AppError.Codes.InvalidInput,
