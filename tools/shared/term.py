@@ -16,6 +16,7 @@ import shared.error
 TERM_NAME_SINGLELINE_PATTERN_STRING = r"[\w \-().:,!?.]+"
 TERM_NAME_MULTILINE_PATTERN_STRING = r"[\w\s\-().:,!?.]+"
 TERM_ID_PATTERN_STRING = r"[a-zA-Z0-9_]+"
+TERM_FILE_EXTENSION = ".md"
 
 _LOG = logging.getLogger(__name__)
 
@@ -97,15 +98,51 @@ def find_term_file_path(term_tree_root: str, term_id: str) -> str | None:
             shared.error.AppError.Codes.InputContractError,
             f"The term tree root path ({term_tree_root}) doesn't exist")
 
+    # The root path is a file:
+
+    if os.path.isfile(term_tree_root):
+        if term_tree_root.endswith(TERM_FILE_EXTENSION):
+            term = load_from_path(term_tree_root)
+
+            if term is None:
+                # TC needed
+                raise shared.error.AppError(
+                    shared.error.AppError.Codes.InvalidInput,
+                    f"The term tree root file ({term_tree_root}) is not a valid term file")
+            elif term.id == term_id:
+                return term_tree_root
+            else:
+                return find_term_file_path(
+                    term_tree_root.removesuffix(TERM_FILE_EXTENSION), term_id)
+        else:
+            raise shared.error.AppError(
+                shared.error.AppError.Codes.InvalidInput,
+                f"Invalid term tree root file ({term_tree_root}) extension (expected:"
+                f" {TERM_FILE_EXTENSION})")
+
+    # The root path is a directory:
+
     if not os.path.isdir(term_tree_root):
         raise shared.error.AppError(
             shared.error.AppError.Codes.InputContractError,
             f"The term tree root path ({term_tree_root}) is not a directory")
 
-    # Function Implementation:
+
+
+    # Tests needed:
+    # 1. root specified as a path to a root term file
+    # 1.1. the term_id is the root term file
+    # 1.2. the term_id is one of the descendants
+    # 1.3. the term_id is unknown in the entire tree
+    # 2. root specified as a path to a descendant term (non-root term) effectively selecting
+    #    a subtree
+    # 2.1. the term_id is the subtree root
+    # 2.2. the term_id is one of the subtree root's descendants
+    # 2.3. the term_id is unknown in the entire tree
+    # 2.4. the term_id is unknown in the subtree but exists in the entire tree
 
     for curr_dir_path, curr_dir_names, curr_file_names in os.walk(term_tree_root):
-        markdown_file_names = [fn for fn in curr_file_names if fn.endswith(".md")]
+        markdown_file_names = [fn for fn in curr_file_names if fn.endswith(TERM_FILE_EXTENSION)]
         acceptable_dir_names = set()
 
         for markdown_file_name in markdown_file_names:
@@ -116,7 +153,7 @@ def find_term_file_path(term_tree_root: str, term_id: str) -> str | None:
                 if term.id == term_id:
                     return os.path.relpath(term_path, term_tree_root)  # Term found
                 else:
-                    acceptable_dir_names.add(markdown_file_name.removesuffix(".md"))
+                    acceptable_dir_names.add(markdown_file_name.removesuffix(TERM_FILE_EXTENSION))
 
         curr_dir_names[:] = [dn for dn in curr_dir_names if dn in acceptable_dir_names]
 
@@ -149,7 +186,7 @@ def process_input_path_inner(
 
         root_path, ext = os.path.splitext(term_path)
 
-        if ext == ".md":
+        if ext == TERM_FILE_EXTENSION:
             _LOG.debug(f"The term path ({term_path}) is a markdown file")
 
             term = load_from_path(term_path)
@@ -201,7 +238,7 @@ def process_term_directory(
 
     result_terms = []
 
-    for term_path in sorted(glob.glob(f"{term_dir_path}/*.md")):
+    for term_path in sorted(glob.glob(f"{term_dir_path}/*{TERM_FILE_EXTENSION}")):
         result_terms += process_input_path_inner(remaining_tree_depth-1, seen_terms, term_path)
 
     return result_terms
