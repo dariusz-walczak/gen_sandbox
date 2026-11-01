@@ -10,12 +10,14 @@ on:
     paths:
       - "code/**"
       - "CMakeLists.txt"
+      - ".clang-tidy"
       - ".github/workflows/cmake-single-platform.yml"
   pull_request:
     branches: [ "main" ]
     paths:
       - "code/**"
       - "CMakeLists.txt"
+      - ".clang-tidy"
       - ".github/workflows/cmake-single-platform.yml"
   workflow_dispatch:
 
