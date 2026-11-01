@@ -1,0 +1,52 @@
+# Runs the quality checks for the Python tools in the `tools/` directory
+# (ruff, mypy, pytest — see OWL-152). The job is triggered only when files
+# under `tools/` change, so unrelated commits don't pay for it.
+name: Tools Quality
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - "tools/**"
+      - ".github/workflows/tools-quality.yml"
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - "tools/**"
+      - ".github/workflows/tools-quality.yml"
+  workflow_dispatch:
+
+jobs:
+  tools-quality:
+    name: ruff, mypy, pytest
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: tools
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v5
+      with:
+        enable-cache: true
+
+    - name: Install Python 3.12
+      run: uv python install 3.12
+
+    - name: Install dependencies
+      run: uv sync --frozen --group dev
+
+    - name: Run Ruff
+      run: uv run ruff check .
+
+    - name: Run mypy
+      run: uv run mypy .
+
+    - name: Run pytest
+      run: uv run pytest
