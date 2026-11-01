@@ -7,8 +7,17 @@ permissions:
 on:
   push:
     branches: [ "main" ]
+    paths:
+      - "code/**"
+      - "CMakeLists.txt"
+      - ".github/workflows/cmake-single-platform.yml"
   pull_request:
     branches: [ "main" ]
+    paths:
+      - "code/**"
+      - "CMakeLists.txt"
+      - ".github/workflows/cmake-single-platform.yml"
+  workflow_dispatch:
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
