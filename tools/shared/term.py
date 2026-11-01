@@ -80,7 +80,7 @@ def find_term_file_path(term_tree_root: str, term_id: str) -> str | None:
 
     :param term_tree_root: the root path of the term tree to be searched
     :param term_id: the identifier of the term to be searched for
-    :returns: the term tree root relative path to the term file or None if it was not found
+    :returns: the term file path or None if it was not found
     """
 
     _LOG.info(f"Searching for the term ({term_id}) starting from the root path ({term_tree_root})")
