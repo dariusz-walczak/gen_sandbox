@@ -57,9 +57,18 @@ class Options(pydantic.BaseModel):
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 
 def find_term_file_paths(term_tree_root: str, term_ids: typing.Sequence[str]) -> list[str]:
-    unfiltered_paths: list[str | None] = [
-        find_term_file_path(term_tree_root, term_id) for term_id in term_ids]
-    return [p for p in unfiltered_paths if p is not None]
+    found_paths: list[str] = []
+
+    for term_id in term_ids:
+        term_path = find_term_file_path(term_tree_root, term_id)
+
+        if term_path is None:
+            _LOG.warning(
+                f"Term `{term_id}` was not found in the tree starting at '{term_tree_root}'")
+        else:
+            found_paths.append(term_path)
+
+    return found_paths
 
 
 def find_term_file_path(term_tree_root: str, term_id: str) -> str | None:
