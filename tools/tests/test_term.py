@@ -347,8 +347,7 @@ def test_find_term_file_path_input_contract_error_tree_root_not_a_directory(
 # 2.4) The searched term id is unknown in the subtree but exists in the entire tree — None is
 #      returned (the search does not escape the selected subtree)
 # 3) The term tree root is a term file without a sibling directory (a flat term list) — None is
-#    expected (and an empty list via find_term_file_paths). Currently an InputContractError is
-#    raised because the recursive call uses the non-existent stripped path — xfail until fixed
+#    expected (and an empty list via find_term_file_paths)
 # 4) Error cases of a term file root:
 # 4.1) A .md file that is not a valid term file — InvalidInput "is not a valid term file"
 # 4.2) A file with a non-.md extension (e.g. txt) — InvalidInput "Invalid term tree root file
