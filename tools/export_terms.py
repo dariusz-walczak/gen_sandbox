@@ -92,7 +92,8 @@ def render_argparse_description() -> str:
                 "",
                 "In this mode, the program exports the Term Dependency Information as a flat list",
                 " of Terms. Each Term appears at most once, in the order they are visited during",
-                " traversal of Reference Paths. Requires at least one Start Term",
+                " traversal of Reference Paths. Requires at least one Start Term.",
+                "",
                 f"The Reference Depth Limit is controlled by `{OptionNames.MAX_REF_DEPTH}`",
                 " (Start Terms count as level 1).",
             )
