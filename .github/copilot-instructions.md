@@ -143,7 +143,7 @@ The `docs/sources/` directory contains knowledge source documentation organized 
 docs/sources/
 ├── index.md                          # Root "Sources" page ({#sources})
 ├── scenario-01_*.md                  # Scenario pages ({#sources_scenario_*})
-├── terms-and-definitions.md          # Terms index page ({#sources_terms})
+├── terms.md                          # Terms index page ({#terms})
 └── terms/
     ├── <term>.md                     # Top-level term page ({#term_id})
     └── <term>/
@@ -154,9 +154,8 @@ docs/sources/
 
 **Doxygen page hierarchy conventions:**
 - Each `.md` file is a Doxygen page; the page ID is set via `{#id}` on the first heading
-- Root and scenario pages use the `sources_` prefix (e.g., `{#sources_terms}`, `{#sources_scenario_01}`) to avoid ID collisions
 - Term pages use the term name directly in `snake_case` (e.g., `{#archive}`, `{#birth_event}`)
-- Parent-child relationships are established using `\subpage child_id` in a `## Subtopics` section
+- Parent-child relationships are established using `\subpage child_id` in a `## Subterms` section
 - Each page links to its **direct children only** via `\subpage`; deeper descendants are handled by their own parent pages
 - Inline cross-references within body text use standard markdown links: `[Term Name](#term_id)`
 
