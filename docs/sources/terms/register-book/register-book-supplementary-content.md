@@ -1,3 +1,3 @@
 # Register Book Supplementary Content {#register_book_supplementary_content}
 
-A __Register Book Supplementary Content__ is part of a __[Register Book](#register_book)__ that is not the __[Register Entries](#register_entry)__, e.g., introductions, instructions, registry closings, and annotations.
+__Register Book Supplementary Content__ is any content in a __[Register Book](#register_book)__ other than its __[Register Book Entries](#register_book_entries)__, e.g., introductions, instructions, registry closings, and annotations.
