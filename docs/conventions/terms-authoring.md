@@ -45,6 +45,16 @@
 
 - **Bold** (`__Term__`) is used for each occurrence of the defined term name.
 - **Bold** is used for terms not yet defined (e.g.: `A __Term__ is a kind of __Something__`)
+- A cross-reference to another term is a **bold** markdown link whose URL is the target term anchor:
+  `__[Space Separated Title](#snake_case_id)__`
+    - Example: `A __Register Entry__ is an individual record within a __[Register](#register)__.`
+    - The link URL anchor (`snake_case_id`, matching `[a-zA-Z0-9_]+`) is the authoritative reference
+      target. It is globally unique and stable — do not retarget a reference because a similarly
+      titled term exists elsewhere.
+    - The link caption (Space Separated Title) may legitimately differ from the target term's exact
+      title — plural, abbreviated, or contextually simplified forms (e.g.: `__[Registers](#register)__`,
+      `__[Witnesses](#witness)__`). Such variations are intentional and carry meaning — do not
+      normalize or correct them.
 
 ## Scope and Precision
 
