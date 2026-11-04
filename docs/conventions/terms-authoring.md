@@ -36,8 +36,14 @@
 
 ## Definition Style
 
-- Every definition follows the pattern: `A __Term__ is ...` (or `An __Alternative Term__ is ...`).
-  Avoid "refers to", "describes", or other indirect openers.
+- The defined term is the grammatical subject of the definition:
+    - A singular term follows the pattern: `A __Term__ is ...` (or `An __Alternative Term__ is ...`).
+    - A plural term follows the pattern: `__Terms__ are ...`.
+    - The verb matches the term's grammatical number, not its meaning — a plural term may denote
+      a set or collection (e.g., Register Book Entries) or a single concept that is plural in
+      form (e.g., banns).
+- The subject is followed directly by the predicate. Avoid indirect openers such as
+  "refers to", "describes", "is defined as", or "is a term for".
 - Definitions are written as a single sentence where possible.
 - Inline examples use `(such as ...)` or `(e.g., ...)` parentheticals — no separate bullet lists.
 
