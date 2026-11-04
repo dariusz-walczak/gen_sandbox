@@ -24,7 +24,7 @@ This document describes a specific type of genealogical data sources: __[Birth](
 * \refined Typically, all [Register Book Entries](#register_entry) use the same [Primary Entry Language](#primary_entry_language).
 * \refined Sometimes, different subsets of [Register Book Entries](#register_book_entries) use different [Primary Entry Languages](#primary_entry_language).
 * \draft A typical [Register Book](#register_book) contains one or more [Homogeneous Registers](#homogeneous_register).
-* \draft A [Register Book](#register_book) may occassionally contain a single [Heterogeneous Register](#heterogeneous_register) (especially at the beginning of the 19th century).
+* \draft A [Register Book](#register_book) may occasionally contain a single [Heterogeneous Register](#heterogeneous_register) (especially at the beginning of the 19th century).
 
 #### Other Facts
 
@@ -43,13 +43,13 @@ This document describes a specific type of genealogical data sources: __[Birth](
 ### Register Entry
 
 * \draft A [Register Entry](#register_entry) is written in one [Primary Entry Language](#primary_entry_language).
-* \draft Parts of a [Register Entry](#register_entry) may be written in [Secondary Entry Languages](#secondary_entry_language) (e.g. names transliteration, marginal notes).
-* \draft [Register Entry Languages](#register_entry_language) vary across [Registries](#register) and periods (e.g., Latin, Polish, Russian, German),
+* \draft Parts of a [Register Entry](#register_entry) may be written in [Secondary Entry Languages](#secondary_entry_language) (e.g., transliteration of names, marginal notes).
+* \draft [Register Entry Languages](#register_entry_language) vary across [Registers](#register) and periods (e.g., Latin, Polish, Russian, German),
   typically depending on the country and year of the [Register Entry](#register_entry) creation.
-* \draft A typical [Register Entry](#register_entry) is a prose describing the documented event.
+* \draft A typical [Register Entry](#register_entry) is a prose description of the documented [Event](#event).
 * \draft The [Register Entries](#register_entry) are typically explicitly and unambiguously numbered.
 * \draft A [Register Entry](#register_entry) may span one or more pages.
-* \draft Parts of a [Register Entry](#register_entry) may be ambiguous, unreadable, or even missing due to physical damages.
+* \draft Parts of a [Register Entry](#register_entry) may be ambiguous, unreadable, or even missing due to physical damage.
 * \draft A typical [Register Entry](#register_entry) includes the date of its creation (i.e., the date of the documented [Event](#event) registration).
 * A [Register Entry](#register_entry) may have one or more [Annotations](#register_entry_annotation).
 * A [Register Entry Correction Note](#register_entry_correction_note) typically shares the date of creation and the [Registrar](#registrar) with the [Register Entry](#register_entry).
