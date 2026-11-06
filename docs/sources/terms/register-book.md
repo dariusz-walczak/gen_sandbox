@@ -1,6 +1,6 @@
 # Register Book {#register_book}
 
-A __Register Book__ is a physical or digital volume containing one or more __[Registers](#register)__, each of a distinct type, covering the same period and __[Administrative Scope](#administrative_scope)__.
+A __Register Book__ is a __[Book](#book)__ containing one or more __[Registers](#register)__, each of a distinct type, covering the same period and __[Administrative Scope](#administrative_scope)__.
 
 ## Subterms
 
