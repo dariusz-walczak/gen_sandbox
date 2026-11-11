@@ -120,7 +120,9 @@ def parse_options(args: list[str]) -> argparse.Namespace:
     parser.add_argument(
         "-r", OptionNames.TREE_ROOT, action="store", metavar="PATH", dest="input_path",
         default=default_input_path,
-        help=(f"PATH to the Term Tree root file or directory (default: {default_input_path})"))
+        help=(
+            "PATH to the Term Tree root file or directory (a directory with a sibling same-named"
+            f" term file is treated as that term file; default: {default_input_path})"))
 
     parser.add_argument(
         "-t", OptionNames.TERM, nargs="+", action="extend", metavar="ID", dest="term_ids",
