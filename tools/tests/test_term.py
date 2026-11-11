@@ -424,6 +424,48 @@ def test_find_term_file_path_term_file_root_without_sibling_dir() -> None:
     assert shared.term.find_term_file_paths(term_file_root, ["accra"]) == []
 
 
+# 5) The term tree root is a directory with a sibling term file (e.g. deep-tree/africa next to
+#    deep-tree/africa.md) — it is resolved to the term file and behaves like a term file root
+@pytest.mark.parametrize("input_term_tree_root,input_term_id,expected_output", [
+    # 5.1) The searched term id is the sibling term file's id — the sibling term file is returned
+    pytest.param(
+        os.path.join(_deep_tree_root, "africa"),
+        "africa",
+        "africa.md",
+        id="root_dir_own_term"),
+    # 5.1b) Same as 5.1 but with a trailing path separator
+    pytest.param(
+        os.path.join(_deep_tree_root, "africa") + os.sep,
+        "africa",
+        "africa.md",
+        id="root_dir_trailing_sep_own_term"),
+    # 5.2) The searched term id is one of the descendants — the root directory is walked
+    pytest.param(
+        os.path.join(_deep_tree_root, "africa"),
+        "bela_bela",
+        os.path.join("africa", "lesotho", "berea", "kueneng", "bela_bela.md"),
+        id="root_dir_descendant"),
+    # 5.3) The searched term id is unknown in the subtree but exists in the entire tree — None is
+    #      returned (the search does not escape the resolved root)
+    pytest.param(
+        os.path.join(_deep_tree_root, "africa"),
+        "europe",
+        None,
+        id="root_dir_term_outside_subtree"),
+])
+def test_find_term_file_path_term_dir_root_with_sibling_file(
+        input_term_tree_root: str,
+        input_term_id: str,
+        expected_output: str | None) -> None:
+
+    output_term_path = shared.term.find_term_file_path(input_term_tree_root, input_term_id)
+
+    if output_term_path is None:
+        assert expected_output is None
+    else:
+        assert os.path.relpath(output_term_path, _deep_tree_root) == expected_output
+
+
 _error_cases_root = os.path.join(_DATA_ROOT, "term", "find-term-error-cases")
 _invalid_md_root = os.path.join(_error_cases_root, "level-2_valid", "level-2-2_invalid.md")
 _txt_root = os.path.join(_error_cases_root, "level-2_valid", "level-2-3_invalid.txt")
@@ -1395,6 +1437,27 @@ def make_dt_expected(
             ),
         ],
         id="africa_md_max_tree_depth_2",
+    ),
+    # The same subtree selected via the sibling directory (deep-tree/africa next to africa.md) —
+    #  the directory root is resolved to the term file and behaves like a term file root
+    pytest.param(
+        shared.term.Options(max_tree_depth=2),
+        os.path.join(_DATA_ROOT, "term", "deep-tree", "africa"),
+        {
+            "africa":       make_dt_term("africa"),       # 1
+            "burkina_faso": make_dt_term("burkina_faso"), # 2
+            "ethiopia":     make_dt_term("ethiopia"),     # 2
+            "lesotho":      make_dt_term("lesotho"),      # 2
+        },
+        [
+            make_dt_term(
+                "africa",                     # 1
+                make_dt_term("burkina_faso"), # 2
+                make_dt_term("ethiopia"),     # 2
+                make_dt_term("lesotho"),      # 2
+            ),
+        ],
+        id="africa_dir_max_tree_depth_2",
     ),
     pytest.param(
         shared.term.Options(max_tree_depth=3),

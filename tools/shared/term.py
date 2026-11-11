@@ -38,10 +38,14 @@ class Options(pydantic.BaseModel):
 
 # Local function call tree:
 #
+# resolve_tree_root_path
+#
 # find_term_file_path
+# -> resolve_tree_root_path
 # -> load_from_path
 #
 # process_input_path
+# -> resolve_tree_root_path
 # -> process_input_path_inner
 #    -> load_from_path
 #        -> load_from_file
@@ -53,6 +57,31 @@ class Options(pydantic.BaseModel):
 # -> extract_referenced_terms_inner
 #    -> extract_term_references
 #    -> [extract_referenced_terms_inner]
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+
+def resolve_tree_root_path(term_path: str) -> str:
+    """Resolve a directory tree root path to its sibling term file when one exists
+
+    When term_path is a directory with a sibling term file (e.g. `root.md` next to the `root/`
+    directory), the term file path is returned, so the caller behaves as if the term file was
+    specified directly. Otherwise, term_path is returned unchanged.
+
+    :param term_path: the term tree root path to be resolved
+    :returns: the sibling term file path when the directory has one, otherwise term_path
+    """
+
+    if os.path.isdir(term_path):
+        sibling_term_file_path = os.path.normpath(term_path) + TERM_FILE_EXTENSION
+
+        if os.path.isfile(sibling_term_file_path):
+            _LOG.debug(
+                f"The tree root directory ({term_path}) has a sibling term file"
+                f" ({sibling_term_file_path}) - resolving to the term file")
+            return sibling_term_file_path
+
+    return term_path
+
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 
@@ -71,12 +100,17 @@ def find_term_file_paths(term_tree_root: str, term_ids: typing.Sequence[str]) ->
     return found_paths
 
 
-def find_term_file_path(term_tree_root: str, term_id: str) -> str | None:
+def find_term_file_path(
+        term_tree_root: str, term_id: str, *, _resolve_tree_root: bool = True) -> str | None:
     """Search the term tree for a specific term
 
     The term tree is walked depth-first starting from the root path. Sub-directories are descended
     into only when they correspond to a term file in the current directory (e.g. `parent/child/`
     is entered only if `parent/child.md` exists).
+
+    A directory root path with a sibling term file is resolved to that term file (see
+    resolve_tree_root_path), unless _resolve_tree_root is False (used for the recursive descent
+    from a term file into its sibling directory).
 
     :param term_tree_root: the root path of the term tree to be searched
     :param term_id: the identifier of the term to be searched for
@@ -107,6 +141,10 @@ def find_term_file_path(term_tree_root: str, term_id: str) -> str | None:
             shared.error.AppError.Codes.InputContractError,
             f"The term tree root path ({term_tree_root}) doesn't exist")
 
+    # A directory root with a sibling term file is resolved to that term file:
+    if _resolve_tree_root:
+        term_tree_root = resolve_tree_root_path(term_tree_root)
+
     # The root path is a file:
 
     if os.path.isfile(term_tree_root):
@@ -123,7 +161,8 @@ def find_term_file_path(term_tree_root: str, term_id: str) -> str | None:
                 term_tree_root_dir = term_tree_root.removesuffix(TERM_FILE_EXTENSION)
 
                 if os.path.exists(term_tree_root_dir):
-                    return find_term_file_path(term_tree_root_dir, term_id)
+                    return find_term_file_path(
+                        term_tree_root_dir, term_id, _resolve_tree_root=False)
                 else:
                     return None  # The term tree root is a non-matching term without children
         else:
@@ -168,6 +207,9 @@ def process_input_path(
         max_depth = HARD_DEPTH_LIMIT
     else:
         max_depth = min(options.max_tree_depth, HARD_DEPTH_LIMIT)
+
+    # A directory root with a sibling term file is resolved to that term file:
+    term_path = resolve_tree_root_path(term_path)
 
     if os.path.isdir(term_path):
         return process_term_directory(max_depth, seen_terms, term_path)
